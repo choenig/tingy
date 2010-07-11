@@ -1,7 +1,8 @@
 #pragma once
 
-#include <QUuid>
+#include <QDataStream>
 #include <QHash>
+#include <QUuid>
 
 class TaskId
 {
@@ -18,9 +19,18 @@ private:
     QUuid uuid_;
 
     friend uint qHash(const TaskId& taskId);
+    friend QDataStream & operator<<(QDataStream & out, const TaskId & taskId);
+    friend QDataStream & operator>>(QDataStream & in, TaskId & taskId );
 };
 
-inline uint qHash(const TaskId& taskId)
-{
+inline uint qHash(const TaskId& taskId) {
     return qHash(taskId.uuid_);
 }
+
+inline QDataStream & operator<<(QDataStream & out, const TaskId & taskId) {
+    return operator<<(out, taskId.uuid_);
+}
+inline QDataStream & operator>>(QDataStream & in, TaskId & taskId ) {
+    return operator>>(in, taskId.uuid_);
+}
+

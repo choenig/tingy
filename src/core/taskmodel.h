@@ -16,6 +16,9 @@ public:
 
     static TaskModel * instance() { return instance_; }
 
+    bool saveToFile() const;
+    bool restoreFromFile();
+
 public slots:
     void addTask(const Task & task);
     void updateTask(const Task & task);

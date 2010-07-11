@@ -14,6 +14,7 @@ public:
 
 private slots:
     void on_leAddTask_returnPressed();
+    void init();
 
 private:
     Ui::MainWindow *ui;

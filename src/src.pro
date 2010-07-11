@@ -18,7 +18,8 @@ SOURCES += main.cpp\
     core/taskid.cpp \
     core/taskmodel.cpp \
     core/importance.cpp \
-    widgets/tasktree.cpp
+    widgets/tasktree.cpp \
+    util/parsetimestamp.cpp
 
 HEADERS  += widgets/mainwindow.h \
     widgets/filterlineedit.h \
@@ -26,6 +27,7 @@ HEADERS  += widgets/mainwindow.h \
     core/taskid.h \
     core/taskmodel.h \
     core/importance.h \
-    widgets/tasktree.h
+    widgets/tasktree.h \
+    util/parsetimestamp.h
 
 FORMS    += widgets/ui/mainwindow.ui

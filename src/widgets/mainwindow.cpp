@@ -4,6 +4,8 @@
 
 #include "ui_mainwindow.h"
 
+#include <QTimer>
+
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
@@ -12,6 +14,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
     ui->leFilter->setInfoText("Filter");
     ui->leAddTask->setInfoText("Add Task");
+
+    QTimer::singleShot(0, this, SLOT(init()));
 }
 
 MainWindow::~MainWindow()
@@ -26,4 +30,11 @@ void MainWindow::on_leAddTask_returnPressed()
 
     TaskModel::instance()->addTask(newTask);
     ui->leAddTask->clear();
+
+    TaskModel::instance()->saveToFile();
+}
+
+void MainWindow::init()
+{
+    TaskModel::instance()->restoreFromFile();
 }
