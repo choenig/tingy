@@ -12,6 +12,9 @@ public:
     MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
+private slots:
+    void on_leAddTask_returnPressed();
+
 private:
     Ui::MainWindow *ui;
 };

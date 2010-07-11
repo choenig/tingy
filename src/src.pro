@@ -9,12 +9,23 @@ QT       += core gui
 TARGET = myTasks
 TEMPLATE = app
 
+INCLUDEPATH += . core widgets
 
 SOURCES += main.cpp\
         widgets/mainwindow.cpp \
-    widgets/filterlineedit.cpp
+    widgets/filterlineedit.cpp \
+    core/task.cpp \
+    core/taskid.cpp \
+    core/taskmodel.cpp \
+    core/importance.cpp \
+    widgets/tasktree.cpp
 
 HEADERS  += widgets/mainwindow.h \
-    widgets/filterlineedit.h
+    widgets/filterlineedit.h \
+    core/task.h \
+    core/taskid.h \
+    core/taskmodel.h \
+    core/importance.h \
+    widgets/tasktree.h
 
 FORMS    += widgets/ui/mainwindow.ui
