@@ -13,7 +13,6 @@ public:
     ~MainWindow();
 
 private slots:
-    void init();
     void on_leAddTask_returnPressed();
 
 private:

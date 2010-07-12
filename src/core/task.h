@@ -15,6 +15,7 @@ public:
     bool isValid() const;
 
     TaskId getId() const { return id_; }
+    void setDescription(const QString & description) { description_ = description; }
     QString getDescription() const { return description_; }
     QDate getDueDate() const { return dueDate_; }
     QTime getEffort() const { return effort_; }

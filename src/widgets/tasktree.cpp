@@ -8,6 +8,7 @@
 #include <QDebug>
 #include <QHash>
 #include <QHeaderView>
+#include <QInputDialog>
 #include <QItemDelegate>
 #include <QPainter>
 #include <QTreeWidgetItem>
@@ -70,6 +71,7 @@ public:
 	}
 
 	Task getTask() { return task_; }
+	void setTask(const Task & task) { task_ = task; init(); }
 
 private:
 	void init()
@@ -168,6 +170,7 @@ TaskTree::TaskTree(QWidget *parent)
 
     TaskModel * tm = TaskModel::instance();
     connect(tm, SIGNAL(taskAdded(Task)), this, SLOT(addTask(Task)));
+    connect(tm, SIGNAL(taskUpdated(Task)), this, SLOT(updateTask(Task)));
 
     initTopLevelItems(this);
 }
@@ -201,9 +204,36 @@ void TaskTree::addTask(const Task & task)
     setColumnWidth(2, 50);
 }
 
-void TaskTree::slotItemDoubleClicked(QTreeWidgetItem * /*i*/, int /*column*/)
+void TaskTree::updateTask(const Task & task)
 {
-    // fixme: implement
+    // find task
+    QTreeWidgetItemIterator it(this);
+    while (*it) {
+        TaskTreeItem * tti = dynamic_cast<TaskTreeItem*>(*it);
+        if (tti) {
+            if (tti->getTask().getId() == task.getId()) {
+                tti->setTask(task);
+                break;
+            }
+        }
+        ++it;
+    }
+}
+
+void TaskTree::slotItemDoubleClicked(QTreeWidgetItem * item, int column)
+{
+    TaskTreeItem * tti = dynamic_cast<TaskTreeItem*>(item);
+    if (!tti) return;
+
+    if (column == 0) {
+        bool ok;
+        QString newDescription = QInputDialog::getText(this, "ficken", "Update description", QLineEdit::Normal, tti->getTask().getDescription(),&ok);
+        if (ok && !newDescription.isEmpty() && newDescription != tti->getTask().getDescription()) {
+            Task newTask = tti->getTask();
+            newTask.setDescription(newDescription);
+            TaskModel::instance()->updateTask(newTask);
+        }
+    }
 }
 
 void TaskTree::drawBranches(QPainter * /*painter*/, const QRect & /*rect*/, const QModelIndex & /*index*/) const

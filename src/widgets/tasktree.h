@@ -18,6 +18,7 @@ public:
 
 private slots:
 	void addTask(const Task & task);
+	void updateTask(const Task & task);
 	void slotItemDoubleClicked(QTreeWidgetItem * item, int column);
 
 protected:
