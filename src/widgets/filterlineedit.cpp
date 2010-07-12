@@ -1,7 +1,10 @@
 #include "filterlineedit.h"
 
-FilterLineEdit::FilterLineEdit(QWidget * parent) :
-    QLineEdit(parent)
+//
+// FilterLineEdit
+
+FilterLineEdit::FilterLineEdit(QWidget * parent)
+    : QLineEdit(parent)
 {
 }
 

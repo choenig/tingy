@@ -9,12 +9,12 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    MainWindow(QWidget *parent = 0);
+    MainWindow(QWidget * parent = 0);
     ~MainWindow();
 
 private slots:
-    void on_leAddTask_returnPressed();
     void init();
+    void on_leAddTask_returnPressed();
 
 private:
     Ui::MainWindow *ui;

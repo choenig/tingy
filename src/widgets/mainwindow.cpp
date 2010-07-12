@@ -6,9 +6,8 @@
 
 #include <QTimer>
 
-MainWindow::MainWindow(QWidget *parent) :
-    QMainWindow(parent),
-    ui(new Ui::MainWindow)
+MainWindow::MainWindow(QWidget *parent)
+    : QMainWindow(parent), ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
 
@@ -23,18 +22,21 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
+void MainWindow::init()
+{
+    TaskModel::instance()->restoreFromFile();
+}
+
 void MainWindow::on_leAddTask_returnPressed()
 {
     Task newTask = Task::createFromString(ui->leAddTask->text());
     if (!newTask.isValid()) return;
 
     TaskModel::instance()->addTask(newTask);
+
     ui->leAddTask->clear();
 
+    // fixme: enhance this
     TaskModel::instance()->saveToFile();
 }
 
-void MainWindow::init()
-{
-    TaskModel::instance()->restoreFromFile();
-}

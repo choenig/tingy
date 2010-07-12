@@ -4,6 +4,9 @@
 
 class Task;
 
+//
+// TaskTree
+
 class TaskTree : public QTreeWidget
 {
     Q_OBJECT
@@ -14,4 +17,3 @@ public:
 private slots:
     void addTask(const Task & task);
 };
-
