@@ -1,2 +1,7 @@
 *.pro.user
 *~
+
+*.o
+Makefile
+moc_*.cpp
+ui_*.h

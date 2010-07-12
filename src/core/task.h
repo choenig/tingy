@@ -10,7 +10,7 @@
 class Task
 {
 public:
-    Task() {}
+    Task() : done_(false) {}
 
     bool isValid() const;
 
@@ -18,6 +18,7 @@ public:
     QString getDescription() const { return description_; }
     QDate getDueDate() const { return dueDate_; }
     QTime getEffort() const { return effort_; }
+    bool isDone() const { return done_; }
 
     QString toString() const;
 
@@ -28,11 +29,13 @@ public:
 
 private:
     TaskId id_;
+    QDateTime creationTimestamp_;
     Importance importance_;
     QString description_;
     QDate dueDate_;
     QDate plannedDate_; // adjustable by drag and drop
     QTime effort_;
+    bool done_;
 
     friend QDataStream & operator<<( QDataStream & out, const Task & task);
     friend QDataStream & operator>>( QDataStream & out, Task & task);
@@ -41,20 +44,24 @@ private:
 inline QDataStream & operator<<(QDataStream & out, const Task & task) {
     out
         << task.id_
+        << task.creationTimestamp_
         << task.importance_
         << task.description_
         << task.dueDate_
         << task.plannedDate_
-        << task.effort_;
+        << task.effort_
+        << task.done_;
     return out;
 }
 inline QDataStream & operator>>(QDataStream & in, Task & task) {
     in
         >> task.id_
+        >> task.creationTimestamp_
         >> task.importance_
         >> task.description_
         >> task.dueDate_
         >> task.plannedDate_
-        >> task.effort_;
+        >> task.effort_
+        >> task.done_;
     return in;
 }

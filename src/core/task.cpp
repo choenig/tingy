@@ -12,7 +12,7 @@ bool Task::isValid() const
 
 QString Task::toString() const
 {
-    return description_;
+    return description_; // fixme enhance
 }
 
 bool Task::operator==(const Task & rhs) const
@@ -29,6 +29,7 @@ Task Task::createFromString(const QString & string)
 {
     Task retval;
     retval.id_ = TaskId::createId();
+    retval.creationTimestamp_ = QDateTime::currentDateTime();
     retval.description_ = string;
 
     QRegExp reDue("\\*([^ ]+)");

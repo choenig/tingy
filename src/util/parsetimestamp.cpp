@@ -41,6 +41,12 @@ QDate parseDate(const QString & string)
             return today.addDays(secs / 3600 / 24);
         }
     }
+    if (string.startsWith("-")) {
+        int secs = parseTimeDef(string.mid(1));
+        if (secs >= 0) {
+            return today.addDays(-secs / 3600 / 24);
+        }
+    }
 
     return QDate();
 }
