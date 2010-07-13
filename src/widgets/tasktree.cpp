@@ -10,7 +10,7 @@
 #include <QHash>
 #include <QHeaderView>
 #include <QInputDialog>
-
+#include <QTimer>
 
 namespace {
 
@@ -59,6 +59,18 @@ TaskTree::TaskTree(QWidget *parent)
     connect(tm, SIGNAL(taskUpdated(Task)), this, SLOT(updateTask(Task)));
 
     initTopLevelItems(this);
+
+    QTimer::singleShot(0, this, SLOT(init()));
+}
+
+void TaskTree::init()
+{
+    header()->setResizeMode(0, QHeaderView::ResizeToContents);
+    header()->setResizeMode(1, QHeaderView::Stretch);
+    header()->setResizeMode(2, QHeaderView::ResizeToContents);
+    header()->setResizeMode(3, QHeaderView::ResizeToContents);
+
+    sortItems(0, Qt::AscendingOrder);
 }
 
 void TaskTree::addTask(const Task & task)
@@ -67,9 +79,9 @@ void TaskTree::addTask(const Task & task)
     TopLevelItem * parent = 0;
     if (task.isDone()) {
         parent = topLevelItems[QDate()];
-    } else if (task.getDueDate().isValid()) {
+    } else if (task.getEffectiveDate().isValid()) {
         foreach (const QDate & date, topLevelItems.keys()) {
-            if (date <= task.getDueDate()) {
+            if (date <= task.getEffectiveDate()) {
                 parent = topLevelItems[date];
             }
         }
@@ -83,13 +95,6 @@ void TaskTree::addTask(const Task & task)
     } else {
         new TaskTreeItem(this, task);
     }
-
-
-    // RFI: move this out of here
-    setColumnWidth(0, 35);
-    setColumnWidth(1, 300);
-    setColumnWidth(2, 60);
-    setColumnWidth(3, 50);
 }
 
 void TaskTree::updateTask(const Task & task)
@@ -113,7 +118,7 @@ void TaskTree::updateTask(const Task & task)
 
     // check what changed
     const Task oldTask = updatedTaskTreeItem->getTask();
-    if (oldTask.getDueDate() != task.getDueDate() || oldTask.isDone() != task.isDone())
+    if (oldTask.getEffectiveDate() != task.getEffectiveDate() || oldTask.isDone() != task.isDone())
     {
         QTreeWidgetItem * parent = updatedTaskTreeItem->parent();
         if (parent) {
@@ -127,9 +132,9 @@ void TaskTree::updateTask(const Task & task)
         // fixme this is copy paste code
         if (task.isDone()) {
             parent = topLevelItems[QDate()];
-        } else if (task.getDueDate().isValid()) {
+        } else if (task.getEffectiveDate().isValid()) {
             foreach (const QDate & date, topLevelItems.keys()) {
-                if (date <= task.getDueDate()) {
+                if (date <= task.getEffectiveDate()) {
                     parent = topLevelItems[date];
                 }
             }
@@ -150,9 +155,10 @@ void TaskTree::slotItemDoubleClicked(QTreeWidgetItem * item, int column)
     TaskTreeItem * tti = dynamic_cast<TaskTreeItem*>(item);
     if (!tti) return;
 
-    if (column == 0) {
+    if (column == 1) {
         bool ok;
-        QString newDescription = QInputDialog::getText(this, "ficken", "Update description", QLineEdit::Normal, tti->getTask().getDescription(),&ok);
+        QString newDescription = QInputDialog::getText(this, "Update Description", "Update description",
+                                                       QLineEdit::Normal, tti->getTask().getDescription(),&ok);
         if (ok && !newDescription.isEmpty() && newDescription != tti->getTask().getDescription()) {
             Task newTask = tti->getTask();
             newTask.setDescription(newDescription);
@@ -201,12 +207,22 @@ bool TaskTree::dropMimeData(QTreeWidgetItem *parent, int /*index*/, const QMimeD
     QDate plannedDate;
 
     if (parent) {
-        TopLevelItem  * tli = dynamic_cast<TopLevelItem*>(parent);
-        if (tli) plannedDate = tli->getDate();
-        else {
-            TaskTreeItem * tti = dynamic_cast<TaskTreeItem*>(parent);
-            if (tti && tti->getTask().getDueDate().isValid()) plannedDate = tti->getTask().getDueDate(); // fixme use planned here
-            else return false;
+        switch (parent->type()) {
+        case TopLevelItem::Type:
+            plannedDate = static_cast<TopLevelItem*>(parent)->getDate();
+            break;
+        case TaskTreeItem::Type:
+        {
+            TaskTreeItem * tti = static_cast<TaskTreeItem*>(parent);
+            if (tti->getTask().getEffectiveDate().isValid()) {
+                plannedDate = tti->getTask().getEffectiveDate();
+                break;
+            } else {
+                return false;
+            }
+        }
+        default:
+            return false;
         }
     }
 
@@ -216,7 +232,7 @@ bool TaskTree::dropMimeData(QTreeWidgetItem *parent, int /*index*/, const QMimeD
 	Task task;
 	ds >> task;
 
-	task.setDueDate(plannedDate); // fixme this should update the planned date
+	task.setPlannedDate(plannedDate);
 	TaskModel::instance()->updateTask(task);
 	return true;
 }
@@ -225,9 +241,12 @@ QMimeData * TaskTree::mimeData(const QList<QTreeWidgetItem *> items) const
 {
 	QByteArray data;
 	QDataStream out(&data, QIODevice::WriteOnly);
-	foreach (QTreeWidgetItem* itm, items) {
-		TaskTreeItem * tti = dynamic_cast<TaskTreeItem*>(itm);
-		if (tti) out << tti->getTask();
+	TaskTreeItem * tti = dynamic_cast<TaskTreeItem*>(items.first());
+	if (tti) {
+		// DnD is not allowed for 'done' tasks
+		if (!tti->getTask().isDone()) {
+			out << tti->getTask();
+		}
 	}
 
 	if (data.isEmpty()) return 0;
@@ -260,14 +279,17 @@ void TaskTree::dragMoveEvent(QDragMoveEvent * e)
 		}
 		// ... there is a TopLevelItem below
 		if (item->type() == TopLevelItem::Type) {
-			e->accept();
-			return;
+			TopLevelItem * tli = dynamic_cast<TopLevelItem*>(item);
+			if (tli->getDate().isValid()) {
+				e->accept();
+				return;
+			}
 		}
 
 		// ... there is a TaskTreeItem and it has a dueDate
 		if (item->type() == TaskTreeItem::Type) {
 			TaskTreeItem * tti = dynamic_cast<TaskTreeItem*>(item);
-			if (tti->getTask().getDueDate().isValid()) {
+			if (tti->getTask().getEffectiveDate().isValid() && !tti->getTask().isDone()) {
 				e->accept();
 				return;
 			}

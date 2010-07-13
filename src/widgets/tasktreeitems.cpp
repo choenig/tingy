@@ -3,6 +3,7 @@
 #include <widgets/tasktree.h>
 
 #include <QPainter>
+#include <QDebug>
 
 //
 // TopLevelItem
@@ -27,6 +28,21 @@ void TopLevelItem::init(const QString& changeList)
 	setSizeHint(0, QSize(0, 40));
 }
 
+bool TopLevelItem::operator<(const QTreeWidgetItem & rhs) const
+{
+	const TopLevelItem * tli = dynamic_cast<const TopLevelItem*>(&rhs);
+	if (!tli) return false;
+
+	if (date_.isValid() && tli->getDate().isValid()) {
+		return date_ < tli->getDate();
+	} else {
+		return date_.isValid() ? true : false;
+	}
+
+
+}
+
+
 //
 // TaskTreeItem
 
@@ -50,9 +66,8 @@ void TaskTreeItem::init()
 	setText(2, task_.getEffort().isValid()  ? task_.getEffort().toString("hh:mm")       : QString());
 	setText(3, task_.getDueDate().isValid() ? task_.getDueDate().toString("dd.MM.yyyy") : QString());
 
-
 	QColor color = Qt::black;
-	if      (task_.getDueDate().isNull())               color = Qt::darkBlue;
+	if      (task_.getDueDate().isNull())                color = Qt::darkBlue;
 	else if (task_.getDueDate() <  QDate::currentDate()) color = Qt::darkRed;
 	else if (task_.getDueDate() == QDate::currentDate()) color = Qt::darkGreen;
 	setForeground(0, color);
@@ -60,6 +75,27 @@ void TaskTreeItem::init()
 	setForeground(2, color);
 	setForeground(3, color);
 }
+
+bool TaskTreeItem::operator<(const QTreeWidgetItem & rhs) const
+{
+	const TaskTreeItem * tti = dynamic_cast<const TaskTreeItem*>(&rhs);
+	if (!tti) return true;
+
+	QDate lhsDate = task_.getEffectiveDate();
+	QDate rhsDate = tti->getTask().getEffectiveDate();
+	if (lhsDate != rhsDate) return lhsDate < rhsDate;
+
+	lhsDate = task_.getDueDate();
+	rhsDate = tti->getTask().getDueDate();
+	if (lhsDate.isValid() && rhsDate.isValid()) {
+		if (lhsDate != rhsDate) return lhsDate < rhsDate;
+	} else {
+		if (lhsDate != rhsDate) return !lhsDate.isNull();
+	}
+
+	return task_.getCreationTimestamp() > tti->getTask().getCreationTimestamp();
+}
+
 
 
 TopLevelItemDelegate::TopLevelItemDelegate(QTreeWidget * parent)

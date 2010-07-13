@@ -25,6 +25,7 @@ public:
 
 private:
 	void init(const QString& changeList);
+	virtual bool operator<(const QTreeWidgetItem & rhs) const;
 
 private:
 	QString string_;
@@ -43,11 +44,12 @@ public:
 	TaskTreeItem(TaskTree * tree, const Task & task);
 	TaskTreeItem(TopLevelItem * topLevelItem, const Task & task);
 
-	Task getTask() { return task_; }
+	Task getTask() const { return task_; }
 	void setTask(const Task & task) { task_ = task; init(); }
 
 private:
 	void init();
+	virtual bool operator<(const QTreeWidgetItem & rhs) const;
 
 private:
 	Task task_;

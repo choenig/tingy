@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>493</width>
-    <height>506</height>
+    <width>665</width>
+    <height>807</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -43,6 +43,9 @@
     </item>
     <item row="1" column="0" colspan="3">
      <widget class="TaskTree" name="taskTree">
+      <attribute name="headerStretchLastSection">
+       <bool>false</bool>
+      </attribute>
       <column>
        <property name="text">
         <string>✔</string>
@@ -75,7 +78,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>493</width>
+     <width>665</width>
      <height>23</height>
     </rect>
    </property>
