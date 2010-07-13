@@ -4,10 +4,8 @@
 
 class Task;
 
-////
-//// TaskTree
-
-class TopLevelItem;
+//
+// TaskTree
 
 class TaskTree : public QTreeWidget
 {
@@ -20,6 +18,7 @@ private slots:
 	void addTask(const Task & task);
 	void updateTask(const Task & task);
 	void slotItemDoubleClicked(QTreeWidgetItem * item, int column);
+	void slotItemChanged(QTreeWidgetItem * item, int column);
 
 protected:
 	virtual void drawBranches(QPainter * painter, const QRect & rect, const QModelIndex & index) const;

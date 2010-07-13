@@ -20,7 +20,8 @@ SOURCES += main.cpp\
     core/importance.cpp \
     widgets/tasktree.cpp \
     util/parsetimestamp.cpp \
-    core/filestorage.cpp
+    core/filestorage.cpp \
+    widgets/tasktreeitems.cpp
 
 HEADERS  += widgets/mainwindow.h \
     widgets/filterlineedit.h \
@@ -30,6 +31,7 @@ HEADERS  += widgets/mainwindow.h \
     core/importance.h \
     widgets/tasktree.h \
     util/parsetimestamp.h \
-    core/filestorage.h
+    core/filestorage.h \
+    widgets/tasktreeitems.h
 
 FORMS    += widgets/ui/mainwindow.ui

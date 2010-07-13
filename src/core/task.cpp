@@ -17,12 +17,14 @@ QString Task::toString() const
 
 bool Task::operator==(const Task & rhs) const
 {
-    return id_           == rhs.id_          &&
-           importance_   == rhs.importance_  &&
-           description_  == rhs.description_ &&
-           dueDate_      == rhs.dueDate_     &&
-           plannedDate_  == rhs.plannedDate_ &&
-           effort_       == rhs.effort_;
+    return id_                == rhs.id_                &&
+           creationTimestamp_ == rhs.creationTimestamp_ &&
+           importance_        == rhs.importance_        &&
+           description_       == rhs.description_       &&
+           dueDate_           == rhs.dueDate_           &&
+           plannedDate_       == rhs.plannedDate_       &&
+           effort_            == rhs.effort_            &&
+           done_              == rhs.done_;
 }
 
 Task Task::createFromString(const QString & string)

@@ -45,6 +45,14 @@
      <widget class="TaskTree" name="taskTree">
       <column>
        <property name="text">
+        <string>✔</string>
+       </property>
+       <property name="textAlignment">
+        <set>AlignHCenter|AlignVCenter|AlignCenter</set>
+       </property>
+      </column>
+      <column>
+       <property name="text">
         <string>Description</string>
        </property>
       </column>

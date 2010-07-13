@@ -2,135 +2,15 @@
 
 #include <core/task.h>
 #include <core/taskmodel.h>
+#include <widgets/tasktreeitems.h>
 
 #include <QContextMenuEvent>
-#include <QDate>
+
 #include <QDebug>
 #include <QHash>
 #include <QHeaderView>
 #include <QInputDialog>
-#include <QItemDelegate>
-#include <QPainter>
-#include <QTreeWidgetItem>
 
-//
-// TopLevelItem
-
-class TopLevelItem : public QTreeWidgetItem
-{
-public:
-	enum { Type = QTreeWidgetItem::UserType + 23 };
-
-public:
-	TopLevelItem(QTreeWidget * treeWidget, QTreeWidgetItem * itmBefore, const QString & string, const QDate & date)
-		: QTreeWidgetItem(treeWidget, itmBefore, Type), string_(string), date_(date)
-	{
-		init(string);
-	}
-
-	TopLevelItem(QTreeWidget * treeWidget, const QString & string, const QDate & date)
-		: QTreeWidgetItem(treeWidget, Type), string_(string), date_(date)
-	{
-		init(string);
-	}
-
-	QString getString() const { return string_; }
-	QDate getDate() const { return date_; }
-
-private:
-	void init(const QString& changeList)
-	{
-		setExpanded(true);
-		setFirstColumnSpanned(true);
-		setText(0, changeList);
-		setSizeHint(0, QSize(0, 40));
-	}
-
-private:
-	QString string_;
-	QDate date_;
-};
-
-//
-// TaskTreeItem
-
-class TaskTreeItem : public QTreeWidgetItem
-{
-public:
-	enum { Type = QTreeWidgetItem::UserType + 24 };
-
-public:
-	TaskTreeItem(TaskTree * tree, const Task & task)
-		: QTreeWidgetItem(tree, 0, Type), task_(task)
-	{
-		init();
-	}
-
-	TaskTreeItem(TopLevelItem * topLevelItem, const Task & task)
-		: QTreeWidgetItem(topLevelItem, Type), task_(task)
-	{
-		init();
-	}
-
-	Task getTask() { return task_; }
-	void setTask(const Task & task) { task_ = task; init(); }
-
-private:
-	void init()
-	{
-		setText(0, task_.getDescription());
-		setText(1, task_.getEffort().isValid()  ? task_.getEffort().toString("hh:mm")       : QString());
-		setText(2, task_.getDueDate().isValid() ? task_.getDueDate().toString("dd.MM.yyyy") : QString());
-
-		setCheckState(0, Qt::Unchecked);
-
-		QColor color = Qt::black;
-		if      (task_.getDueDate().isNull())               color = Qt::darkBlue;
-		else if (task_.getDueDate() <  QDate::currentDate()) color = Qt::darkRed;
-		else if (task_.getDueDate() == QDate::currentDate()) color = Qt::darkGreen;
-		setForeground(0, color);
-		setForeground(1, color);
-		setForeground(2, color);
-	}
-
-private:
-	Task task_;
-};
-
-class TopLevelItemDelegate : public QItemDelegate
-{
-public:
-	TopLevelItemDelegate(QTreeWidget * parent = 0) :QItemDelegate(parent), parent_(parent) {}
-
-	void paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
-	{
-		TopLevelItem* tli = dynamic_cast<TopLevelItem*>(static_cast<QTreeWidgetItem*>(index.internalPointer()));
-		if (!tli) {
-			QItemDelegate::paint(painter, option, index);
-			return;
-		}
-
-		painter->save();
-		QFont f(painter->font());
-		f.setBold(true);
-		painter->setFont(f);
-		painter->drawText(option.rect.adjusted(10,0,0,-5), Qt::AlignBottom, tli->getString());
-		{
-			QPoint off(0,-6);
-			QLinearGradient gradient(0, 0, 300, 0);
-			gradient.setColorAt(0, Qt::blue);
-			gradient.setColorAt(1, Qt::white);
-			painter->fillRect(QRect(option.rect.bottomLeft()+off, option.rect.bottomRight()+off), QBrush(gradient));
-		}
-		painter->restore();
-	}
-
-private:
-	QTreeWidget* parent_;
-};
-
-//
-// TaskTree
 
 namespace {
 
@@ -155,13 +35,17 @@ void initTopLevelItems(TaskTree * tree)
 
 }
 
+//
+// TaskTree
+
 TaskTree::TaskTree(QWidget *parent)
 	: QTreeWidget(parent)
 {
 	setRootIsDecorated(false);
-	setIndentation(10);
+	setIndentation(0);
 
 	connect(this, SIGNAL(itemDoubleClicked(QTreeWidgetItem*, int)), this, SLOT(slotItemDoubleClicked(QTreeWidgetItem *, int)));
+	connect(this, SIGNAL(itemChanged(QTreeWidgetItem*,int)), this, SLOT(slotItemChanged(QTreeWidgetItem*,int)));
 
 	// used for top level items
 	setItemDelegateForColumn(0, new TopLevelItemDelegate(this));
@@ -202,46 +86,63 @@ void TaskTree::addTask(const Task & task)
 
 
     // RFI: move this out of here
-    setColumnWidth(0, 300);
-    setColumnWidth(1, 60);
-    setColumnWidth(2, 50);
+    setColumnWidth(0, 35);
+    setColumnWidth(1, 300);
+    setColumnWidth(2, 60);
+    setColumnWidth(3, 50);
 }
 
 void TaskTree::updateTask(const Task & task)
 {
+    TaskTreeItem * updatedTaskTreeItem = 0;
+
     QTreeWidgetItemIterator it(this);
     while (*it) {
         TaskTreeItem * tti = dynamic_cast<TaskTreeItem*>(*it);
         if (tti) {
-            if (tti->getTask().getId() == task.getId())
-            {
-                Task oldTask = tti->getTask();
-                if (oldTask.getDueDate() != task.getDueDate())
-                {
-                    QTreeWidgetItem * parent = tti->parent();
-                    parent->removeChild(tti);
-                    if (parent->childCount() == 0) parent->setHidden(true);
-
-                    parent = 0;
-                    // fixme this is copy paste code
-                    if (task.isDone()) {
-                        parent = topLevelItems[QDate()];
-                    } else if (task.getDueDate().isValid()) {
-                        foreach (const QDate & date, topLevelItems.keys()) {
-                            if (date <= task.getDueDate()) {
-                                parent = topLevelItems[date];
-                            }
-                        }
-                    }
-                    parent->addChild(tti);
-                }
-                tti->setTask(task);
-
+            if (tti->getTask().getId() == task.getId()) {
+                updatedTaskTreeItem = tti;
                 break;
             }
         }
         ++it;
     }
+
+    // if its not there, return here
+    if (!updatedTaskTreeItem) return;
+
+    // check what changed
+    const Task oldTask = updatedTaskTreeItem->getTask();
+    if (oldTask.getDueDate() != task.getDueDate() || oldTask.isDone() != task.isDone())
+    {
+        QTreeWidgetItem * parent = updatedTaskTreeItem->parent();
+        if (parent) {
+            parent->removeChild(updatedTaskTreeItem);
+            if (parent->childCount() == 0) parent->setHidden(true);
+        } else {
+            invisibleRootItem()->removeChild(updatedTaskTreeItem);
+        }
+
+        parent = 0;
+        // fixme this is copy paste code
+        if (task.isDone()) {
+            parent = topLevelItems[QDate()];
+        } else if (task.getDueDate().isValid()) {
+            foreach (const QDate & date, topLevelItems.keys()) {
+                if (date <= task.getDueDate()) {
+                    parent = topLevelItems[date];
+                }
+            }
+        }
+        if (parent) {
+            parent->addChild(updatedTaskTreeItem);
+            parent->setHidden(false);
+        } else {
+            invisibleRootItem()->insertChild(0, updatedTaskTreeItem);
+        }
+    }
+    updatedTaskTreeItem->setTask(task);
+
 }
 
 void TaskTree::slotItemDoubleClicked(QTreeWidgetItem * item, int column)
@@ -257,6 +158,23 @@ void TaskTree::slotItemDoubleClicked(QTreeWidgetItem * item, int column)
             newTask.setDescription(newDescription);
             TaskModel::instance()->updateTask(newTask);
         }
+    }
+}
+
+void TaskTree::slotItemChanged(QTreeWidgetItem * item, int column)
+{
+    TaskTreeItem * tti = dynamic_cast<TaskTreeItem*>(item);
+    if (!tti) return;
+
+    // only look for changes of the checkbox
+    if (column != 0) return;
+
+    bool doneIsChecked = tti->checkState(0) == Qt::Checked;
+    if (doneIsChecked != tti->getTask().isDone()) {
+        // checkstate changed
+        Task newTask = tti->getTask();
+        newTask.setDone(doneIsChecked);
+        TaskModel::instance()->updateTask(newTask);
     }
 }
 
