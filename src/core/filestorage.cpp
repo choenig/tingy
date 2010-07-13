@@ -5,9 +5,10 @@
 
 #include <QFile>
 #include <QDir>
+#include <QDebug>
 
 FileStorage::FileStorage()
-: QObject()
+: QObject(), fileDir_(QDir::homePath() + QDir::separator() + ".myTasks"), restoreInProgress_(false)
 {
     TaskModel * tm = TaskModel::instance();
     connect(tm, SIGNAL(taskAdded(Task)), this, SLOT(addTask(Task)));
@@ -15,56 +16,70 @@ FileStorage::FileStorage()
     connect(tm, SIGNAL(taskRemoved(TaskId)), this, SLOT(removeTask(TaskId)));
 }
 
-void FileStorage::restoreFromFile()
+void FileStorage::restoreFromFiles()
 {
-    QFile f(QDir::homePath() + "/.myTasks/tasks.data");
-    if (!f.open(QFile::ReadOnly)) return;
-
-    // first remove all available tasks
-    foreach (const Task & task, tasks_) {
-        TaskModel::instance()->removeTask(task.getId());
-   }
-
-    QDataStream in(&f);
     QList<Task> tasks;
-    in >> tasks;
-    f.close();
 
-    foreach (const Task & task, tasks) {
-        TaskModel::instance()->addTask(task);
+    const QStringList files = fileDir_.entryList(QStringList("*.task"));
+    foreach (const QString & fileName, files) {
+        QFile f(fileDir_.absolutePath() + QDir::separator() + fileName);
+        if (f.open(QFile::ReadOnly)) {
+            QDataStream in(&f);
+            Task task;
+            in >> task;
+            tasks << task;
+            f.close();
+        }
     }
+
+    if (tasks.isEmpty()) return;
+
+    restoreInProgress_ = true;
+    {
+        // first remove all available tasks
+        TaskModel::instance()->clear();
+
+        foreach (const Task & task, tasks) {
+            TaskModel::instance()->addTask(task);
+        }
+    }
+    restoreInProgress_ = false;
 }
 
 void FileStorage::addTask(const Task & task)
 {
-    tasks_ << task;
-    saveToFile();
+    if (restoreInProgress_) return;
+
+    saveToFile(task);
 }
 
 void FileStorage::updateTask(const Task & task)
 {
-    removeTask(task.getId());
-    addTask(task);
+    if (restoreInProgress_) return;
+
+    saveToFile(task);
 }
 
 void FileStorage::removeTask(const TaskId & taskId)
 {
-    foreach (const Task & task, tasks_) {
-        if (task.getId() == taskId) {
-            tasks_.removeAll(task);
-            return;
-        }
+    if (restoreInProgress_) return;
+
+    QFile f(fileDir_.absolutePath() + QDir::separator() + taskId.toString() + ".task");
+    if (!f.exists()) {
+        qWarning("cannot find task %s to remove", (const char*)taskId.toString().constData());
+        return;
     }
-    saveToFile();
+
+    f.remove();
 }
 
-void FileStorage::saveToFile()
+void FileStorage::saveToFile(const Task & task)
 {
-    QFile f(QDir::homePath() + "/.myTasks/tasks.data");
+    QFile f(fileDir_.absolutePath() + QDir::separator() + task.getId().toString() + ".task");
     if (!f.open(QFile::WriteOnly)) return;
 
     QDataStream out(&f);
-    out << tasks_;
+    out << task;
 
     f.close();
 }

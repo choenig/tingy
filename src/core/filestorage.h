@@ -2,6 +2,7 @@
 
 #include <core/task.h>
 
+#include <QDir>
 #include <QObject>
 
 class TaskId;
@@ -14,15 +15,16 @@ public:
     FileStorage();
 
 private slots:
-    void restoreFromFile();
+    void restoreFromFiles();
 
     void addTask(const Task & task);
     void updateTask(const Task & task);
     void removeTask(const TaskId & taskId);
 
 private:
-    void saveToFile();
+    void saveToFile(const Task & task);
 
 private:
-    QList<Task> tasks_;
+    QDir fileDir_;
+    bool restoreInProgress_;
 };

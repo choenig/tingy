@@ -12,7 +12,7 @@ int main(int argc, char *argv[])
     TaskModel taskModel;
 
     FileStorage fileStorage;
-    QTimer::singleShot(0, &fileStorage, SLOT(restoreFromFile()));
+    QTimer::singleShot(0, &fileStorage, SLOT(restoreFromFiles()));
 
     MainWindow mainWindow;
     mainWindow.show();

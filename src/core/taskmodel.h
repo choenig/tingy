@@ -20,6 +20,7 @@ public:
     bool restoreFromFile();
 
 public slots:
+    void clear();
     void addTask(const Task & task);
     void updateTask(const Task & task);
     void removeTask(const TaskId & taskId);

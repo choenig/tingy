@@ -50,5 +50,7 @@ Task Task::createFromString(const QString & string)
         }
     }
 
+    retval.description_ = retval.description_.simplified();
+
     return retval;
 }

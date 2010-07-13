@@ -13,6 +13,13 @@ TaskModel::~TaskModel()
     if (isFirstInstance_) instance_ = 0;
 }
 
+void TaskModel::clear()
+{
+    foreach (const TaskId & taskId, tasks_.keys()) {
+        removeTask(taskId);
+    }
+}
+
 void TaskModel::addTask(const Task & task)
 {
     if (tasks_.contains(task.getId())) {

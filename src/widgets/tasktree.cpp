@@ -22,19 +22,20 @@ public:
 	enum { Type = QTreeWidgetItem::UserType + 23 };
 
 public:
-	TopLevelItem(QTreeWidget * treeWidget, QTreeWidgetItem * itmBefore, const QString & string)
-		: QTreeWidgetItem(treeWidget, itmBefore, Type), string_(string)
+	TopLevelItem(QTreeWidget * treeWidget, QTreeWidgetItem * itmBefore, const QString & string, const QDate & date)
+		: QTreeWidgetItem(treeWidget, itmBefore, Type), string_(string), date_(date)
 	{
 		init(string);
 	}
 
-	TopLevelItem(QTreeWidget * treeWidget, const QString & string)
-		: QTreeWidgetItem(treeWidget, Type), string_(string)
+	TopLevelItem(QTreeWidget * treeWidget, const QString & string, const QDate & date)
+		: QTreeWidgetItem(treeWidget, Type), string_(string), date_(date)
 	{
 		init(string);
 	}
 
 	QString getString() const { return string_; }
+	QDate getDate() const { return date_; }
 
 private:
 	void init(const QString& changeList)
@@ -47,6 +48,7 @@ private:
 
 private:
 	QString string_;
+	QDate date_;
 };
 
 //
@@ -138,12 +140,12 @@ void initTopLevelItems(TaskTree * tree)
 {
     const QDate today = QDate::currentDate();
 
-    topLevelItems[QDate(1970,1,1)]  = new TopLevelItem(tree, "Overdue");
-    topLevelItems[today]            = new TopLevelItem(tree, "Today");
-    topLevelItems[today.addDays(1)] = new TopLevelItem(tree, "Tomorrow");
-    topLevelItems[today.addDays(3)] = new TopLevelItem(tree, "Next week");
-    topLevelItems[today.addDays(7)] = new TopLevelItem(tree, "Future ...");
-    topLevelItems[QDate()]          = new TopLevelItem(tree, "Done");
+    topLevelItems[QDate(1970,1,1)]  = new TopLevelItem(tree, "Overdue",    QDate(1970,1,1));
+    topLevelItems[today]            = new TopLevelItem(tree, "Today",      today);
+    topLevelItems[today.addDays(1)] = new TopLevelItem(tree, "Tomorrow",   today.addDays(1));
+    topLevelItems[today.addDays(3)] = new TopLevelItem(tree, "Next week",  today.addDays(3));
+    topLevelItems[today.addDays(7)] = new TopLevelItem(tree, "Future ...", today.addDays(7));
+    topLevelItems[QDate()]          = new TopLevelItem(tree, "Done",       QDate());
 
     // initially hide all items
     foreach (const QDate & date, topLevelItems.keys()) {
@@ -177,6 +179,7 @@ TaskTree::TaskTree(QWidget *parent)
 
 void TaskTree::addTask(const Task & task)
 {
+    // fixme this is copy paste code
     TopLevelItem * parent = 0;
     if (task.isDone()) {
         parent = topLevelItems[QDate()];
@@ -206,13 +209,34 @@ void TaskTree::addTask(const Task & task)
 
 void TaskTree::updateTask(const Task & task)
 {
-    // find task
     QTreeWidgetItemIterator it(this);
     while (*it) {
         TaskTreeItem * tti = dynamic_cast<TaskTreeItem*>(*it);
         if (tti) {
-            if (tti->getTask().getId() == task.getId()) {
+            if (tti->getTask().getId() == task.getId())
+            {
+                Task oldTask = tti->getTask();
+                if (oldTask.getDueDate() != task.getDueDate())
+                {
+                    QTreeWidgetItem * parent = tti->parent();
+                    parent->removeChild(tti);
+                    if (parent->childCount() == 0) parent->setHidden(true);
+
+                    parent = 0;
+                    // fixme this is copy paste code
+                    if (task.isDone()) {
+                        parent = topLevelItems[QDate()];
+                    } else if (task.getDueDate().isValid()) {
+                        foreach (const QDate & date, topLevelItems.keys()) {
+                            if (date <= task.getDueDate()) {
+                                parent = topLevelItems[date];
+                            }
+                        }
+                    }
+                    parent->addChild(tti);
+                }
                 tti->setTask(task);
+
                 break;
             }
         }
@@ -254,38 +278,29 @@ void TaskTree::contextMenuEvent(QContextMenuEvent * e)
 }
 
 
-bool TaskTree::dropMimeData(QTreeWidgetItem *parent, int /*index*/, const QMimeData */*data*/, Qt::DropAction /*action*/)
+bool TaskTree::dropMimeData(QTreeWidgetItem *parent, int /*index*/, const QMimeData * data, Qt::DropAction /*action*/)
 {
-//	QString changeListName;
+    QDate plannedDate;
 
     if (parent) {
-//		ChangeListItem * cli = dynamic_cast<ChangeListItem*>(parent);
-//		if (cli) changeListName = cli->getChangeList();
-//		else {
-//			SvnTreeWidgetItem * twi = dynamic_cast<SvnTreeWidgetItem*>(parent);
-//			if (twi && twi->hasChangeList()) changeListName = twi->getItem().changeList;
-//			else return false;
-//		}
+        TopLevelItem  * tli = dynamic_cast<TopLevelItem*>(parent);
+        if (tli) plannedDate = tli->getDate();
+        else {
+            TaskTreeItem * tti = dynamic_cast<TaskTreeItem*>(parent);
+            if (tti && tti->getTask().getDueDate().isValid()) plannedDate = tti->getTask().getDueDate(); // fixme use planned here
+            else return false;
+        }
     }
 
-//	// Create a QByteArray from the mimedata associated with foo/bar
-//	QByteArray ba = data->data("myTasks/Task");
-//	QDataStream ds(&ba, QIODevice::ReadOnly);
-//	QStringList selItems;
-//	ds >> selItems;
+	// Create a QByteArray from the mimedata associated with foo/bar
+	QByteArray ba = data->data("myTasks/Task");
+	QDataStream ds(&ba, QIODevice::ReadOnly);
+	Task task;
+	ds >> task;
 
-//	bool success = false;
-
-//	SvnApi::Client client;
-//	if (!changeListName.isNull()) {
-//		success = client.addToChangeList(selItems, changeListName);
-//	} else {
-//		success = client.removeFromChangeList(selItems);
-//	}
-//	if (success) emit contentChanged();
-
-//	return true;
-	return false;
+	task.setDueDate(plannedDate); // fixme this should update the planned date
+	TaskModel::instance()->updateTask(task);
+	return true;
 }
 
 QMimeData * TaskTree::mimeData(const QList<QTreeWidgetItem *> items) const
@@ -317,27 +332,28 @@ void TaskTree::dragMoveEvent(QDragMoveEvent * e)
 {
 	if (e->mimeData()->hasFormat("myTasks/Task"))
 	{
-//		QTreeWidgetItem * item = itemAt(e->answerRect().topLeft());
-//		// accept if ...
-//		// ... there is no item (means remove changelist)
-//		if (!item) {
-//			e->accept();
-//			return;
-//		}
-//		// ... there is a ChangeListItem below
-//		if (item->type() == ChangeListItem::Type) {
-//			e->accept();
-//			return;
-//		}
+		QTreeWidgetItem * item = itemAt(e->answerRect().topLeft());
+		// accept if ...
 
-//		// ... there is a SvnTreeWidgetItem and it has a changelist
-//		if (item->type() == SvnTreeWidgetItem::Type) {
-//			SvnTreeWidgetItem * twi = dynamic_cast<SvnTreeWidgetItem*>(item);
-//			if (twi->hasChangeList()) {
-//				e->accept();
-//				return;
-//			}
-//		}
+		// ... there is no item (means remove changelist)
+		if (!item) {
+			e->accept();
+			return;
+		}
+		// ... there is a TopLevelItem below
+		if (item->type() == TopLevelItem::Type) {
+			e->accept();
+			return;
+		}
+
+		// ... there is a TaskTreeItem and it has a dueDate
+		if (item->type() == TaskTreeItem::Type) {
+			TaskTreeItem * tti = dynamic_cast<TaskTreeItem*>(item);
+			if (tti->getTask().getDueDate().isValid()) {
+				e->accept();
+				return;
+			}
+		}
 	}
 
 	// otherwise ignore
