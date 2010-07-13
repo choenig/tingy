@@ -45,7 +45,7 @@ public:
 	TaskTreeItem(TopLevelItem * topLevelItem, const Task & task);
 
 	Task getTask() const { return task_; }
-	void setTask(const Task & task) { task_ = task; init(); }
+	void setTask(const Task & task);
 
 private:
 	void init();
@@ -61,7 +61,4 @@ public:
 	TopLevelItemDelegate(QTreeWidget * parent = 0);
 
 	void paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const;
-
-private:
-	QTreeWidget* parent_;
 };

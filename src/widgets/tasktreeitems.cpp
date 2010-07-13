@@ -42,7 +42,6 @@ bool TopLevelItem::operator<(const QTreeWidgetItem & rhs) const
 
 }
 
-
 //
 // TaskTreeItem
 
@@ -58,18 +57,25 @@ TaskTreeItem::TaskTreeItem(TopLevelItem * topLevelItem, const Task & task)
 	init();
 }
 
+void TaskTreeItem::setTask(const Task & task)
+{
+	task_ = task;
+	init();
+}
+
+
 void TaskTreeItem::init()
 {
 	setCheckState(0, task_.isDone() ? Qt::Checked : Qt::Unchecked);
 
-	setText(1, task_.getDescription());
+	setText(1, task_.getDescription() + " [" + task_.getPlannedDate().toString(Qt::ISODate) + "]");
 	setText(2, task_.getEffort().isValid()  ? task_.getEffort().toString("hh:mm")       : QString());
 	setText(3, task_.getDueDate().isValid() ? task_.getDueDate().toString("dd.MM.yyyy") : QString());
 
 	QColor color = Qt::black;
-	if      (task_.getDueDate().isNull())                color = Qt::darkBlue;
+	if      (task_.getDueDate().isNull())                color = Qt::darkGreen;
 	else if (task_.getDueDate() <  QDate::currentDate()) color = Qt::darkRed;
-	else if (task_.getDueDate() == QDate::currentDate()) color = Qt::darkGreen;
+	else if (task_.getDueDate() == QDate::currentDate()) color = Qt::darkBlue;
 	setForeground(0, color);
 	setForeground(1, color);
 	setForeground(2, color);
@@ -93,13 +99,14 @@ bool TaskTreeItem::operator<(const QTreeWidgetItem & rhs) const
 		if (lhsDate != rhsDate) return !lhsDate.isNull();
 	}
 
-	return task_.getCreationTimestamp() > tti->getTask().getCreationTimestamp();
+	return task_.getCreationTimestamp() < tti->getTask().getCreationTimestamp();
 }
 
-
+//
+// TopLevelItemDelegate
 
 TopLevelItemDelegate::TopLevelItemDelegate(QTreeWidget * parent)
-	: QItemDelegate(parent), parent_(parent)
+	: QItemDelegate(parent)
 {
 }
 

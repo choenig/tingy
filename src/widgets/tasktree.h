@@ -3,6 +3,9 @@
 #include <QTreeWidget>
 
 class Task;
+class TaskId;
+class TaskTreeItem;
+class TopLevelItem;
 
 //
 // TaskTree
@@ -18,6 +21,8 @@ private slots:
 	void init();
 	void addTask(const Task & task);
 	void updateTask(const Task & task);
+	void removeTask(const TaskId & taskId);
+
 	void slotItemDoubleClicked(QTreeWidgetItem * item, int column);
 	void slotItemChanged(QTreeWidgetItem * item, int column);
 
@@ -27,9 +32,17 @@ protected:
 	virtual void contextMenuEvent(QContextMenuEvent * e);
 
 	// drag and drop
-	virtual bool dropMimeData(QTreeWidgetItem *parent, int index, const QMimeData *data, Qt::DropAction action);
 	virtual QMimeData *mimeData(const QList<QTreeWidgetItem *> items) const;
 	virtual void dragEnterEvent(QDragEnterEvent *e);
 	virtual void dragMoveEvent(QDragMoveEvent *e);
+	virtual void dragLeaveEvent(QDragLeaveEvent * event);
+	virtual void dropEvent(QDropEvent *event);
 	virtual Qt::DropActions supportedDropActions () const;
+	virtual bool dropMimeData(QTreeWidgetItem *parent, int index, const QMimeData *data, Qt::DropAction action);
+
+
+
+private:
+	TaskTreeItem * findTaskTreeItem(const TaskId & taskId) const;
+	TopLevelItem * getTopLevelItemForTask(const Task & task) const ;
 };
