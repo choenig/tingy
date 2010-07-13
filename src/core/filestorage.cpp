@@ -9,8 +9,12 @@
 #include <QSettings>
 
 FileStorage::FileStorage()
-: QObject(), fileDir_(QDir::homePath() + QDir::separator() + ".myTasks"), restoreInProgress_(false)
+: QObject(), fileDir_(QDir::homePath() + QDir::separator() + ".myTasks/tasks"), restoreInProgress_(false)
 {
+    if (!fileDir_.exists()) {
+        fileDir_.mkpath(fileDir_.absolutePath());
+    }
+
     TaskModel * tm = TaskModel::instance();
     connect(tm, SIGNAL(taskAdded(Task)), this, SLOT(addTask(Task)));
     connect(tm, SIGNAL(taskUpdated(Task)), this, SLOT(updateTask(Task)));

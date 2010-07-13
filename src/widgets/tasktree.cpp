@@ -37,13 +37,13 @@ void initTopLevelItems(TaskTree * tree)
 {
     const QDate today = QDate::currentDate();
 
-    topLevelItems[QDate(1970,1,1)]   = new TopLevelItem(tree, "Overdue",    QDate(1970,1,1));
-    topLevelItems[today]             = new TopLevelItem(tree, "Today",      today);
-    topLevelItems[today.addDays(1)]  = new TopLevelItem(tree, "Tomorrow",   today.addDays(1));
-    topLevelItems[today.addDays(2)]  = new TopLevelItem(tree, "Week",       today.addDays(2));
-    topLevelItems[today.addDays(7)]  = new TopLevelItem(tree, "Month",      today.addDays(7));
-    topLevelItems[today.addDays(30)] = new TopLevelItem(tree, "Future ...", today.addDays(30));
-    topLevelItems[QDate()]           = new TopLevelItem(tree, "Done",       QDate());
+    topLevelItems[QDate(1970,1,1)]   = new TopLevelItem(tree, "Überfällig",     QDate(1970,1,1));
+    topLevelItems[today]             = new TopLevelItem(tree, "Heute",          today);
+    topLevelItems[today.addDays(1)]  = new TopLevelItem(tree, "Morgen",         today.addDays(1));
+    topLevelItems[today.addDays(2)]  = new TopLevelItem(tree, "nächste Woche",  today.addDays(2));
+    topLevelItems[today.addDays(7)]  = new TopLevelItem(tree, "nächster Monat", today.addDays(7));
+    topLevelItems[today.addDays(30)] = new TopLevelItem(tree, "Zukunft ...",     today.addDays(30));
+    topLevelItems[QDate()]           = new TopLevelItem(tree, "Done",           QDate());
 
     // initially hide all items
     hideEmptyTopLevelItems();
@@ -61,7 +61,8 @@ TaskTree::TaskTree(QWidget *parent)
 	setIndentation(0);
 
 	// used for top level items
-	setItemDelegateForColumn(0, new TopLevelItemDelegate(this));
+	TopLevelItemDelegate * dlg = new TopLevelItemDelegate(this);
+	for (int i = 0; i < 4 ; ++i) setItemDelegateForColumn(i, dlg);
 
 	// drag and drop
 	setAcceptDrops( true );
@@ -200,11 +201,17 @@ void TaskTree::contextMenuEvent(QContextMenuEvent * e)
 
     if (twi->type() != TaskTreeItem::Type) return;
 
+    Task task = static_cast<TaskTreeItem*>(twi)->getTask();
+
     QMenu contextMenu;
     QAction * removeTaskAct = contextMenu.addAction("Remove Task");
 
+    QAction * resetPlannedAct = contextMenu.addAction("Reset planned status");
+    resetPlannedAct->setEnabled(task.getPlannedDate().isValid());
+
     QAction *act = contextMenu.exec(e->globalPos());
     if (!act) return;
+
 
     if (act == removeTaskAct)
     {
@@ -212,9 +219,13 @@ void TaskTree::contextMenuEvent(QContextMenuEvent * e)
                                            "Really remove the selected Task?",
                                            QMessageBox::Yes | QMessageBox::No);
         if (result == QMessageBox::Yes) {
-            TaskTreeItem * tti = static_cast<TaskTreeItem*>(twi);
-            TaskModel::instance()->removeTask(tti->getTask().getId());
+            TaskModel::instance()->removeTask(task.getId());
         }
+    }
+    else if (act == resetPlannedAct)
+    {
+        task.setPlannedDate(QDate());
+        TaskModel::instance()->updateTask(task);
     }
 }
 
@@ -325,7 +336,10 @@ bool TaskTree::dropMimeData(QTreeWidgetItem *parent, int /*index*/, const QMimeD
 	Task task;
 	ds >> task;
 
-	task.setPlannedDate(plannedDate);
+	// reset the planned date if it equals the due date
+	if (task.getDueDate() == plannedDate) task.setPlannedDate(QDate());
+	else                                  task.setPlannedDate(plannedDate);
+
 	TaskModel::instance()->updateTask(task);
 	return true;
 }

@@ -22,10 +22,18 @@ TopLevelItem::TopLevelItem(QTreeWidget * treeWidget, const QString & string, con
 
 void TopLevelItem::init(const QString& changeList)
 {
+	const QDate today = QDate::currentDate();
+
 	setExpanded(true);
 	setFirstColumnSpanned(true);
 	setText(0, changeList);
 	setSizeHint(0, QSize(0, 40));
+
+	QColor bgColor = Qt::transparent;
+	if      (date_.isNull()) bgColor = Qt::transparent;
+	else if (date_ <  today) bgColor = QColor("#ffe7e9");
+	else if (date_ == today) bgColor = QColor("#e7e7ff");
+	setBackgroundColor(0, bgColor);
 }
 
 bool TopLevelItem::operator<(const QTreeWidgetItem & rhs) const
@@ -38,8 +46,6 @@ bool TopLevelItem::operator<(const QTreeWidgetItem & rhs) const
 	} else {
 		return date_.isValid() ? true : false;
 	}
-
-
 }
 
 //
@@ -63,34 +69,43 @@ void TaskTreeItem::setTask(const Task & task)
 	init();
 }
 
-
 void TaskTreeItem::init()
 {
+	const QDate today = QDate::currentDate();
+
 	setCheckState(0, task_.isDone() ? Qt::Checked : Qt::Unchecked);
 
 	setText(1, task_.getDescription() + " [" + task_.getPlannedDate().toString(Qt::ISODate) + "]");
 	setText(2, task_.getEffort().isValid()  ? task_.getEffort().toString("hh:mm")       : QString());
 	setText(3, task_.getDueDate().isValid() ? task_.getDueDate().toString("dd.MM.yyyy") : QString());
 
-	QColor color = Qt::black;
-	if      (task_.getDueDate().isNull())                color = Qt::darkGreen;
-	else if (task_.getDueDate() <  QDate::currentDate()) color = Qt::darkRed;
-	else if (task_.getDueDate() == QDate::currentDate()) color = Qt::darkBlue;
-	setForeground(0, color);
-	setForeground(1, color);
-	setForeground(2, color);
-	setForeground(3, color);
+	QColor fgColor = Qt::black;
+	if      (task_.getDueDate().isNull())                 fgColor = Qt::darkGreen;
+	else if (task_.getDueDate() <  today)                 fgColor = Qt::darkRed;
+	else if (task_.getDueDate() == today)                 fgColor = Qt::darkBlue;
+	for (int i = 0; i < 4 ; ++i) setForeground(i, fgColor);
+
+	QColor bgColor = Qt::transparent;
+	if      (task_.getEffectiveDate().isNull()) bgColor = Qt::transparent;
+	else if (task_.getEffectiveDate() <  today) bgColor = QColor("#ffe7e9");
+	else if (task_.getEffectiveDate() == today) bgColor = QColor("#e7e7ff");
+	for (int i = 0; i < 4 ; ++i) setBackground(i, bgColor);
+
+	QFont f = font(0);
+	f.setBold(false);
+	for (int i = 0; i < 4 ; ++i) setFont(i, f);
 
 	if (task_.getImportance() == Importance::High) {
-		QFont f = font(0);
 		f.setBold(true);
-		setFont(0, f);
-		setFont(1, f);
-		setFont(2, f);
+		for (int i = 0; i < 4 ; ++i) setFont(i, f);
+	}
+
+	if (task_.getDueDate() < task_.getPlannedDate()) {
+		setForeground(3, Qt::red);
+		f.setBold(true);
 		setFont(3, f);
 	}
 }
-
 
 bool TaskTreeItem::operator<(const QTreeWidgetItem & rhs) const
 {
@@ -130,6 +145,9 @@ void TopLevelItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &
 	}
 
 	painter->save();
+
+	painter->fillRect(option.rect.adjusted(0, 10, 0, 0), tli->backgroundColor(0));
+
 	QFont f(painter->font());
 	f.setBold(true);
 	painter->setFont(f);
@@ -138,7 +156,7 @@ void TopLevelItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &
 		QPoint off(0,-6);
 		QLinearGradient gradient(0, 0, 300, 0);
 		gradient.setColorAt(0, Qt::blue);
-		gradient.setColorAt(1, Qt::white);
+		gradient.setColorAt(1, Qt::transparent);
 		painter->fillRect(QRect(option.rect.bottomLeft()+off, option.rect.bottomRight()+off), QBrush(gradient));
 	}
 	painter->restore();

@@ -56,17 +56,17 @@
       </column>
       <column>
        <property name="text">
-        <string>Description</string>
+        <string>Beschreibung</string>
        </property>
       </column>
       <column>
        <property name="text">
-        <string>Effort</string>
+        <string>Aufwand</string>
        </property>
       </column>
       <column>
        <property name="text">
-        <string>Due</string>
+        <string>Fällig</string>
        </property>
       </column>
      </widget>

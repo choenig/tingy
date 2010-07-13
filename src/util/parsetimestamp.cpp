@@ -41,12 +41,30 @@ QDate parseDate(const QString & string)
             return today.addDays(secs / 3600 / 24);
         }
     }
+
     if (string.startsWith("-")) {
         int secs = parseTimeDef(string.mid(1));
         if (secs >= 0) {
             return today.addDays(-secs / 3600 / 24);
         }
     }
+
+    // accepts a date
+    QRegExp reDate("([0-9]{1,2})\\.(([0-9]{1,2})\\.(([0-9]{2,4}))?)?");
+    if (reDate.exactMatch(string)) {
+        for (int i = 0; i < reDate.numCaptures(); ++i) {
+            int day   = reDate.cap(1).toInt();
+            int month = reDate.cap(3).toInt();
+            int year  = reDate.cap(4).toInt();
+
+            if (day   == 0) day   = today.day();
+            if (month == 0) month = today.month();
+            if (year  == 0) year  = today.year();
+
+            return QDate(year, month, day);
+        }
+    }
+
 
     return QDate();
 }
