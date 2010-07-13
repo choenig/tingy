@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/images">
+        <file alias="hideDone.png">images/exit.png</file>
+    </qresource>
+</RCC>

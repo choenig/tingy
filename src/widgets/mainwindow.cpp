@@ -11,6 +11,8 @@ MainWindow::MainWindow(QWidget *parent)
 
     ui->leFilter->setInfoText("Filter");
     ui->leAddTask->setInfoText("Add Task");
+
+    initActions();
 }
 
 MainWindow::~MainWindow()
@@ -26,5 +28,16 @@ void MainWindow::on_leAddTask_returnPressed()
     TaskModel::instance()->addTask(newTask);
 
     ui->leAddTask->clear();
+}
+
+void MainWindow::initActions()
+{
+     hideDoneAction_ = ui->mainToolBar->addAction(QIcon(":images/hideDone.png"), "Hide done tasks", this, SLOT(toggleHideDoneTasks()));
+     hideDoneAction_->setCheckable(true);
+}
+
+void MainWindow::toggleHideDoneTasks()
+{
+    ui->taskTree->hideDoneTasks(hideDoneAction_->isChecked());
 }
 

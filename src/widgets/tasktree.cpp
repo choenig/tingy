@@ -80,6 +80,11 @@ TaskTree::TaskTree(QWidget *parent)
     QTimer::singleShot(0, this, SLOT(init()));
 }
 
+void TaskTree::hideDoneTasks(bool hide)
+{
+    topLevelItems[QDate()]->setHidden(hide);
+}
+
 void TaskTree::init()
 {
     header()->setResizeMode(0, QHeaderView::ResizeToContents);

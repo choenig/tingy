@@ -35,3 +35,6 @@ HEADERS  += widgets/mainwindow.h \
     widgets/tasktreeitems.h
 
 FORMS    += widgets/ui/mainwindow.ui
+
+RESOURCES += \
+    mytasks.qrc

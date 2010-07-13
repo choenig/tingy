@@ -14,6 +14,11 @@ public:
 
 private slots:
     void on_leAddTask_returnPressed();
+    void initActions();
+    void toggleHideDoneTasks();
+
+private:
+    QAction * hideDoneAction_;
 
 private:
     Ui::MainWindow *ui;

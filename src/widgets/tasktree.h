@@ -17,6 +17,9 @@ class TaskTree : public QTreeWidget
 public:
 	TaskTree(QWidget * parent = 0);
 
+public slots:
+	void hideDoneTasks(bool hide);
+
 private slots:
 	void init();
 	void addTask(const Task & task);
