@@ -23,6 +23,7 @@ private slots:
 
 private:
     void saveToFile(const Task & task);
+    Task loadFromFile(const QString & filePath);
 
 private:
     QDir fileDir_;

@@ -15,15 +15,28 @@ public:
     bool isValid() const;
 
     TaskId getId() const { return id_; }
+    void setId(const TaskId & taskId) { id_ = taskId; }
 
-    void setDescription(const QString & description) { description_ = description; }
+    QDateTime getCreationTimestamp() const { return creationTimestamp_; }
+    void setCreationTimestamp(const QDateTime & timestamp) { creationTimestamp_ = timestamp; }
+
+    Importance getImportance() const { return importance_; }
+    void setImportance(const Importance & importance) { importance_ = importance; }
+
     QString getDescription() const { return description_; }
+    void setDescription(const QString & description) { description_ = description; }
 
-    void setDueDate(const QDate & dueDate) { dueDate_ = dueDate; }
     QDate getDueDate() const { return dueDate_; }
+    void setDueDate(const QDate & dueDate) { dueDate_ = dueDate; }
+
+    QDate getPlannedDate() const { return plannedDate_; }
+    void setPlannedDate(const QDate & plannedDate) { plannedDate_ = plannedDate; }
 
     QTime getEffort() const { return effort_; }
+    void setEffort(const QTime & effort) { effort_ = effort; }
+
     bool isDone() const { return done_; }
+    void setDone(bool done) { done_ = done; }
 
     QString toString() const;
 

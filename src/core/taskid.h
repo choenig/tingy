@@ -8,11 +8,13 @@ class TaskId
 {
 public:
     bool isNull() const { return uuid_.isNull(); }
+
     QString toString() const { return uuid_.toString(); }
 
     bool operator==(const TaskId & rhs) const { return uuid_ == rhs.uuid_; }
     bool operator!=(const TaskId & rhs) const { return !operator==(rhs); }
 
+    static TaskId fromString(const QString & idString) { TaskId t; t.uuid_ = QUuid(idString); return t;}
     static TaskId createId();
 
 private:

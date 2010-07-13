@@ -6,6 +6,7 @@
 #include <QFile>
 #include <QDir>
 #include <QDebug>
+#include <QSettings>
 
 FileStorage::FileStorage()
 : QObject(), fileDir_(QDir::homePath() + QDir::separator() + ".myTasks"), restoreInProgress_(false)
@@ -18,31 +19,18 @@ FileStorage::FileStorage()
 
 void FileStorage::restoreFromFiles()
 {
-    QList<Task> tasks;
+    restoreInProgress_ = true;
 
+    // first remove all available tasks ...
+    TaskModel::instance()->clear();
+
+    // ... then load the tasks from files
     const QStringList files = fileDir_.entryList(QStringList("*.task"));
     foreach (const QString & fileName, files) {
-        QFile f(fileDir_.absolutePath() + QDir::separator() + fileName);
-        if (f.open(QFile::ReadOnly)) {
-            QDataStream in(&f);
-            Task task;
-            in >> task;
-            tasks << task;
-            f.close();
-        }
+        Task task = loadFromFile(fileDir_.absolutePath() + QDir::separator() + fileName);
+        TaskModel::instance()->addTask(task);
     }
 
-    if (tasks.isEmpty()) return;
-
-    restoreInProgress_ = true;
-    {
-        // first remove all available tasks
-        TaskModel::instance()->clear();
-
-        foreach (const Task & task, tasks) {
-            TaskModel::instance()->addTask(task);
-        }
-    }
     restoreInProgress_ = false;
 }
 
@@ -75,11 +63,30 @@ void FileStorage::removeTask(const TaskId & taskId)
 
 void FileStorage::saveToFile(const Task & task)
 {
-    QFile f(fileDir_.absolutePath() + QDir::separator() + task.getId().toString() + ".task");
-    if (!f.open(QFile::WriteOnly)) return;
+    QSettings settings(fileDir_.absolutePath() + QDir::separator() + task.getId().toString() + ".task", QSettings::IniFormat);
+    settings.setValue("task/id", task.getId().toString());
+    settings.setValue("task/creationTimestamp", task.getCreationTimestamp().toString(Qt::ISODate));
+    settings.setValue("task/importance", (qint32)task.getImportance());
+    settings.setValue("task/description", task.getDescription());
+    settings.setValue("task/dueDate", task.getDueDate().toString(Qt::ISODate));
+    settings.setValue("task/plannedDate", task.getPlannedDate().toString(Qt::ISODate));
+    settings.setValue("task/effort", task.getEffort().toString(Qt::ISODate));
+    settings.setValue("task/done", task.isDone());
+}
 
-    QDataStream out(&f);
-    out << task;
+Task FileStorage::loadFromFile(const QString & filePath)
+{
+    Task task;
 
-    f.close();
+    QSettings settings(filePath, QSettings::IniFormat);
+    task.setId(TaskId::fromString(settings.value("task/id").toString()));
+    task.setCreationTimestamp(QDateTime::fromString(settings.value("task/creationTimestamp").toString(), Qt::ISODate));
+    task.setImportance((Importance::Level)settings.value("task/importance").toInt());
+    task.setDescription(settings.value("task/description").toString());
+    task.setDueDate(QDate::fromString(settings.value("task/dueDate").toString(),Qt::ISODate));
+    task.setPlannedDate(QDate::fromString(settings.value("task/plannedDate").toString(),Qt::ISODate));
+    task.setEffort(QTime::fromString(settings.value("task/effort").toString(),Qt::ISODate));
+    task.setDone(settings.value("task/done").toBool());
+
+    return task;
 }
