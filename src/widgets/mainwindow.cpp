@@ -2,6 +2,8 @@
 
 #include <core/taskmodel.h>
 
+#include <QCloseEvent>
+
 #include "ui_mainwindow.h"
 
 MainWindow::MainWindow(QWidget *parent)
@@ -13,6 +15,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui->leAddTask->setInfoText("Add Task");
 
     initActions();
+    initSystemTray();
 }
 
 MainWindow::~MainWindow()
@@ -41,3 +44,31 @@ void MainWindow::toggleHideDoneTasks()
     ui->taskTree->hideDoneTasks(hideDoneAction_->isChecked());
 }
 
+void MainWindow::initSystemTray()
+{
+    QSystemTrayIcon * trayIcon = new QSystemTrayIcon(QIcon(":images/yellowBall.png"), this);
+    connect(trayIcon, SIGNAL(activated(QSystemTrayIcon::ActivationReason)),
+            this,  SLOT(trayActivated(QSystemTrayIcon::ActivationReason)));
+
+    QMenu * contextMenu = new QMenu;
+    contextMenu->addAction("Quit", qApp, SLOT(quit()));
+    trayIcon->setContextMenu(contextMenu);
+
+    trayIcon->show();
+}
+
+void MainWindow::trayActivated(QSystemTrayIcon::ActivationReason reason)
+{
+    if (reason == QSystemTrayIcon::Trigger) {
+        setVisible(!isVisible());
+    }
+}
+
+void MainWindow::closeEvent(QCloseEvent * event)
+{
+    // ignore the close event ...
+    event->ignore();
+
+    // ... then hide the widget
+    hide();
+}
