@@ -66,7 +66,7 @@ void FileStorage::saveToFile(const Task & task)
     QSettings settings(fileDir_.absolutePath() + QDir::separator() + task.getId().toString() + ".task", QSettings::IniFormat);
     settings.setValue("task/id", task.getId().toString());
     settings.setValue("task/creationTimestamp", task.getCreationTimestamp().toString(Qt::ISODate));
-    settings.setValue("task/importance", (qint32)task.getImportance());
+    settings.setValue("task/importance", task.getImportance().toInt());
     settings.setValue("task/description", task.getDescription());
     settings.setValue("task/dueDate", task.getDueDate().toString(Qt::ISODate));
     settings.setValue("task/plannedDate", task.getPlannedDate().toString(Qt::ISODate));

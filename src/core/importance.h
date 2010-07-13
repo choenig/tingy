@@ -14,7 +14,7 @@ public:
 public:
     Importance(Level level = Normal) : level_(level) {}
 
-    operator int() { return (int)level_; }
+    int toInt() { return (int)level_; }
 
     bool operator==(const Importance & rhs) const { return level_ == rhs.level_; }
     bool operator!=(const Importance & rhs) const { return !operator==(rhs); }

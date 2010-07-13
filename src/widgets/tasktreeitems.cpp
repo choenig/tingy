@@ -80,7 +80,17 @@ void TaskTreeItem::init()
 	setForeground(1, color);
 	setForeground(2, color);
 	setForeground(3, color);
+
+	if (task_.getImportance() == Importance::High) {
+		QFont f = font(0);
+		f.setBold(true);
+		setFont(0, f);
+		setFont(1, f);
+		setFont(2, f);
+		setFont(3, f);
+	}
 }
+
 
 bool TaskTreeItem::operator<(const QTreeWidgetItem & rhs) const
 {

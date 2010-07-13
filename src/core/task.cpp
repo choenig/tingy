@@ -29,30 +29,36 @@ bool Task::operator==(const Task & rhs) const
 
 Task Task::createFromString(const QString & string)
 {
-    Task retval;
-    retval.id_ = TaskId::createId();
-    retval.creationTimestamp_ = QDateTime::currentDateTime();
-    retval.description_ = string;
+    Task task;
+    task.id_ = TaskId::createId();
+    task.creationTimestamp_ = QDateTime::currentDateTime();
+    task.description_ = string;
 
     QRegExp reDue("\\*([^ ]+)");
-    if (retval.description_.indexOf(reDue) >= 0) {
+    if (task.description_.indexOf(reDue) >= 0) {
         const QDate dueDate = parseDate(reDue.cap(1));
         if (dueDate.isValid()) {
-            retval.description_.remove(reDue);
-            retval.dueDate_ = dueDate;
+            task.description_.remove(reDue);
+            task.dueDate_ = dueDate;
         }
     }
 
     QRegExp reEffort("\\$([^ ]+)");
-    if (retval.description_.indexOf(reEffort) >= 0) {
+    if (task.description_.indexOf(reEffort) >= 0) {
         const QTime effortTime = parseTime(reEffort.cap(1));
         if (effortTime.isValid()) {
-            retval.description_.remove(reEffort);
-            retval.effort_ = effortTime;
+            task.description_.remove(reEffort);
+            task.effort_ = effortTime;
         }
     }
 
-    retval.description_ = retval.description_.simplified();
+    QRegExp reImportance("\\!([+-])");
+    if (task.description_.indexOf(reImportance) >= 0) {
+        task.setImportance(reImportance.cap(1) == "+" ? Importance::High : Importance::Low);
+        task.description_.remove(reImportance);
+    }
 
-    return retval;
+    task.description_ = task.description_.simplified();
+
+    return task;
 }
