@@ -91,8 +91,6 @@ void TaskTree::init()
     header()->setResizeMode(1, QHeaderView::Stretch);
     header()->setResizeMode(2, QHeaderView::ResizeToContents);
     header()->setResizeMode(3, QHeaderView::ResizeToContents);
-
-    sortItems(0, Qt::AscendingOrder);
 }
 
 void TaskTree::addTask(const Task & task)
@@ -104,6 +102,8 @@ void TaskTree::addTask(const Task & task)
     } else {
         new TaskTreeItem(this, task);
     }
+    sortItems(0, Qt::AscendingOrder);
+
 }
 
 void TaskTree::updateTask(const Task & task)
@@ -134,6 +134,8 @@ void TaskTree::updateTask(const Task & task)
         } else {
             invisibleRootItem()->insertChild(0, updatedTaskTreeItem);
         }
+
+        sortItems(0, Qt::AscendingOrder);
     }
 }
 

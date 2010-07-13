@@ -99,6 +99,7 @@ bool TaskTreeItem::operator<(const QTreeWidgetItem & rhs) const
 
 	QDate lhsDate = task_.getEffectiveDate();
 	QDate rhsDate = tti->getTask().getEffectiveDate();
+
 	if (lhsDate != rhsDate) return lhsDate < rhsDate;
 
 	lhsDate = task_.getDueDate();
