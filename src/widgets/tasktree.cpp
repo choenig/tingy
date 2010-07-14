@@ -62,7 +62,7 @@ TaskTree::TaskTree(QWidget *parent)
 
 	// used for top level items
 	TopLevelItemDelegate * dlg = new TopLevelItemDelegate(this);
-	for (int i = 0; i < 4 ; ++i) setItemDelegateForColumn(i, dlg);
+	for (int i = 0; i < 2 ; ++i) setItemDelegateForColumn(i, dlg);
 
 	// drag and drop
 	setAcceptDrops( true );
@@ -90,8 +90,6 @@ void TaskTree::init()
 {
     header()->setResizeMode(0, QHeaderView::ResizeToContents);
     header()->setResizeMode(1, QHeaderView::Stretch);
-    header()->setResizeMode(2, QHeaderView::ResizeToContents);
-    header()->setResizeMode(3, QHeaderView::ResizeToContents);
 }
 
 void TaskTree::addTask(const Task & task)

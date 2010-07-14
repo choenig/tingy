@@ -59,16 +59,6 @@
         <string>Beschreibung</string>
        </property>
       </column>
-      <column>
-       <property name="text">
-        <string>Aufwand</string>
-       </property>
-      </column>
-      <column>
-       <property name="text">
-        <string>Fällig</string>
-       </property>
-      </column>
      </widget>
     </item>
    </layout>
@@ -79,7 +69,7 @@
      <x>0</x>
      <y>0</y>
      <width>665</width>
-     <height>23</height>
+     <height>20</height>
     </rect>
    </property>
   </widget>

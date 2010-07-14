@@ -43,8 +43,6 @@ protected:
 	virtual Qt::DropActions supportedDropActions () const;
 	virtual bool dropMimeData(QTreeWidgetItem *parent, int index, const QMimeData *data, Qt::DropAction action);
 
-
-
 private:
 	TaskTreeItem * findTaskTreeItem(const TaskId & taskId) const;
 	TopLevelItem * getTopLevelItemForTask(const Task & task) const ;
