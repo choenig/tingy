@@ -37,6 +37,10 @@ void MainWindow::initActions()
 {
      hideDoneAction_ = ui->mainToolBar->addAction(QIcon(":images/hideDone.png"), "Hide done tasks", this, SLOT(toggleHideDoneTasks()));
      hideDoneAction_->setCheckable(true);
+     hideDoneAction_->setChecked(true);
+
+     // initialy hide done tasks
+     toggleHideDoneTasks();
 }
 
 void MainWindow::toggleHideDoneTasks()
