@@ -43,12 +43,13 @@ Task Task::createFromString(const QString & string)
         }
     }
 
+    // fixme
     QRegExp reEffort("\\$([^ ]+)");
     if (task.description_.indexOf(reEffort) >= 0) {
-        const QTime effortTime = parseTime(reEffort.cap(1));
-        if (effortTime.isValid()) {
+        const Effort effort = parseEffort(reEffort.cap(1));
+        if (effort.isValid()) {
             task.description_.remove(reEffort);
-            task.effort_ = effortTime;
+            task.effort_ = effort;
         }
     }
 

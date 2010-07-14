@@ -76,11 +76,11 @@ void TaskTreeItem::init()
 	setCheckState(0, task_.isDone() ? Qt::Checked : Qt::Unchecked);
 
 	QStringList infos;
-	if (task_.getEffort().isValid())  infos << task_.getEffort().toString("hh:mm");
+	if (task_.getEffort().isValid())  infos << task_.getEffort().toString();
 	if (task_.getDueDate().isValid()) infos << task_.getDueDate().toString("dd.MM.yyyy");
 
 	QString txt = task_.getDescription();
-	if (!infos.isEmpty()) txt += " [" + infos.join(",") + "]";
+	if (!infos.isEmpty()) txt += " [" + infos.join(", ") + "]";
 
 	setText(1, txt);
 

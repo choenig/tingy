@@ -74,7 +74,7 @@ void FileStorage::saveToFile(const Task & task)
     settings.setValue("task/description", task.getDescription());
     settings.setValue("task/dueDate", task.getDueDate().toString(Qt::ISODate));
     settings.setValue("task/plannedDate", task.getPlannedDate().toString(Qt::ISODate));
-    settings.setValue("task/effort", task.getEffort().toString(Qt::ISODate));
+    settings.setValue("task/effort", task.getEffort().toMinutes());
     settings.setValue("task/done", task.isDone());
 }
 
@@ -89,7 +89,7 @@ Task FileStorage::loadFromFile(const QString & filePath)
     task.setDescription(settings.value("task/description").toString());
     task.setDueDate(QDate::fromString(settings.value("task/dueDate").toString(),Qt::ISODate));
     task.setPlannedDate(QDate::fromString(settings.value("task/plannedDate").toString(),Qt::ISODate));
-    task.setEffort(QTime::fromString(settings.value("task/effort").toString(),Qt::ISODate));
+    task.setEffort(Effort::fromMinutes(settings.value("task/effort").toUInt()));
     task.setDone(settings.value("task/done").toBool());
 
     return task;

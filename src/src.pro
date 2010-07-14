@@ -21,7 +21,8 @@ SOURCES += main.cpp\
     widgets/tasktree.cpp \
     util/parsetimestamp.cpp \
     core/filestorage.cpp \
-    widgets/tasktreeitems.cpp
+    widgets/tasktreeitems.cpp \
+    core/effort.cpp
 
 HEADERS  += widgets/mainwindow.h \
     widgets/filterlineedit.h \
@@ -32,7 +33,8 @@ HEADERS  += widgets/mainwindow.h \
     widgets/tasktree.h \
     util/parsetimestamp.h \
     core/filestorage.h \
-    widgets/tasktreeitems.h
+    widgets/tasktreeitems.h \
+    core/effort.h
 
 FORMS    += widgets/ui/mainwindow.ui
 

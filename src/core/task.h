@@ -1,11 +1,11 @@
 #pragma once
 
-#include <core/taskid.h>
+#include <core/effort.h>
 #include <core/importance.h>
+#include <core/taskid.h>
 
 #include <QDate>
 #include <QString>
-#include <QTime>
 
 class Task
 {
@@ -35,8 +35,8 @@ public:
     QDate getPlannedDate() const { return plannedDate_; }
     void setPlannedDate(const QDate & plannedDate) { plannedDate_ = plannedDate; }
 
-    QTime getEffort() const { return effort_; }
-    void setEffort(const QTime & effort) { effort_ = effort; }
+    Effort getEffort() const { return effort_; }
+    void setEffort(const Effort & effort) { effort_ = effort; }
 
     bool isDone() const { return done_; }
     void setDone(bool done) { done_ = done; }
@@ -55,7 +55,7 @@ private:
     QString description_;
     QDate dueDate_;
     QDate plannedDate_; // adjustable by drag and drop
-    QTime effort_;
+    Effort effort_;
     bool done_;
 
     friend QDataStream & operator<<( QDataStream & out, const Task & task);

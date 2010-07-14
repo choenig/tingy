@@ -1,9 +1,12 @@
 #include "parsetimestamp.h"
 
+#include <core/effort.h>
+
 #include <QDateTime>
 #include <QRegExp>
 #include <QString>
 #include <QDebug>
+#include <QStringList>
 
 namespace {
 
@@ -69,12 +72,12 @@ QDate parseDate(const QString & string)
     return QDate();
 }
 
-QTime parseTime(const QString & string)
+Effort parseEffort(const QString & string)
 {
     int secs = parseTimeDef(string);
     if (secs >= 0) {
-        return QTime().addSecs(secs);
+        return Effort::fromMinutes(secs / 60);
     }
-    return QTime();
+    return Effort();
 }
 

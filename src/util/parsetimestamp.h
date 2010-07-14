@@ -2,7 +2,7 @@
 
 class QDate;
 class QString;
-class QTime;
+class Effort;
 
 QDate parseDate(const QString & string);
-QTime parseTime(const QString & string);
+Effort parseEffort(const QString & string);
