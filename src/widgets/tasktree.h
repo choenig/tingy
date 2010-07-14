@@ -45,5 +45,6 @@ protected:
 
 private:
 	TaskTreeItem * findTaskTreeItem(const TaskId & taskId) const;
-	TopLevelItem * getTopLevelItemForTask(const Task & task) const ;
+	TopLevelItem * getTopLevelItemForTask(const Task & task) const;
+	void reparentUpdatedItem(TaskTreeItem * updatedTaskTreeItem);
 };

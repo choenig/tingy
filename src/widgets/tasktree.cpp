@@ -15,21 +15,14 @@
 
 namespace {
 
+TopLevelItem * doneTopLevelItem;
 QMap<QDate, TopLevelItem*> topLevelItems;
 
-void hideEmptyTopLevelItems()
+void setTopLevelItemsHidden(bool hide, bool ignoreWithChildren = false)
 {
     foreach (const QDate & date, topLevelItems.keys()) {
-        if (!topLevelItems[date]->childCount()) {
-            topLevelItems[date]->setHidden(true);
-        }
-    }
-}
-
-void showAllTopLevelItems()
-{
-    foreach (const QDate & date, topLevelItems.keys()) {
-        topLevelItems[date]->setHidden(false);
+        if (ignoreWithChildren && topLevelItems[date]->childCount() > 0) continue;
+        topLevelItems[date]->setHidden(hide);
     }
 }
 
@@ -37,16 +30,16 @@ void initTopLevelItems(TaskTree * tree)
 {
     const QDate today = QDate::currentDate();
 
-    topLevelItems[QDate(1970,1,1)]   = new TopLevelItem(tree, "Überfällig",     QDate(1970,1,1));
-    topLevelItems[today]             = new TopLevelItem(tree, "Heute",          today);
-    topLevelItems[today.addDays(1)]  = new TopLevelItem(tree, "Morgen",         today.addDays(1));
-    topLevelItems[today.addDays(2)]  = new TopLevelItem(tree, "nächste Woche",  today.addDays(2));
-    topLevelItems[today.addDays(7)]  = new TopLevelItem(tree, "nächster Monat", today.addDays(7));
-    topLevelItems[today.addDays(30)] = new TopLevelItem(tree, "Zukunft ...",     today.addDays(30));
-    topLevelItems[QDate()]           = new TopLevelItem(tree, "Done",           QDate());
+    topLevelItems[QDate(1970,1,1)]   = new TopLevelItem(tree, "Überfällig",  QDate(1970,1,1));
+    topLevelItems[today]             = new TopLevelItem(tree, "Heute",       today);
+    topLevelItems[today.addDays(1)]  = new TopLevelItem(tree, "Morgen",      today.addDays(1));
+    topLevelItems[today.addDays(2)]  = new TopLevelItem(tree, "eine Woche",  today.addDays(2));
+    topLevelItems[today.addDays(7)]  = new TopLevelItem(tree, "ein Monat",   today.addDays(7));
+    topLevelItems[today.addDays(30)] = new TopLevelItem(tree, "Zukunft ...", today.addDays(30));
+    doneTopLevelItem                 = new TopLevelItem(tree, "Done",        QDate());
 
     // initially hide all items
-    hideEmptyTopLevelItems();
+    setTopLevelItemsHidden(true);
 }
 
 }
@@ -81,19 +74,25 @@ TaskTree::TaskTree(QWidget *parent)
     QTimer::singleShot(0, this, SLOT(init()));
 }
 
-void TaskTree::hideDoneTasks(bool hide)
-{
-    topLevelItems[QDate()]->setHidden(hide);
-}
-
 void TaskTree::init()
 {
     header()->setResizeMode(0, QHeaderView::ResizeToContents);
     header()->setResizeMode(1, QHeaderView::Stretch);
 }
 
+void TaskTree::hideDoneTasks(bool hide)
+{
+    doneTopLevelItem->setHidden(hide);
+}
+
 void TaskTree::addTask(const Task & task)
 {
+    if (task.isDone()) {
+        new TaskTreeItem(doneTopLevelItem, task);
+        sortItems(0, Qt::AscendingOrder);
+        return;
+    }
+
     TopLevelItem * parent = getTopLevelItemForTask(task);
     if (parent) {
         parent->setHidden(false);
@@ -110,7 +109,7 @@ void TaskTree::updateTask(const Task & task)
     TaskTreeItem * updatedTaskTreeItem = findTaskTreeItem(task.getId());
     if (!updatedTaskTreeItem) return;
 
-    // check what changed
+    // remember old task to check what changed
     const Task oldTask = updatedTaskTreeItem->getTask();
 
     updatedTaskTreeItem->setTask(task);
@@ -118,22 +117,7 @@ void TaskTree::updateTask(const Task & task)
     // if effectiveDate or isDone changed, the TaskTreeItem has to be moved probably
     if (oldTask.getEffectiveDate() != task.getEffectiveDate() || oldTask.isDone() != task.isDone())
     {
-        QTreeWidgetItem * parent = updatedTaskTreeItem->parent();
-        if (parent) {
-            parent->removeChild(updatedTaskTreeItem);
-            if (parent->childCount() == 0) parent->setHidden(true);
-        } else {
-            invisibleRootItem()->removeChild(updatedTaskTreeItem);
-        }
-
-        parent = getTopLevelItemForTask(task);
-        if (parent) {
-            parent->addChild(updatedTaskTreeItem);
-            parent->setHidden(false);
-        } else {
-            invisibleRootItem()->insertChild(0, updatedTaskTreeItem);
-        }
-
+        reparentUpdatedItem(updatedTaskTreeItem);
         sortItems(0, Qt::AscendingOrder);
     }
 }
@@ -250,7 +234,7 @@ QMimeData * TaskTree::mimeData(const QList<QTreeWidgetItem *> items) const
 void TaskTree::dragEnterEvent(QDragEnterEvent * e)
 {
 	if (e->mimeData()->hasFormat("myTasks/Task")) {
-		showAllTopLevelItems();
+		setTopLevelItemsHidden(false);
 		e->accept();
 	} else {
 		e->ignore();
@@ -295,13 +279,13 @@ void TaskTree::dragMoveEvent(QDragMoveEvent * e)
 void TaskTree::dragLeaveEvent(QDragLeaveEvent * event)
 {
 	QTreeWidget::dragLeaveEvent(event);
-	hideEmptyTopLevelItems();
+	setTopLevelItemsHidden(true, true);
 }
 
 void TaskTree::dropEvent(QDropEvent *event)
 {
 	QTreeWidget::dropEvent(event);
-	hideEmptyTopLevelItems();
+	setTopLevelItemsHidden(true, true);
 }
 
 Qt::DropActions TaskTree::supportedDropActions () const
@@ -312,7 +296,7 @@ Qt::DropActions TaskTree::supportedDropActions () const
 
 bool TaskTree::dropMimeData(QTreeWidgetItem *parent, int /*index*/, const QMimeData * data, Qt::DropAction /*action*/)
 {
-    hideEmptyTopLevelItems();
+    setTopLevelItemsHidden(true, true);
 
     QDate plannedDate;
     if (parent) {
@@ -360,7 +344,7 @@ TopLevelItem * TaskTree::getTopLevelItemForTask(const Task & task) const
 {
     TopLevelItem * parent = 0;
     if (task.isDone()) {
-        parent = topLevelItems[QDate()];
+        parent = doneTopLevelItem;
     } else if (task.getEffectiveDate().isValid()) {
         foreach (const QDate & date, topLevelItems.keys()) {
             if (date <= task.getEffectiveDate()) {
@@ -370,4 +354,25 @@ TopLevelItem * TaskTree::getTopLevelItemForTask(const Task & task) const
         }
     }
     return parent;
+}
+
+void TaskTree::reparentUpdatedItem(TaskTreeItem * updatedTaskTreeItem)
+{
+    QTreeWidgetItem * parent = updatedTaskTreeItem->parent();
+    if (parent) {
+        parent->removeChild(updatedTaskTreeItem);
+        if (parent->childCount() == 0 && parent != doneTopLevelItem) parent->setHidden(true);
+    } else {
+        invisibleRootItem()->removeChild(updatedTaskTreeItem);
+    }
+
+    parent = getTopLevelItemForTask(updatedTaskTreeItem->getTask());
+    if (parent) {
+        parent->addChild(updatedTaskTreeItem);
+        if (parent != doneTopLevelItem) parent->setHidden(false);
+    } else {
+        invisibleRootItem()->insertChild(0, updatedTaskTreeItem);
+    }
+
+    sortItems(0, Qt::AscendingOrder);
 }

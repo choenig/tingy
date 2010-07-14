@@ -20,13 +20,13 @@ TopLevelItem::TopLevelItem(QTreeWidget * treeWidget, const QString & string, con
 	init(string);
 }
 
-void TopLevelItem::init(const QString& changeList)
+void TopLevelItem::init(const QString& string)
 {
 	const QDate today = QDate::currentDate();
 
 	setExpanded(true);
 	setFirstColumnSpanned(true);
-	setText(0, changeList);
+	setText(0, string);
 	setSizeHint(0, QSize(0, 40));
 
 	QColor bgColor = Qt::transparent;
