@@ -76,8 +76,10 @@ void TaskTreeItem::init()
 	setCheckState(0, task_.isDone() ? Qt::Checked : Qt::Unchecked);
 
 	QStringList infos;
-	if (task_.getEffort().isValid())  infos << task_.getEffort().toString();
-	if (task_.getDueDate().isValid()) infos << task_.getDueDate().toString("dd.MM.yyyy");
+	if (task_.getEffort().isValid())      infos << QString::fromUtf8("\xe2\x97\xb7") + task_.getEffort().toString();
+	if (task_.getPlannedDate().isValid()) infos << QString::fromUtf8("\xe2\x9e\xbe") + task_.getPlannedDate().toString("dd.MM.yyyy");
+	if (task_.getDueDate().isValid())     infos << QString::fromUtf8("\xe2\x87\xa5") + task_.getDueDate().toString("dd.MM.yyyy");
+//	if (task_.getDueDate().isValid())     infos << QString::fromUtf8("\xe2\xa4\x9e") + task_.getDueDate().toString("dd.MM.yyyy");
 
 	QString txt = task_.getDescription();
 	if (!infos.isEmpty()) txt += " [" + infos.join(", ") + "]";
@@ -85,9 +87,9 @@ void TaskTreeItem::init()
 	setText(1, txt);
 
 	QColor fgColor = Qt::black;
-	if      (task_.getDueDate().isNull())                 fgColor = Qt::darkGreen;
-	else if (task_.getDueDate() <  today)                 fgColor = Qt::darkRed;
-	else if (task_.getDueDate() == today)                 fgColor = Qt::darkBlue;
+	if      (task_.getDueDate().isNull()) fgColor = Qt::darkGreen;
+	else if (task_.getDueDate() <  today) fgColor = Qt::darkRed;
+	else if (task_.getDueDate() == today) fgColor = Qt::darkBlue;
 	for (int i = 0; i < 2 ; ++i) setForeground(i, fgColor);
 
 	QColor bgColor = Qt::transparent;
