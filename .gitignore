@@ -6,3 +6,4 @@ Makefile
 moc_*.cpp
 ui_*.h
 src/myTasks
+src/qrc_mytasks.cpp
