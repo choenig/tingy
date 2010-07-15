@@ -63,7 +63,12 @@ void MainWindow::initSystemTray()
 void MainWindow::trayActivated(QSystemTrayIcon::ActivationReason reason)
 {
     if (reason == QSystemTrayIcon::Trigger) {
-        setVisible(!isVisible());
+		if (isVisible() && !QApplication::focusWidget()) {
+			activateWindow();
+			raise();
+		} else {
+			setVisible(!isVisible());
+		}
     }
 }
 
