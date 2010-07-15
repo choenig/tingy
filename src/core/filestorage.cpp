@@ -70,7 +70,7 @@ void FileStorage::saveToFile(const Task & task)
     QSettings settings(fileDir_.absolutePath() + QDir::separator() + task.getId().toString() + ".task", QSettings::IniFormat);
     settings.setValue("task/id", task.getId().toString());
     settings.setValue("task/creationTimestamp", task.getCreationTimestamp().toString(Qt::ISODate));
-    settings.setValue("task/importance", task.getImportance().toInt());
+    settings.setValue("task/priority", task.getPriority().toInt());
     settings.setValue("task/description", task.getDescription());
     settings.setValue("task/dueDate", task.getDueDate().toString(Qt::ISODate));
     settings.setValue("task/plannedDate", task.getPlannedDate().toString(Qt::ISODate));
@@ -85,7 +85,7 @@ Task FileStorage::loadFromFile(const QString & filePath)
     QSettings settings(filePath, QSettings::IniFormat);
     task.setId(TaskId::fromString(settings.value("task/id").toString()));
     task.setCreationTimestamp(QDateTime::fromString(settings.value("task/creationTimestamp").toString(), Qt::ISODate));
-    task.setImportance((Importance::Level)settings.value("task/importance").toInt());
+    task.setPriority((Priority::Level)settings.value("task/priority").toInt());
     task.setDescription(settings.value("task/description").toString());
     task.setDueDate(QDate::fromString(settings.value("task/dueDate").toString(),Qt::ISODate));
     task.setPlannedDate(QDate::fromString(settings.value("task/plannedDate").toString(),Qt::ISODate));

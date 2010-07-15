@@ -1,7 +1,7 @@
 #pragma once
 
 #include <core/effort.h>
-#include <core/importance.h>
+#include <core/priority.h>
 #include <core/taskid.h>
 
 #include <QDate>
@@ -20,8 +20,8 @@ public:
     QDateTime getCreationTimestamp() const { return creationTimestamp_; }
     void setCreationTimestamp(const QDateTime & timestamp) { creationTimestamp_ = timestamp; }
 
-    Importance getImportance() const { return importance_; }
-    void setImportance(const Importance & importance) { importance_ = importance; }
+    Priority getPriority() const { return priority_; }
+    void setPriority(const Priority & priority) { priority_ = priority; }
 
     QString getDescription() const { return description_; }
     void setDescription(const QString & description) { description_ = description; }
@@ -51,7 +51,7 @@ public:
 private:
     TaskId id_;
     QDateTime creationTimestamp_;
-    Importance importance_;
+    Priority priority_;
     QString description_;
     QDate dueDate_;
     QDate plannedDate_; // adjustable by drag and drop
@@ -66,7 +66,7 @@ inline QDataStream & operator<<(QDataStream & out, const Task & task) {
     out
         << task.id_
         << task.creationTimestamp_
-        << task.importance_
+        << task.priority_
         << task.description_
         << task.dueDate_
         << task.plannedDate_
@@ -78,7 +78,7 @@ inline QDataStream & operator>>(QDataStream & in, Task & task) {
     in
         >> task.id_
         >> task.creationTimestamp_
-        >> task.importance_
+        >> task.priority_
         >> task.description_
         >> task.dueDate_
         >> task.plannedDate_

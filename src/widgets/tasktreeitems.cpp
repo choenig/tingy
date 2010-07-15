@@ -109,7 +109,7 @@ void TaskTreeItem::init()
 	f.setBold(false);
 	for (int i = 0; i < 2 ; ++i) setFont(i, f);
 
-	if (task_.getImportance() == Importance::High) {
+	if (task_.getPriority() == Priority::High) {
 		f.setBold(true);
 		for (int i = 0; i < 2 ; ++i) setFont(i, f);
 	}

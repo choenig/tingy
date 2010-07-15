@@ -19,7 +19,7 @@ bool Task::operator==(const Task & rhs) const
 {
     return id_                == rhs.id_                &&
            creationTimestamp_ == rhs.creationTimestamp_ &&
-           importance_        == rhs.importance_        &&
+           priority_        == rhs.priority_        &&
            description_       == rhs.description_       &&
            dueDate_           == rhs.dueDate_           &&
            plannedDate_       == rhs.plannedDate_       &&
@@ -53,10 +53,10 @@ Task Task::createFromString(const QString & string)
         }
     }
 
-    QRegExp reImportance("\\!([+-])");
-    if (task.description_.indexOf(reImportance) >= 0) {
-        task.setImportance(reImportance.cap(1) == "+" ? Importance::High : Importance::Low);
-        task.description_.remove(reImportance);
+    QRegExp rePriority("\\!([+-])");
+    if (task.description_.indexOf(rePriority) >= 0) {
+        task.setPriority(rePriority.cap(1) == "+" ? Priority::High : Priority::Low);
+        task.description_.remove(rePriority);
     }
 
     task.description_ = task.description_.simplified();

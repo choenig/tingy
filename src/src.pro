@@ -17,7 +17,7 @@ SOURCES += main.cpp\
     core/task.cpp \
     core/taskid.cpp \
     core/taskmodel.cpp \
-    core/importance.cpp \
+    core/priority.cpp \
     widgets/tasktree.cpp \
     util/parsetimestamp.cpp \
     core/filestorage.cpp \
@@ -29,7 +29,7 @@ HEADERS  += widgets/mainwindow.h \
     core/task.h \
     core/taskid.h \
     core/taskmodel.h \
-    core/importance.h \
+    core/priority.h \
     widgets/tasktree.h \
     util/parsetimestamp.h \
     core/filestorage.h \
