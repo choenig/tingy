@@ -73,13 +73,20 @@ void TaskTreeItem::init()
 {
 	const QDate today = QDate::currentDate();
 
+	if        (task_.getPriority() == Priority::High) {
+		setIcon(1, QIcon(":images/highPriority.png"));
+	} else if (task_.getPriority() == Priority::Normal) {
+		setIcon(1, QIcon(":images/normalPriority.png"));
+	} else if (task_.getPriority() == Priority::Low) {
+		setIcon(1, QIcon(":images/lowPriority.png"));
+	}
+
 	setCheckState(0, task_.isDone() ? Qt::Checked : Qt::Unchecked);
 
 	QStringList infos;
 	if (task_.getEffort().isValid())      infos << QString::fromUtf8("\xe2\x97\xb7") + task_.getEffort().toString();
 	if (task_.getPlannedDate().isValid()) infos << QString::fromUtf8("\xe2\x9e\xbe") + task_.getPlannedDate().toString("dd.MM.yyyy");
 	if (task_.getDueDate().isValid())     infos << QString::fromUtf8("\xe2\x87\xa5") + task_.getDueDate().toString("dd.MM.yyyy");
-//	if (task_.getDueDate().isValid())     infos << QString::fromUtf8("\xe2\xa4\x9e") + task_.getDueDate().toString("dd.MM.yyyy");
 
 	QString txt = task_.getDescription();
 	if (!infos.isEmpty()) txt += " [" + infos.join(", ") + "]";
