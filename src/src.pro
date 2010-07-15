@@ -22,7 +22,9 @@ SOURCES += main.cpp\
     util/parsetimestamp.cpp \
     core/filestorage.cpp \
     widgets/tasktreeitems.cpp \
-    core/effort.cpp
+    core/effort.cpp \
+    widgets/taskeditwidget.cpp \
+    widgets/autocompletelineedit.cpp
 
 HEADERS  += widgets/mainwindow.h \
     widgets/filterlineedit.h \
@@ -34,9 +36,12 @@ HEADERS  += widgets/mainwindow.h \
     util/parsetimestamp.h \
     core/filestorage.h \
     widgets/tasktreeitems.h \
-    core/effort.h
+    core/effort.h \
+    widgets/taskeditwidget.h \
+    widgets/autocompletelineedit.h
 
-FORMS    += widgets/ui/mainwindow.ui
+FORMS    += widgets/ui/mainwindow.ui \
+    widgets/taskeditwidget.ui
 
 RESOURCES += \
     mytasks.qrc

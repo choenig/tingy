@@ -3,6 +3,7 @@
 #include <core/taskmodel.h>
 
 #include <QCloseEvent>
+#include <QApplication>
 
 #include "ui_mainwindow.h"
 
@@ -11,7 +12,7 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
-    ui->leAddTask->setInfoText("Add new Task");
+    ui->leAddTask->setPlaceholderText("Add new Task");
 
     initActions();
     initSystemTray();
