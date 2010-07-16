@@ -68,6 +68,7 @@ void FileStorage::removeTask(const TaskId & taskId)
 void FileStorage::saveToFile(const Task & task)
 {
     QSettings settings(fileDir_.absolutePath() + QDir::separator() + task.getId().toString() + ".task", QSettings::IniFormat);
+    settings.setValue("fileStorageVersion", 1);
     settings.setValue("task/id", task.getId().toString());
     settings.setValue("task/creationTimestamp", task.getCreationTimestamp().toString(Qt::ISODate));
     settings.setValue("task/priority", task.getPriority().toInt());
@@ -75,14 +76,16 @@ void FileStorage::saveToFile(const Task & task)
     settings.setValue("task/dueDate", task.getDueDate().toString(Qt::ISODate));
     settings.setValue("task/plannedDate", task.getPlannedDate().toString(Qt::ISODate));
     settings.setValue("task/effort", task.getEffort().toMinutes());
-    settings.setValue("task/done", task.isDone());
+    settings.setValue("task/done", task.getDoneTimestamp().toString(Qt::ISODate));
 }
 
 Task FileStorage::loadFromFile(const QString & filePath)
 {
-    Task task;
-
     QSettings settings(filePath, QSettings::IniFormat);
+
+    const int version = settings.value("fileStorageVersion").toInt();
+
+    Task task;
     task.setId(TaskId::fromString(settings.value("task/id").toString()));
     task.setCreationTimestamp(QDateTime::fromString(settings.value("task/creationTimestamp").toString(), Qt::ISODate));
     task.setPriority((Priority::Level)settings.value("task/priority").toInt());
@@ -90,7 +93,11 @@ Task FileStorage::loadFromFile(const QString & filePath)
     task.setDueDate(QDate::fromString(settings.value("task/dueDate").toString(),Qt::ISODate));
     task.setPlannedDate(QDate::fromString(settings.value("task/plannedDate").toString(),Qt::ISODate));
     task.setEffort(Effort::fromMinutes(settings.value("task/effort").toUInt()));
-    task.setDone(settings.value("task/done").toBool());
+    if (version == 0) {
+        task.setDone(settings.value("task/done").toBool() ? QDateTime::currentDateTime() : QDateTime());
+    } else {
+        task.setDone(QDateTime::fromString(settings.value("task/done").toString(),Qt::ISODate));
+    }
 
     return task;
 }

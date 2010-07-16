@@ -166,7 +166,7 @@ void TaskTree::slotItemChanged(QTreeWidgetItem * item, int column)
     if (doneIsChecked != tti->getTask().isDone()) {
         // checkstate changed
         Task newTask = tti->getTask();
-        newTask.setDone(doneIsChecked);
+        newTask.setDone(doneIsChecked ? QDateTime::currentDateTime() : QDateTime());
         TaskModel::instance()->updateTask(newTask);
     }
 }

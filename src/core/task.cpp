@@ -19,12 +19,12 @@ bool Task::operator==(const Task & rhs) const
 {
     return id_                == rhs.id_                &&
            creationTimestamp_ == rhs.creationTimestamp_ &&
-           priority_        == rhs.priority_        &&
+           priority_          == rhs.priority_        &&
            description_       == rhs.description_       &&
            dueDate_           == rhs.dueDate_           &&
            plannedDate_       == rhs.plannedDate_       &&
            effort_            == rhs.effort_            &&
-           done_              == rhs.done_;
+           doneTimestamp_     == rhs.doneTimestamp_;
 }
 
 Task Task::createFromString(const QString & string)

@@ -10,7 +10,7 @@
 class Task
 {
 public:
-    Task() : done_(false) {}
+    Task() {}
 
     bool isValid() const;
 
@@ -38,8 +38,9 @@ public:
     Effort getEffort() const { return effort_; }
     void setEffort(const Effort & effort) { effort_ = effort; }
 
-    bool isDone() const { return done_; }
-    void setDone(bool done) { done_ = done; }
+    bool isDone() const { return doneTimestamp_.isValid(); }
+    void setDone(const QDateTime & now) { doneTimestamp_ = now; }
+    QDateTime getDoneTimestamp() const { return doneTimestamp_; }
 
     QString toString() const;
 
@@ -56,7 +57,7 @@ private:
     QDate dueDate_;
     QDate plannedDate_; // adjustable by drag and drop
     Effort effort_;
-    bool done_;
+    QDateTime doneTimestamp_;
 
     friend QDataStream & operator<<( QDataStream & out, const Task & task);
     friend QDataStream & operator>>( QDataStream & out, Task & task);
@@ -71,7 +72,7 @@ inline QDataStream & operator<<(QDataStream & out, const Task & task) {
         << task.dueDate_
         << task.plannedDate_
         << task.effort_
-        << task.done_;
+        << task.doneTimestamp_;
     return out;
 }
 inline QDataStream & operator>>(QDataStream & in, Task & task) {
@@ -83,6 +84,6 @@ inline QDataStream & operator>>(QDataStream & in, Task & task) {
         >> task.dueDate_
         >> task.plannedDate_
         >> task.effort_
-        >> task.done_;
+        >> task.doneTimestamp_;
     return in;
 }
