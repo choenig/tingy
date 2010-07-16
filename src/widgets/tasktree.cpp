@@ -12,31 +12,43 @@
 #include <QMenu>
 #include <QMessageBox>
 #include <QTimer>
+#include <QLocale>
 
 namespace {
 
 TopLevelItem * doneTopLevelItem;
-QMap<QDate, TopLevelItem*> topLevelItems;
+QList<TopLevelItem*> topLevelItems;
 
 void setTopLevelItemsHidden(bool hide, bool ignoreWithChildren = false)
 {
-    foreach (const QDate & date, topLevelItems.keys()) {
-        if (ignoreWithChildren && topLevelItems[date]->childCount() > 0) continue;
-        topLevelItems[date]->setHidden(hide);
+    foreach (TopLevelItem * item , topLevelItems) {
+        if (ignoreWithChildren && item->childCount() > 0) continue;
+        item->setHidden(hide);
     }
+}
+
+void updateTopLevelItems(TaskTree * tree)
+{
+    const QDate today = QDate::currentDate();
+
+    QMutableListIterator<TopLevelItem*> it(topLevelItems);
+    it.next()->update(QDate(1970,1,1),   "Überfällig");
+    it.next()->update(today,             QString("Heute, %1") .arg(QLocale().toString(today,            "dddd, dd.MM.yyyy")));
+    it.next()->update(today.addDays(1),  QString("Morgen, %1").arg(QLocale().toString(today.addDays(1), "dddd, dd.MM.yyyy")));
+    it.next()->update(today.addDays(2),  "Nächste Woche");
+    it.next()->update(today.addDays(7),  "Nächster Monat");
+    it.next()->update(today.addDays(30), "Zukunft ...");
 }
 
 void initTopLevelItems(TaskTree * tree)
 {
-    const QDate today = QDate::currentDate();
+    for (int i = 0 ; i < 6; ++i) {
+        topLevelItems <<   new TopLevelItem(tree);
+    }
+    updateTopLevelItems(tree);
 
-    topLevelItems[QDate(1970,1,1)]   = new TopLevelItem(tree, "Überfällig",  QDate(1970,1,1));
-    topLevelItems[today]             = new TopLevelItem(tree, "Heute",       today);
-    topLevelItems[today.addDays(1)]  = new TopLevelItem(tree, "Morgen",      today.addDays(1));
-    topLevelItems[today.addDays(2)]  = new TopLevelItem(tree, "eine Woche",  today.addDays(2));
-    topLevelItems[today.addDays(7)]  = new TopLevelItem(tree, "ein Monat",   today.addDays(7));
-    topLevelItems[today.addDays(30)] = new TopLevelItem(tree, "Zukunft ...", today.addDays(30));
-    doneTopLevelItem                 = new TopLevelItem(tree, "Done",        QDate());
+    doneTopLevelItem = new TopLevelItem(tree);
+    doneTopLevelItem->update(QDate(), "Done");
 
     // initially hide all items
     setTopLevelItemsHidden(true);
@@ -70,6 +82,10 @@ TaskTree::TaskTree(QWidget *parent)
     connect(tm, SIGNAL(taskRemoved(TaskId)), this, SLOT(removeTask(TaskId)));
 
     initTopLevelItems(this);
+
+    QTimer * dayChangeTimer = new QTimer(this);
+    dayChangeTimer->setInterval(QDateTime::currentDateTime().secsTo(QDateTime(QDate::currentDate().addDays(1), QTime(0,0))));
+    connect(dayChangeTimer, SIGNAL(timeout()), this, SLOT(handleDayChange()));
 
     QTimer::singleShot(0, this, SLOT(init()));
 }
@@ -168,6 +184,18 @@ void TaskTree::slotItemChanged(QTreeWidgetItem * item, int column)
         Task newTask = tti->getTask();
         newTask.setDone(doneIsChecked ? QDateTime::currentDateTime() : QDateTime());
         TaskModel::instance()->updateTask(newTask);
+    }
+}
+
+void TaskTree::handleDayChange()
+{
+    updateTopLevelItems(this);
+
+    QTreeWidgetItemIterator it(this);
+    while (*it) {
+        TaskTreeItem * tti = dynamic_cast<TaskTreeItem*>(*it);
+        if (tti) reparentUpdatedItem(tti);
+        ++it;
     }
 }
 
@@ -341,9 +369,9 @@ TopLevelItem * TaskTree::getTopLevelItemForTask(const Task & task) const
     if (task.isDone()) {
         parent = doneTopLevelItem;
     } else if (task.getEffectiveDate().isValid()) {
-        foreach (const QDate & date, topLevelItems.keys()) {
-            if (date <= task.getEffectiveDate()) {
-                parent = topLevelItems[date];
+        foreach (TopLevelItem * tli, topLevelItems) {
+            if (tli->getDate() <= task.getEffectiveDate()) {
+                parent = tli;
                 // do not break here!
             }
         }

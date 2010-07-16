@@ -8,25 +8,24 @@
 //
 // TopLevelItem
 
-TopLevelItem::TopLevelItem(QTreeWidget * treeWidget, QTreeWidgetItem * itmBefore, const QString & string, const QDate & date)
-	: QTreeWidgetItem(treeWidget, itmBefore, Type), string_(string), date_(date)
+//TopLevelItem::TopLevelItem(QTreeWidget * treeWidget, QTreeWidgetItem * itmBefore)
+//	: QTreeWidgetItem(treeWidget, itmBefore, Type)
+//{
+//	init(string);
+//}
+
+TopLevelItem::TopLevelItem(QTreeWidget * treeWidget)
+	: QTreeWidgetItem(treeWidget, Type)
 {
-	init(string);
 }
 
-TopLevelItem::TopLevelItem(QTreeWidget * treeWidget, const QString & string, const QDate & date)
-	: QTreeWidgetItem(treeWidget, Type), string_(string), date_(date)
-{
-	init(string);
-}
-
-void TopLevelItem::init(const QString& string)
+void TopLevelItem::init()
 {
 	const QDate today = QDate::currentDate();
 
 	setExpanded(true);
 	setFirstColumnSpanned(true);
-	setText(0, string);
+	setText(0, string_);
 	setSizeHint(0, QSize(0, 40));
 
 	QColor bgColor = Qt::transparent;

@@ -4,13 +4,16 @@
 
 #include <QApplication>
 #include <QTimer>
+#include <QLocale>
 
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
 
-    TaskModel taskModel;
+    // use 'de' as default language
+    QLocale::setDefault(QLocale(QLocale::German, QLocale::Germany));
 
+    TaskModel taskModel;
     FileStorage fileStorage;
     QTimer::singleShot(0, &fileStorage, SLOT(restoreFromFiles()));
 

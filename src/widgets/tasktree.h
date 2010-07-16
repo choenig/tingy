@@ -29,6 +29,8 @@ private slots:
 	void slotItemDoubleClicked(QTreeWidgetItem * item, int column);
 	void slotItemChanged(QTreeWidgetItem * item, int column);
 
+	void handleDayChange();
+
 protected:
 	virtual void drawBranches(QPainter * painter, const QRect & rect, const QModelIndex & index) const;
 

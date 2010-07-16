@@ -17,14 +17,20 @@ public:
 	enum { Type = QTreeWidgetItem::UserType + 23 };
 
 public:
-	TopLevelItem(QTreeWidget * treeWidget, QTreeWidgetItem * itmBefore, const QString & string, const QDate & date);
-	TopLevelItem(QTreeWidget * treeWidget, const QString & string, const QDate & date);
+//	TopLevelItem(QTreeWidget * treeWidget, QTreeWidgetItem * itmBefore);
+	TopLevelItem(QTreeWidget * treeWidget);
+
+	void update(const QDate & date, const QString & string) {
+		date_ = date;
+		string_ = string;
+		init();
+	}
 
 	QString getString() const { return string_; }
 	QDate getDate() const { return date_; }
 
 private:
-	void init(const QString& changeList);
+	void init();
 	virtual bool operator<(const QTreeWidgetItem & rhs) const;
 
 private:
