@@ -83,9 +83,14 @@ void TaskTreeItem::init()
 	setCheckState(0, task_.isDone() ? Qt::Checked : Qt::Unchecked);
 
 	QStringList infos;
-	if (task_.getEffort().isValid())      infos << QString::fromUtf8("\xe2\x97\xb7") + task_.getEffort().toString();
-	if (task_.getPlannedDate().isValid()) infos << QString::fromUtf8("\xe2\x9e\xbe") + task_.getPlannedDate().toString("dd.MM.yyyy");
-	if (task_.getDueDate().isValid())     infos << QString::fromUtf8("\xe2\x87\xa5") + task_.getDueDate().toString("dd.MM.yyyy");
+	if (task_.getEffort().isValid())
+		infos << QString::fromUtf8("\xe2\x86\xa5") + task_.getEffort().toString();
+	if (task_.getEffectiveDate().isValid() && task_.getEffectiveDate() != QDate::currentDate())
+		infos << QString::fromUtf8("\xe2\x86\xa6%1d").arg(QDate::currentDate().daysTo(task_.getEffectiveDate()));
+	if (task_.getPlannedDate().isValid())
+		infos << QString::fromUtf8("\xe2\x86\xb4") + task_.getPlannedDate().toString("dd.MM.yyyy");
+	if (task_.getDueDate().isValid())
+		infos << QString::fromUtf8("\xe2\x8a\x9a") + task_.getDueDate().toString("dd.MM.yyyy");
 
 	QString txt = task_.getDescription();
 	if (!infos.isEmpty()) txt += " [" + infos.join(", ") + "]";
