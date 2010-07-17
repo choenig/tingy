@@ -1,124 +1,64 @@
 #include "autocompletelineedit.h"
 
-#include <QTreeWidget>
-#include <QHeaderView>
-#include <QKeyEvent>
+#include <widgets/calendarpopup.h>
+#include <widgets/textpopup.h>
 
-QTreeWidget * popup;
+namespace {
+TextPopup * textPopup;
+CalendarPopup * calPopup;
+}
 
 AutocompleteLineEdit::AutocompleteLineEdit(QWidget *parent) :
     QLineEdit(parent)
 {
+    textPopup = new TextPopup(this);
+    connect(textPopup, SIGNAL(textSelected(QString)), this, SLOT(doneTextCompletion(QString)));
+
+    calPopup = new CalendarPopup(this);
+    connect(calPopup, SIGNAL(dateSelected(QDate)), this, SLOT(doneCalCompletion(QDate)));
+
     connect(this, SIGNAL(textChanged(QString)), this, SLOT(onTextChanged(QString)));
-
-    popup = new QTreeWidget;
-    popup->setWindowFlags(Qt::Popup);
-    popup->setFocusPolicy(Qt::NoFocus);
-    popup->setFocusProxy(parent);
-    popup->setMouseTracking(true);
-
-    popup->setColumnCount(1);
-    popup->setUniformRowHeights(true);
-    popup->setRootIsDecorated(false);
-    popup->setEditTriggers(QTreeWidget::NoEditTriggers);
-    popup->setSelectionBehavior(QTreeWidget::SelectRows);
-    popup->setFrameStyle(QFrame::Box | QFrame::Plain);
-    popup->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-    popup->header()->hide();
-
-    popup->installEventFilter(this);
-
-    connect(popup, SIGNAL(itemClicked(QTreeWidgetItem*,int)), this, SLOT(doneCompletion()));
 }
-
 
 void AutocompleteLineEdit::onTextChanged(const QString & text)
 {
-    QStringList choices;
+    QWidget * wdgt = 0;
+
     if (text.endsWith("!")) {
-        choices << "+" << "-";
+        QStringList choices; choices << "+" << "-";
+        textPopup->setChoices(choices, QRegExp("[+-]"));
+        wdgt = textPopup;
+    } else if (text.endsWith("$")) {
+        QStringList choices; choices << "m" << "h"<< "d"<< "w"<< "y";
+        textPopup->setChoices(choices, QRegExp("[0-9]+([mhdwy]?[0-9]*)*"));
+        wdgt = textPopup;
     } else if (text.endsWith("*")) {
-        choices << "today" << "tomorrow" << "+2d";
+        calPopup->reset();
+        wdgt = calPopup;
     }
 
-    if (choices.isEmpty()) return;
+    if (!wdgt) return;
 
-    popup->setUpdatesEnabled(false);
-    popup->clear();
-    for (int i = 0; i < choices.count(); ++i) {
-        QTreeWidgetItem * item = new QTreeWidgetItem(popup);
-        item->setText(0, choices[i] + " ");
-    }
-    popup->setCurrentItem(popup->topLevelItem(0));
-    popup->resizeColumnToContents(0);
-    popup->adjustSize();
-    popup->setUpdatesEnabled(true);
-
-    int h = popup->sizeHintForRow(0) * qMin(7, choices.count()) + 3;
-    popup->resize(popup->width(), h);
-
-    QFontMetrics fm(popup->font());
-    int x = fm.width(this->text()) + 7;
-
-    popup->move(this->mapToGlobal(QPoint(x, this->height() - 4)));
-    popup->setFocus();
-    popup->show();
+    QFontMetrics fm(textPopup->font());
+    int cursorPosPx = fm.width(this->text()) + 7;
+    wdgt->move(this->mapToGlobal(QPoint(cursorPosPx, this->height() - 4)));
+    wdgt->setFocus();
+    wdgt->show();
 }
 
-bool AutocompleteLineEdit::eventFilter(QObject *object, QEvent *event)
- {
-     if (object != popup) return false;
+void AutocompleteLineEdit::doneTextCompletion(const QString & txt)
+{
+    // do not append the selected text, if its already there
+    // dunno if this is a good solution
+    if (text().endsWith(txt)) {
+        setText(text() + " ");
+    } else {
+        setText(text() + txt + " ");
+    }
+}
 
-     if (event->type() == QEvent::MouseButtonPress) {
-         popup->hide();
-         this->setFocus();
-         return true;
-     }
-
-     if (event->type() == QEvent::KeyPress)
-     {
-         bool consumed = false;
-         int key = static_cast<QKeyEvent*>(event)->key();
-         switch (key) {
-         case Qt::Key_Enter:
-         case Qt::Key_Return: {
-             doneCompletion();
-             consumed = true;
-         }
-         case Qt::Key_Escape:
-             this->setFocus();
-             popup->hide();
-             consumed = true;
-
-         case Qt::Key_Up:
-         case Qt::Key_Down:
-         case Qt::Key_Home:
-         case Qt::Key_End:
-         case Qt::Key_PageUp:
-         case Qt::Key_PageDown:
-             break;
-
-         default:
-             this->setFocus();
-             this->event(event);
-             popup->hide();
-             break;
-         }
-
-         return consumed;
-     }
-
-     return false;
- }
-
-void AutocompleteLineEdit::doneCompletion()
- {
-     popup->hide();
-     setFocus();
-     QTreeWidgetItem *item = popup->currentItem();
-     if (item) {
-         setText(text() + item->text(0));
-//         QMetaObject::invokeMethod(editor, "returnPressed");
-     }
- }
+void AutocompleteLineEdit::doneCalCompletion(const QDate &date)
+{
+    setText(text() + date.toString("dd.MM.yyyy") + " ");
+}
 

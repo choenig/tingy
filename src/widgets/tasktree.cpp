@@ -27,7 +27,7 @@ void setTopLevelItemsHidden(bool hide, bool ignoreWithChildren = false)
     }
 }
 
-void updateTopLevelItems(TaskTree * tree)
+void updateTopLevelItems()
 {
     const QDate today = QDate::currentDate();
 
@@ -45,7 +45,7 @@ void initTopLevelItems(TaskTree * tree)
     for (int i = 0 ; i < 6; ++i) {
         topLevelItems <<   new TopLevelItem(tree);
     }
-    updateTopLevelItems(tree);
+    updateTopLevelItems();
 
     doneTopLevelItem = new TopLevelItem(tree);
     doneTopLevelItem->update(QDate(), "Done");
@@ -189,7 +189,7 @@ void TaskTree::slotItemChanged(QTreeWidgetItem * item, int column)
 
 void TaskTree::handleDayChange()
 {
-    updateTopLevelItems(this);
+    updateTopLevelItems();
 
     QTreeWidgetItemIterator it(this);
     while (*it) {

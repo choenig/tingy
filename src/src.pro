@@ -24,7 +24,9 @@ SOURCES += main.cpp\
     widgets/tasktreeitems.cpp \
     core/effort.cpp \
     widgets/taskeditwidget.cpp \
-    widgets/autocompletelineedit.cpp
+    widgets/autocompletelineedit.cpp \
+    widgets/calendarpopup.cpp \
+    widgets/textpopup.cpp
 
 HEADERS  += widgets/mainwindow.h \
     widgets/filterlineedit.h \
@@ -38,10 +40,13 @@ HEADERS  += widgets/mainwindow.h \
     widgets/tasktreeitems.h \
     core/effort.h \
     widgets/taskeditwidget.h \
-    widgets/autocompletelineedit.h
+    widgets/autocompletelineedit.h \
+    widgets/calendarpopup.h \
+    widgets/textpopup.h
 
 FORMS    += widgets/ui/mainwindow.ui \
-    widgets/taskeditwidget.ui
+    widgets/ui/taskeditwidget.ui \
+    widgets/ui/calendarpopup.ui
 
 RESOURCES += \
     mytasks.qrc

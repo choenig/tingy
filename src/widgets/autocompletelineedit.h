@@ -2,16 +2,17 @@
 
 #include <QLineEdit>
 
+class QDate;
+
 class AutocompleteLineEdit : public QLineEdit
 {
     Q_OBJECT
 public:
-    explicit AutocompleteLineEdit(QWidget *parent = 0);
+    AutocompleteLineEdit(QWidget *parent = 0);
 
 private slots:
     void onTextChanged(const QString & text);
-    void doneCompletion();
 
-private:
-    bool eventFilter(QObject *obj, QEvent *ev);
+    void doneTextCompletion(const QString & text);
+    void doneCalCompletion(const QDate & date);
 };
