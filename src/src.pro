@@ -26,7 +26,8 @@ SOURCES += main.cpp\
     widgets/taskeditwidget.cpp \
     widgets/autocompletelineedit.cpp \
     widgets/calendarpopup.cpp \
-    widgets/textpopup.cpp
+    widgets/textpopup.cpp \
+    core/clock.cpp
 
 HEADERS  += widgets/mainwindow.h \
     widgets/filterlineedit.h \
@@ -42,7 +43,8 @@ HEADERS  += widgets/mainwindow.h \
     widgets/taskeditwidget.h \
     widgets/autocompletelineedit.h \
     widgets/calendarpopup.h \
-    widgets/textpopup.h
+    widgets/textpopup.h \
+    core/clock.h
 
 FORMS    += widgets/ui/mainwindow.ui \
     widgets/ui/taskeditwidget.ui \

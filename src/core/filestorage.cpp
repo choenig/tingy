@@ -1,5 +1,6 @@
 #include "filestorage.h"
 
+#include <core/clock.h>
 #include <core/task.h>
 #include <core/taskmodel.h>
 
@@ -94,7 +95,7 @@ Task FileStorage::loadFromFile(const QString & filePath)
     task.setPlannedDate(QDate::fromString(settings.value("task/plannedDate").toString(),Qt::ISODate));
     task.setEffort(Effort::fromMinutes(settings.value("task/effort").toUInt()));
     if (version == 0) {
-        task.setDone(settings.value("task/done").toBool() ? QDateTime::currentDateTime() : QDateTime());
+        task.setDone(settings.value("task/done").toBool() ? Clock::currentDateTime() : QDateTime());
     } else {
         task.setDone(QDateTime::fromString(settings.value("task/done").toString(),Qt::ISODate));
     }

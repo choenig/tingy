@@ -1,5 +1,7 @@
 #include "calendarpopup.h"
 
+#include <core/clock.h>
+
 #include <QDateTime>
 #include <QLabel>
 #include <QPainter>
@@ -35,7 +37,7 @@ CalendarPopup::~CalendarPopup()
 
 void CalendarPopup::reset()
 {
-    const QDate now = QDate::currentDate();
+    const QDate now = Clock::currentDate();
 
     updateVisibleDates(now.addDays(-ColCount));
 
@@ -48,7 +50,7 @@ void CalendarPopup::updateVisibleDates(const QDate & dateInFirstRow)
     currentStartDate_ = dateInFirstRow.addDays(-(dateInFirstRow.dayOfWeek()-1));
 
     // init dates
-    const QDate now = QDate::currentDate();
+    const QDate now = Clock::currentDate();
     for (int i = 0; i < LabelCount; ++i) {
         QDate date = currentStartDate_.addDays(i);
         QLabel * lbl = getDateLabel(QPoint(i % ColCount, i / ColCount));
@@ -177,7 +179,7 @@ void CalendarPopup::keyPressEvent(QKeyEvent * keyEvent)
 void CalendarPopup::updateSelectedDate(const QDate & selectedDate)
 {
     selectedDate_ = selectedDate;
-    ui->lblSelectedDate->setText(selectedDate_.toString("dd.MM.yyyy") + QString(" [%1d]").arg(QDate::currentDate().daysTo(selectedDate_)));
+    ui->lblSelectedDate->setText(selectedDate_.toString("dd.MM.yyyy") + QString(" [%1d]").arg(Clock::currentDate().daysTo(selectedDate_)));
 
     // update label colors
     for (int i = 0; i < LabelCount; ++i) {

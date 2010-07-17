@@ -1,9 +1,12 @@
 #include "mainwindow.h"
 
+#include <core/clock.h>
 #include <core/taskmodel.h>
 
 #include <QCloseEvent>
 #include <QApplication>
+#include <QLabel>
+#include <QTimer>
 
 #include "ui_mainwindow.h"
 
@@ -16,6 +19,19 @@ MainWindow::MainWindow(QWidget *parent)
 
     initActions();
     initSystemTray();
+
+    lblStatusBar_ = new QLabel;
+    statusBar()->addPermanentWidget(lblStatusBar_);
+
+    QTimer * timer = new QTimer;
+    connect(timer, SIGNAL(timeout()), this, SLOT(updateStatusBar()));
+    timer->start(1000);
+
+}
+
+void MainWindow::updateStatusBar()
+{
+    lblStatusBar_->setText(Clock::currentDateTime().toString("dd.MM.yyyy   hh:mm:ss"));
 }
 
 MainWindow::~MainWindow()

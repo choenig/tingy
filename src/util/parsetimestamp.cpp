@@ -1,5 +1,6 @@
 #include "parsetimestamp.h"
 
+#include <core/clock.h>
 #include <core/effort.h>
 
 #include <QDateTime>
@@ -29,7 +30,7 @@ qint32 parseTimeDef(const QString & string)
 
 QDate parseDate(const QString & string)
 {
-    const QDate today = QDate::currentDate();
+    const QDate today = Clock::currentDate();
 
     if (string.isEmpty()                    ||
         QString("today").startsWith(string) ||

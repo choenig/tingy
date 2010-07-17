@@ -1,5 +1,6 @@
 #include "tasktree.h"
 
+#include <core/clock.h>
 #include <core/task.h>
 #include <core/taskmodel.h>
 #include <widgets/tasktreeitems.h>
@@ -29,7 +30,7 @@ void setTopLevelItemsHidden(bool hide, bool ignoreWithChildren = false)
 
 void updateTopLevelItems()
 {
-    const QDate today = QDate::currentDate();
+    const QDate today = Clock::currentDate();
 
     QMutableListIterator<TopLevelItem*> it(topLevelItems);
     it.next()->update(QDate(1970,1,1),   "Überfällig");
@@ -83,9 +84,11 @@ TaskTree::TaskTree(QWidget *parent)
 
     initTopLevelItems(this);
 
+    // this timer updates the tree on day change
     QTimer * dayChangeTimer = new QTimer(this);
-    dayChangeTimer->setInterval(QDateTime::currentDateTime().secsTo(QDateTime(QDate::currentDate().addDays(1), QTime(0,0))));
     connect(dayChangeTimer, SIGNAL(timeout()), this, SLOT(handleDayChange()));
+    dayChangeTimer->setSingleShot(true);
+    dayChangeTimer->start(Clock::msecsTillTomorrow());
 
     QTimer::singleShot(0, this, SLOT(init()));
 }
@@ -116,6 +119,7 @@ void TaskTree::addTask(const Task & task)
     } else {
         new TaskTreeItem(this, task);
     }
+
     sortItems(0, Qt::AscendingOrder);
 
 }
@@ -128,6 +132,7 @@ void TaskTree::updateTask(const Task & task)
     // remember old task to check what changed
     const Task oldTask = updatedTaskTreeItem->getTask();
 
+    // update the task
     updatedTaskTreeItem->setTask(task);
 
     // if effectiveDate or isDone changed, the TaskTreeItem has to be moved probably
@@ -182,20 +187,32 @@ void TaskTree::slotItemChanged(QTreeWidgetItem * item, int column)
     if (doneIsChecked != tti->getTask().isDone()) {
         // checkstate changed
         Task newTask = tti->getTask();
-        newTask.setDone(doneIsChecked ? QDateTime::currentDateTime() : QDateTime());
+        newTask.setDone(doneIsChecked ? Clock::currentDateTime() : QDateTime());
         TaskModel::instance()->updateTask(newTask);
     }
 }
 
 void TaskTree::handleDayChange()
 {
+    // restart timer for next run
+    static_cast<QTimer*>(sender())->start(Clock::msecsTillTomorrow());
+
     updateTopLevelItems();
 
+    // first gather all items up ...
+    QList<TaskTreeItem *> taskItems;
     QTreeWidgetItemIterator it(this);
     while (*it) {
-        TaskTreeItem * tti = dynamic_cast<TaskTreeItem*>(*it);
-        if (tti) reparentUpdatedItem(tti);
+        if ((*it)->type() == TaskTreeItem::Type) {
+            taskItems << static_cast<TaskTreeItem*>(*it);
+        }
         ++it;
+    }
+
+    // ... then reparent and update them
+    foreach (TaskTreeItem * tti, taskItems) {
+        reparentUpdatedItem(tti);
+        tti->update();
     }
 }
 
@@ -222,13 +239,10 @@ void TaskTree::contextMenuEvent(QContextMenuEvent * e)
     QAction *act = contextMenu.exec(e->globalPos());
     if (!act) return;
 
-
-    if (act == removeTaskAct)
-    {
+    if (act == removeTaskAct) {
         TaskModel::instance()->removeTask(task.getId());
     }
-    else if (act == resetPlannedAct)
-    {
+    else if (act == resetPlannedAct) {
         task.setPlannedDate(QDate());
         TaskModel::instance()->updateTask(task);
     }
@@ -313,7 +327,6 @@ void TaskTree::dropEvent(QDropEvent *event)
 
 Qt::DropActions TaskTree::supportedDropActions () const
 {
-    // returns what actions are supported when dropping
     return Qt::CopyAction;
 }
 

@@ -17,7 +17,6 @@ public:
 	enum { Type = QTreeWidgetItem::UserType + 23 };
 
 public:
-//	TopLevelItem(QTreeWidget * treeWidget, QTreeWidgetItem * itmBefore);
 	TopLevelItem(QTreeWidget * treeWidget);
 
 	void update(const QDate & date, const QString & string) {
@@ -53,8 +52,9 @@ public:
 	Task getTask() const { return task_; }
 	void setTask(const Task & task);
 
+	void update();
+
 private:
-	void init();
 	virtual bool operator<(const QTreeWidgetItem & rhs) const;
 
 private:

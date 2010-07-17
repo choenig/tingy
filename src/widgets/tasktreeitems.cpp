@@ -1,5 +1,6 @@
 #include "tasktreeitems.h"
 
+#include <core/clock.h>
 #include <widgets/tasktree.h>
 
 #include <QPainter>
@@ -21,7 +22,7 @@ TopLevelItem::TopLevelItem(QTreeWidget * treeWidget)
 
 void TopLevelItem::init()
 {
-	const QDate today = QDate::currentDate();
+	const QDate today = Clock::currentDate();
 
 	setExpanded(true);
 	setFirstColumnSpanned(true);
@@ -53,24 +54,24 @@ bool TopLevelItem::operator<(const QTreeWidgetItem & rhs) const
 TaskTreeItem::TaskTreeItem(TaskTree * tree, const Task & task)
 	: QTreeWidgetItem(tree, 0, Type), task_(task)
 {
-	init();
+	update();
 }
 
 TaskTreeItem::TaskTreeItem(TopLevelItem * topLevelItem, const Task & task)
 	: QTreeWidgetItem(topLevelItem, Type), task_(task)
 {
-	init();
+	update();
 }
 
 void TaskTreeItem::setTask(const Task & task)
 {
 	task_ = task;
-	init();
+	update();
 }
 
-void TaskTreeItem::init()
+void TaskTreeItem::update()
 {
-	const QDate today = QDate::currentDate();
+	const QDate today = Clock::currentDate();
 
 	if        (task_.getPriority() == Priority::High) {
 		setIcon(1, QIcon(":images/highPriority.png"));
@@ -85,8 +86,8 @@ void TaskTreeItem::init()
 	QStringList infos;
 	if (task_.getEffort().isValid())
 		infos << QString::fromUtf8("\xe2\x86\xa5") + task_.getEffort().toString();
-	if (task_.getEffectiveDate().isValid() && task_.getEffectiveDate() != QDate::currentDate())
-		infos << QString::fromUtf8("\xe2\x86\xa6%1d").arg(QDate::currentDate().daysTo(task_.getEffectiveDate()));
+	if (task_.getEffectiveDate().isValid() && task_.getEffectiveDate() != Clock::currentDate())
+		infos << QString::fromUtf8("\xe2\x86\xa6%1d").arg(Clock::currentDate().daysTo(task_.getEffectiveDate()));
 	if (task_.getPlannedDate().isValid())
 		infos << QString::fromUtf8("\xe2\x86\xb4") + task_.getPlannedDate().toString("dd.MM.yyyy");
 	if (task_.getDueDate().isValid())

@@ -1,5 +1,6 @@
 #include "task.h"
 
+#include <core/clock.h>
 #include <util/parsetimestamp.h>
 
 #include <QDebug>
@@ -31,7 +32,7 @@ Task Task::createFromString(const QString & string)
 {
     Task task;
     task.id_ = TaskId::createId();
-    task.creationTimestamp_ = QDateTime::currentDateTime();
+    task.creationTimestamp_ = Clock::currentDateTime();
     task.description_ = string;
 
     QRegExp reDue("\\*([^ ]+)");
