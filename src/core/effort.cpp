@@ -2,8 +2,8 @@
 
 #include <QStringList>
 
-Effort::Effort()
-    : effortInMinutes_(0)
+Effort::Effort(quint32 minutes)
+    : effortInMinutes_(minutes)
 {
 }
 
@@ -18,11 +18,4 @@ QString Effort::toString() const
     if (h > 0) retval << QString("%1h").arg(h);
     if (m > 0) retval << QString("%1m").arg(m);
     return retval.join(" ");
-}
-
-Effort Effort::fromMinutes(quint32 minutes)
-{
-    Effort retval;
-    retval.effortInMinutes_ = minutes;
-    return retval;
 }

@@ -4,6 +4,9 @@
 #include <QHash>
 #include <QUuid>
 
+//
+// TaskId
+
 class TaskId
 {
 public:
@@ -15,7 +18,7 @@ public:
     bool operator!=(const TaskId & rhs) const { return !operator==(rhs); }
 
     static TaskId fromString(const QString & idString) { TaskId t; t.uuid_ = QUuid(idString); return t;}
-    static TaskId createId();
+    static TaskId createUniqueId();
 
 private:
     QUuid uuid_;
@@ -25,9 +28,15 @@ private:
     friend QDataStream & operator>>(QDataStream & in, TaskId & taskId );
 };
 
+//
+// qHash
+
 inline uint qHash(const TaskId& taskId) {
     return qHash(taskId.uuid_);
 }
+
+//
+// stream operators
 
 inline QDataStream & operator<<(QDataStream & out, const TaskId & taskId) {
     return operator<<(out, taskId.uuid_);

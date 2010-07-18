@@ -77,7 +77,7 @@ Effort parseEffort(const QString & string)
 {
     int secs = parseTimeDef(string);
     if (secs >= 0) {
-        return Effort::fromMinutes(secs / 60);
+        return Effort(secs / 60);
     }
     return Effort();
 }

@@ -2,6 +2,9 @@
 
 #include <QDataStream>
 
+//
+// Priority
+
 class Priority
 {
 public:
@@ -25,6 +28,9 @@ private:
     friend QDataStream & operator<<(QDataStream & out, const Priority & priority);
     friend QDataStream & operator>>(QDataStream & in, Priority & priority );
 };
+
+//
+// stream operators
 
 inline QDataStream & operator<<(QDataStream & out, const Priority & priority) {
     out << (qint32)priority.level_;

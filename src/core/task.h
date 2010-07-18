@@ -7,11 +7,15 @@
 #include <QDate>
 #include <QString>
 
+//
+// Task
+
 class Task
 {
 public:
     Task() {}
 
+    bool isNull() const;
     bool isValid() const;
 
     TaskId getId() const { return id_; }
@@ -64,6 +68,9 @@ private:
     friend QDataStream & operator<<( QDataStream & out, const Task & task);
     friend QDataStream & operator>>( QDataStream & out, Task & task);
 };
+
+//
+// stream operators
 
 inline QDataStream & operator<<(QDataStream & out, const Task & task) {
     out

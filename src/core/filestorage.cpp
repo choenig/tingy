@@ -93,7 +93,7 @@ Task FileStorage::loadFromFile(const QString & filePath)
     task.setDescription(settings.value("task/description").toString());
     task.setDueDate(QDate::fromString(settings.value("task/dueDate").toString(),Qt::ISODate));
     task.setPlannedDate(QDate::fromString(settings.value("task/plannedDate").toString(),Qt::ISODate));
-    task.setEffort(Effort::fromMinutes(settings.value("task/effort").toUInt()));
+    task.setEffort(Effort(settings.value("task/effort").toUInt()));
     if (version == 0) {
         task.setDone(settings.value("task/done").toBool() ? Clock::currentDateTime() : QDateTime());
     } else {

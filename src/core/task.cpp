@@ -6,9 +6,14 @@
 #include <QDebug>
 #include <QRegExp>
 
+bool Task::isNull() const
+{
+    return id_.isNull() && creationTimestamp_.isNull() && description_.isNull();
+}
+
 bool Task::isValid() const
 {
-    return !id_.isNull() && !description_.isEmpty();
+    return !id_.isNull() && creationTimestamp_.isValid() && !description_.isEmpty();
 }
 
 bool Task::isOverdue() const
@@ -19,14 +24,14 @@ bool Task::isOverdue() const
 
 QString Task::toString() const
 {
-    return description_; // fixme enhance
+    return description_; // RFI enhance
 }
 
 bool Task::operator==(const Task & rhs) const
 {
     return id_                == rhs.id_                &&
            creationTimestamp_ == rhs.creationTimestamp_ &&
-           priority_          == rhs.priority_        &&
+           priority_          == rhs.priority_          &&
            description_       == rhs.description_       &&
            dueDate_           == rhs.dueDate_           &&
            plannedDate_       == rhs.plannedDate_       &&
@@ -37,7 +42,7 @@ bool Task::operator==(const Task & rhs) const
 Task Task::createFromString(const QString & string)
 {
     Task task;
-    task.id_ = TaskId::createId();
+    task.id_ = TaskId::createUniqueId();
     task.creationTimestamp_ = Clock::currentDateTime();
     task.description_ = string;
 

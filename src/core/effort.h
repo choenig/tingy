@@ -3,10 +3,13 @@
 #include <QDataStream>
 #include <QString>
 
+//
+// Effort
+
 class Effort
 {
 public:
-    Effort();
+    explicit Effort(quint32 minutes = 0);
 
     bool isNull() const { return effortInMinutes_ == 0; }
     bool isValid() const { return !isNull(); }
@@ -17,7 +20,6 @@ public:
     bool operator!=(const Effort & rhs) const { return !operator==(rhs); }
 
     quint32 toMinutes() const { return effortInMinutes_; }
-    static Effort fromMinutes(quint32 minutes);
 
 private:
     quint32 effortInMinutes_;
@@ -25,6 +27,9 @@ private:
     friend QDataStream & operator<<( QDataStream & out, const Effort & effort);
     friend QDataStream & operator>>( QDataStream & out, Effort & effort);
 };
+
+//
+// stream operators
 
 inline QDataStream & operator<<(QDataStream & out, const Effort & effort) {
     out << effort.effortInMinutes_;

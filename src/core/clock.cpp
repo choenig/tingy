@@ -2,7 +2,9 @@
 
 #include <QDateTime>
 
+namespace {
 qint64 offsetInMSecs = 0;
+}
 
 void Clock::init(const QDateTime & now)
 {
@@ -27,5 +29,5 @@ QTime Clock::currentTime()
 int Clock::msecsTillTomorrow()
 {
     const QDateTime now = currentDateTime();
-    return now.msecsTo(QDateTime(now.date().addDays(1), QTime(0,0,1)));
+    return now.msecsTo(QDateTime(now.date().addDays(1)));
 }

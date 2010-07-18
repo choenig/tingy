@@ -1,10 +1,6 @@
 #include "taskid.h"
 
-#include <QtGlobal>
-#include <cstdlib>
-#include <stdlib.h>
-
-TaskId TaskId::createId()
+TaskId TaskId::createUniqueId()
 {
     TaskId retval;
     retval.uuid_ = QUuid::createUuid();

@@ -32,9 +32,9 @@ private:
 
 private:
     QAction * hideDoneAction_;
-    QLabel * lblStatusBar_;
+    QLabel  * lblStatusBarTimestamp_;
     QSystemTrayIcon * trayIcon_;
 
 private:
-    Ui::MainWindow *ui;
+    Ui::MainWindow * ui;
 };

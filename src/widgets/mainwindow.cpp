@@ -4,21 +4,20 @@
 #include <core/taskmodel.h>
 
 #include <QCloseEvent>
-#include <QApplication>
 #include <QLabel>
 #include <QTimer>
 
 #include "ui_mainwindow.h"
 
-MainWindow::MainWindow(QWidget *parent)
+MainWindow::MainWindow(QWidget * parent)
     : QMainWindow(parent), ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-
     ui->leAddTask->setPlaceholderText("Add new Task");
 
     connect (TaskModel::instance(), SIGNAL(hasOverdueTasks(bool)), this, SLOT(updateTrayIcon(bool)));
 
+    // init stuff
     initActions();
     initSystemTray();
     initStatusBar();
@@ -47,7 +46,7 @@ void MainWindow::on_leAddTask_returnPressed()
 
     ui->leAddTask->clear();
 
-    statusBar()->showMessage("Task added successfully", 5*1000);
+    statusBar()->showMessage("Task added successfully", 5 * 1000);
 }
 
 void MainWindow::initActions()
@@ -69,7 +68,7 @@ void MainWindow::initSystemTray()
 {
     trayIcon_ = new QSystemTrayIcon(QIcon(":images/OK.png"), this);
     connect(trayIcon_, SIGNAL(activated(QSystemTrayIcon::ActivationReason)),
-            this,  SLOT(trayActivated(QSystemTrayIcon::ActivationReason)));
+            this,      SLOT(trayActivated(QSystemTrayIcon::ActivationReason)));
 
     QMenu * contextMenu = new QMenu;
     contextMenu->addAction("Quit", qApp, SLOT(quit()));
@@ -80,13 +79,15 @@ void MainWindow::initSystemTray()
 
 void MainWindow::trayActivated(QSystemTrayIcon::ActivationReason reason)
 {
-	if (reason == QSystemTrayIcon::Trigger) {
-		if (isVisible() && !QApplication::focusWidget()) {
-			activateWindow();
-			raise();
-		} else {
-			setVisible(!isVisible());
-		}
+	if (reason != QSystemTrayIcon::Trigger) return;
+
+	if (isVisible() && !QApplication::focusWidget()) {
+		// get the window to the front ...
+		activateWindow();
+		raise();
+	} else {
+		// ... or toggle visibility
+		setVisible(!isVisible());
 	}
 }
 
@@ -97,8 +98,8 @@ void MainWindow::updateTrayIcon(bool hasOverdueTasks)
 
 void MainWindow::initStatusBar()
 {
-    lblStatusBar_ = new QLabel;
-    statusBar()->addPermanentWidget(lblStatusBar_);
+    lblStatusBarTimestamp_ = new QLabel;
+    statusBar()->addPermanentWidget(lblStatusBarTimestamp_);
 
     QTimer * timer = new QTimer;
     connect(timer, SIGNAL(timeout()), this, SLOT(updateStatusBar()));
@@ -107,6 +108,5 @@ void MainWindow::initStatusBar()
 
 void MainWindow::updateStatusBar()
 {
-    lblStatusBar_->setText(Clock::currentDateTime().toString("dd.MM.yyyy   hh:mm:ss"));
+    lblStatusBarTimestamp_->setText(Clock::currentDateTime().toString("dd.MM.yyyy   hh:mm:ss"));
 }
-

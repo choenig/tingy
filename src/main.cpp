@@ -17,10 +17,12 @@ int main(int argc, char *argv[])
     // use 'de' as default language
     QLocale::setDefault(QLocale(QLocale::German, QLocale::Germany));
 
+    // initialize taskModel end corresponding fileStorage
     TaskModel taskModel;
     FileStorage fileStorage;
     QTimer::singleShot(0, &fileStorage, SLOT(restoreFromFiles()));
 
+    // init the mainWindow
     MainWindow mainWindow;
     mainWindow.show();
 
