@@ -264,13 +264,13 @@ QMimeData * TaskTree::mimeData(const QList<QTreeWidgetItem *> items) const
 	if (data.isEmpty()) return 0;
 
 	QMimeData *mimeData = new QMimeData;
-	mimeData->setData("myTasks/Task", data);
+	mimeData->setData("tingy/Task", data);
 	return mimeData;
 }
 
 void TaskTree::dragEnterEvent(QDragEnterEvent * e)
 {
-	if (e->mimeData()->hasFormat("myTasks/Task")) {
+	if (e->mimeData()->hasFormat("tingy/Task")) {
 		setTopLevelItemsHidden(false);
 		e->accept();
 	} else {
@@ -280,7 +280,7 @@ void TaskTree::dragEnterEvent(QDragEnterEvent * e)
 
 void TaskTree::dragMoveEvent(QDragMoveEvent * e)
 {
-	if (e->mimeData()->hasFormat("myTasks/Task"))
+	if (e->mimeData()->hasFormat("tingy/Task"))
 	{
 		QTreeWidgetItem * item = itemAt(e->answerRect().topLeft());
 		// accept if ...
@@ -349,7 +349,7 @@ bool TaskTree::dropMimeData(QTreeWidgetItem *parent, int /*index*/, const QMimeD
     }
 
 	// Create a QByteArray from the mimedata associated with foo/bar
-	QByteArray ba = data->data("myTasks/Task");
+	QByteArray ba = data->data("tingy/Task");
 	QDataStream ds(&ba, QIODevice::ReadOnly);
 	Task task;
 	ds >> task;

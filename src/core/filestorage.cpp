@@ -10,7 +10,7 @@
 #include <QSettings>
 
 FileStorage::FileStorage()
-: QObject(), fileDir_(QDir::homePath() + QDir::separator() + ".myTasks/tasks"), restoreInProgress_(false)
+: QObject(), fileDir_(QDir::homePath() + QDir::separator() + ".tingy/tasks"), restoreInProgress_(false)
 {
     if (!fileDir_.exists()) {
         fileDir_.mkpath(fileDir_.absolutePath());

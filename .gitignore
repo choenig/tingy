@@ -5,5 +5,5 @@
 Makefile
 moc_*.cpp
 ui_*.h
-src/myTasks
-src/qrc_mytasks.cpp
+tingy
+src/qrc_tingy.cpp

@@ -6,12 +6,12 @@
 
 QT       += core gui
 
-TARGET = myTasks
+TARGET = ../tingy
 TEMPLATE = app
 
-INCLUDEPATH += . core widgets
+INCLUDEPATH += . core widgets util
 
-SOURCES += main.cpp\
+SOURCES += main.cpp \
         widgets/mainwindow.cpp \
     widgets/filterlineedit.cpp \
     core/task.cpp \
@@ -51,4 +51,4 @@ FORMS    += widgets/ui/mainwindow.ui \
     widgets/ui/calendarpopup.ui
 
 RESOURCES += \
-    mytasks.qrc
+    tingy.qrc
