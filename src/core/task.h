@@ -32,6 +32,8 @@ public:
     QDate getDueDate() const { return dueDate_; }
     void setDueDate(const QDate & dueDate) { dueDate_ = dueDate; }
 
+    bool isOverdue() const;
+
     QDate getPlannedDate() const { return plannedDate_; }
     void setPlannedDate(const QDate & plannedDate) { plannedDate_ = plannedDate; }
 

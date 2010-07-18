@@ -1,9 +1,10 @@
 <RCC>
     <qresource prefix="/images">
         <file alias="hideDone.png">images/exit.png</file>
-        <file alias="yellowBall.png">images/yellow_ball.png</file>
         <file alias="highPriority.png">images/icon_priority_maximum.png</file>
         <file alias="lowPriority.png">images/icon_priority_low.png</file>
         <file alias="normalPriority.png">images/icon_priority_minimum.png</file>
+        <file alias="NOK.png">images/mytasks_nok.png</file>
+        <file alias="OK.png">images/mytasks_ok.png</file>
     </qresource>
 </RCC>

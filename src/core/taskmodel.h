@@ -5,6 +5,7 @@
 
 #include <QObject>
 #include <QHash>
+#include <QSet>
 
 class TaskModel : public QObject
 {
@@ -29,9 +30,11 @@ signals:
     void taskAdded(const Task & task);
     void taskUpdated(const Task & task);
     void taskRemoved(const TaskId & taskId);
+    void hasOverdueTasks(bool b);
 
 private:
     QHash<TaskId, Task> tasks_;
+    QSet<TaskId> overdueTasks_;
 
 private:
     bool isFirstInstance_;

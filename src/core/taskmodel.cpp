@@ -29,6 +29,13 @@ void TaskModel::addTask(const Task & task)
 
     tasks_[task.getId()] = task;
     emit taskAdded(task);
+
+    if (task.isOverdue()) {
+        overdueTasks_ << task.getId();
+        if (overdueTasks_.size() == 1) {
+            emit hasOverdueTasks(true);
+        }
+    }
 }
 
 void TaskModel::updateTask(const Task & task)
@@ -39,6 +46,16 @@ void TaskModel::updateTask(const Task & task)
 
     tasks_[task.getId()] = task;
     emit taskUpdated(task);
+
+    if (overdueTasks_.contains(task.getId()) != task.isOverdue()) {
+        if (task.isOverdue()) {
+            overdueTasks_ << task.getId();
+            if (overdueTasks_.size() == 1) emit hasOverdueTasks(true);
+        } else {
+             overdueTasks_.remove(task.getId());
+             if (overdueTasks_.isEmpty()) emit hasOverdueTasks(false);
+        }
+    }
 }
 
 void TaskModel::removeTask(const TaskId & taskId)
@@ -50,4 +67,7 @@ void TaskModel::removeTask(const TaskId & taskId)
 
     tasks_.remove(taskId);
     emit taskRemoved(taskId);
+
+    overdueTasks_.remove(taskId);
+    if (overdueTasks_.isEmpty()) emit hasOverdueTasks(false);
 }

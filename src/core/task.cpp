@@ -11,6 +11,12 @@ bool Task::isValid() const
     return !id_.isNull() && !description_.isEmpty();
 }
 
+bool Task::isOverdue() const
+{
+    const QDate effDate = getEffectiveDate();
+    return !isDone() && effDate.isValid() && effDate < Clock::currentDate();
+}
+
 QString Task::toString() const
 {
     return description_; // fixme enhance

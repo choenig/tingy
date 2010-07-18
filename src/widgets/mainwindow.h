@@ -15,22 +15,25 @@ public:
     MainWindow(QWidget * parent = 0);
     ~MainWindow();
 
-private:
-    void initActions();
-    void initSystemTray();
+protected:
+    virtual void closeEvent(QCloseEvent * event);
 
 private slots:
     void on_leAddTask_returnPressed();
     void toggleHideDoneTasks();
     void trayActivated(QSystemTrayIcon::ActivationReason reason);
+    void updateTrayIcon(bool ok);
     void updateStatusBar();
 
-protected:
-    virtual void closeEvent(QCloseEvent * event);
+private:
+    void initActions();
+    void initSystemTray();
+    void initStatusBar();
 
 private:
     QAction * hideDoneAction_;
     QLabel * lblStatusBar_;
+    QSystemTrayIcon * trayIcon_;
 
 private:
     Ui::MainWindow *ui;

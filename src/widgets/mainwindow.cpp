@@ -17,26 +17,25 @@ MainWindow::MainWindow(QWidget *parent)
 
     ui->leAddTask->setPlaceholderText("Add new Task");
 
+    connect (TaskModel::instance(), SIGNAL(hasOverdueTasks(bool)), this, SLOT(updateTrayIcon(bool)));
+
     initActions();
     initSystemTray();
-
-    lblStatusBar_ = new QLabel;
-    statusBar()->addPermanentWidget(lblStatusBar_);
-
-    QTimer * timer = new QTimer;
-    connect(timer, SIGNAL(timeout()), this, SLOT(updateStatusBar()));
-    timer->start(1000);
-
-}
-
-void MainWindow::updateStatusBar()
-{
-    lblStatusBar_->setText(Clock::currentDateTime().toString("dd.MM.yyyy   hh:mm:ss"));
+    initStatusBar();
 }
 
 MainWindow::~MainWindow()
 {
     delete ui;
+}
+
+void MainWindow::closeEvent(QCloseEvent * event)
+{
+    // ignore the close event ...
+    event->ignore();
+
+    // ... then hide the widget
+    hide();
 }
 
 void MainWindow::on_leAddTask_returnPressed()
@@ -47,6 +46,8 @@ void MainWindow::on_leAddTask_returnPressed()
     TaskModel::instance()->addTask(newTask);
 
     ui->leAddTask->clear();
+
+    statusBar()->showMessage("Task added successfully", 5*1000);
 }
 
 void MainWindow::initActions()
@@ -66,34 +67,46 @@ void MainWindow::toggleHideDoneTasks()
 
 void MainWindow::initSystemTray()
 {
-    QSystemTrayIcon * trayIcon = new QSystemTrayIcon(QIcon(":images/yellowBall.png"), this);
-    connect(trayIcon, SIGNAL(activated(QSystemTrayIcon::ActivationReason)),
+    trayIcon_ = new QSystemTrayIcon(QIcon(":images/OK.png"), this);
+    connect(trayIcon_, SIGNAL(activated(QSystemTrayIcon::ActivationReason)),
             this,  SLOT(trayActivated(QSystemTrayIcon::ActivationReason)));
 
     QMenu * contextMenu = new QMenu;
     contextMenu->addAction("Quit", qApp, SLOT(quit()));
-    trayIcon->setContextMenu(contextMenu);
+    trayIcon_->setContextMenu(contextMenu);
 
-    trayIcon->show();
+    trayIcon_->show();
 }
 
 void MainWindow::trayActivated(QSystemTrayIcon::ActivationReason reason)
 {
-    if (reason == QSystemTrayIcon::Trigger) {
+	if (reason == QSystemTrayIcon::Trigger) {
 		if (isVisible() && !QApplication::focusWidget()) {
 			activateWindow();
 			raise();
 		} else {
 			setVisible(!isVisible());
 		}
-    }
+	}
 }
 
-void MainWindow::closeEvent(QCloseEvent * event)
+void MainWindow::updateTrayIcon(bool hasOverdueTasks)
 {
-    // ignore the close event ...
-    event->ignore();
-
-    // ... then hide the widget
-    hide();
+	trayIcon_->setIcon( hasOverdueTasks ? QIcon(":images/NOK.png") : QIcon(":images/OK.png") );
 }
+
+void MainWindow::initStatusBar()
+{
+    lblStatusBar_ = new QLabel;
+    statusBar()->addPermanentWidget(lblStatusBar_);
+
+    QTimer * timer = new QTimer;
+    connect(timer, SIGNAL(timeout()), this, SLOT(updateStatusBar()));
+    timer->start(1000);
+}
+
+void MainWindow::updateStatusBar()
+{
+    lblStatusBar_->setText(Clock::currentDateTime().toString("dd.MM.yyyy   hh:mm:ss"));
+}
+
