@@ -71,7 +71,7 @@ void MainWindow::initSystemTray()
             this,      SLOT(trayActivated(QSystemTrayIcon::ActivationReason)));
 
     QMenu * contextMenu = new QMenu;
-    contextMenu->addAction("Quit", qApp, SLOT(quit()));
+    contextMenu->addAction(QIcon(":images/exit.png"), "Quit Tingy", qApp, SLOT(quit()));
     trayIcon_->setContextMenu(contextMenu);
 
     trayIcon_->show();
