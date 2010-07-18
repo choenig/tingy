@@ -15,6 +15,7 @@ public:
     bool isValid() const { return !isNull(); }
 
     QString toString() const;
+    static Effort fromString(const QString & str);
 
     bool operator==(const Effort & rhs) const { return effortInMinutes_ == rhs.effortInMinutes_; }
     bool operator!=(const Effort & rhs) const { return !operator==(rhs); }

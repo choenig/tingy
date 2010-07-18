@@ -1,5 +1,7 @@
 #include "effort.h"
 
+#include <util/parsetimestamp.h>
+
 #include <QStringList>
 
 Effort::Effort(quint32 minutes)
@@ -18,4 +20,11 @@ QString Effort::toString() const
     if (h > 0) retval << QString("%1h").arg(h);
     if (m > 0) retval << QString("%1m").arg(m);
     return retval.join(" ");
+}
+
+Effort Effort::fromString(const QString & str)
+{
+    Effort retval;
+    retval.effortInMinutes_ = parseYWDHMTime(str);
+    return retval;
 }

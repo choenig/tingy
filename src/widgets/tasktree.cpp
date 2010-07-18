@@ -3,6 +3,7 @@
 #include <core/clock.h>
 #include <core/task.h>
 #include <core/taskmodel.h>
+#include <widgets/taskeditwidget.h>
 #include <widgets/tasktreeitems.h>
 
 #include <QContextMenuEvent>
@@ -164,12 +165,9 @@ void TaskTree::slotItemDoubleClicked(QTreeWidgetItem * item, int column)
     if (!tti) return;
 
     if (column == 1) {
-        bool ok;
-        QString newDescription = QInputDialog::getText(this, "Update Description", "Update description",
-                                                       QLineEdit::Normal, tti->getTask().getDescription(),&ok);
-        if (ok && !newDescription.isEmpty() && newDescription != tti->getTask().getDescription()) {
-            Task newTask = tti->getTask();
-            newTask.setDescription(newDescription);
+        TaskEditWidget * tew = new TaskEditWidget;
+        Task newTask = tew->exec(tti->getTask());
+        if (newTask.isValid()) {
             TaskModel::instance()->updateTask(newTask);
         }
     }

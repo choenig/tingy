@@ -58,7 +58,7 @@ Task Task::createFromString(const QString & string)
     // fixme
     QRegExp reEffort("\\$([^ ]+)");
     if (task.description_.indexOf(reEffort) >= 0) {
-        const Effort effort = parseEffort(reEffort.cap(1));
+        const Effort effort = Effort::fromString(reEffort.cap(1));
         if (effort.isValid()) {
             task.description_.remove(reEffort);
             task.effort_ = effort;
