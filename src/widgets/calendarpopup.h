@@ -5,7 +5,6 @@
 
 class QLabel;
 
-
 namespace Ui { class CalendarPopup; }
 
 class CalendarPopup : public QWidget
@@ -13,7 +12,7 @@ class CalendarPopup : public QWidget
     Q_OBJECT
 
 public:
-    CalendarPopup(QWidget *parent = 0);
+    CalendarPopup(QWidget * parent = 0);
     ~CalendarPopup();
 
     void reset();
@@ -25,9 +24,6 @@ protected:
     virtual void paintEvent(QPaintEvent * event);
     virtual void keyPressEvent(QKeyEvent * keyEvent);
 
-private slots:
-    void updateSelectedDate(const QDate & selectedDate);
-
 private:
     void updateVisibleDates(const QDate & dateInFirstRow);
     void moveSelectedIndex(int days);
@@ -38,8 +34,8 @@ private:
 private:
     QPoint selectedIdx_;
     QDate  selectedDate_;
-    QDate currentStartDate_;
+    QDate  currentStartDate_;
 
 private:
-    Ui::CalendarPopup *ui;
+    Ui::CalendarPopup * ui;
 };
