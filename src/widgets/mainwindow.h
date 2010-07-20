@@ -17,6 +17,8 @@ public:
 
 protected:
     virtual void closeEvent(QCloseEvent * event);
+    virtual void hideEvent(QHideEvent * event);
+    virtual void showEvent(QShowEvent * event);
 
 private slots:
     void on_leAddTask_returnPressed();
@@ -36,6 +38,7 @@ private:
     QAction * hideDoneAction_;
     QLabel  * lblStatusBarTimestamp_;
     QSystemTrayIcon * trayIcon_;
+    QPoint lastPos;
 
 private:
     Ui::MainWindow * ui;

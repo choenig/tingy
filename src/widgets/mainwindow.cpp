@@ -45,6 +45,18 @@ void MainWindow::closeEvent(QCloseEvent * event)
     hide();
 }
 
+void MainWindow::hideEvent(QHideEvent *event)
+{
+    lastPos = pos();
+    QMainWindow::hideEvent(event);
+}
+
+void MainWindow::showEvent(QShowEvent * event)
+{
+    if (!lastPos.isNull()) move(lastPos);
+    QMainWindow::showEvent(event);
+}
+
 void MainWindow::on_leAddTask_returnPressed()
 {
     Task newTask = Task::createFromString(ui->leAddTask->text());
