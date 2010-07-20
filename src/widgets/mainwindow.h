@@ -25,6 +25,8 @@ private slots:
     void updateTrayIcon(bool ok);
     void updateStatusBar();
 
+    void globalShortcut();
+
 private:
     void initActions();
     void initSystemTray();

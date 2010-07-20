@@ -2,10 +2,13 @@
 
 #include <core/clock.h>
 #include <core/taskmodel.h>
+#include <util/qxtglobalshortcut.h>
 
+#include <QDebug>
 #include <QCloseEvent>
 #include <QLabel>
 #include <QTimer>
+#include <QMessageBox>
 
 #include "ui_mainwindow.h"
 
@@ -21,6 +24,10 @@ MainWindow::MainWindow(QWidget * parent)
     initActions();
     initSystemTray();
     initStatusBar();
+
+//    QxtGlobalShortcut * globalShortcut = new QxtGlobalShortcut(QKeySequence("Ctrl+Shift+F9"), this);
+//    globalShortcut->setEnabled(true);
+//    connect(globalShortcut, SIGNAL(activated()), this, SLOT(globalShortcut()));
 }
 
 MainWindow::~MainWindow()
@@ -109,4 +116,11 @@ void MainWindow::initStatusBar()
 void MainWindow::updateStatusBar()
 {
     lblStatusBarTimestamp_->setText(Clock::currentDateTime().toString("dd.MM.yyyy   hh:mm:ss"));
+}
+
+void MainWindow::globalShortcut()
+{
+    setVisible(true);
+//    trayActivated(QSystemTrayIcon::Trigger);
+    QMessageBox::information(this, "jibbi", "jibbi");
 }

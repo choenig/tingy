@@ -27,7 +27,9 @@ SOURCES += main.cpp \
     widgets/autocompletelineedit.cpp \
     widgets/calendarpopup.cpp \
     widgets/textpopup.cpp \
-    core/clock.cpp
+    core/clock.cpp \
+util/qxtglobalshortcut.cpp \
+util/qxtglobalshortcut_x11.cpp
 
 HEADERS  += widgets/mainwindow.h \
     widgets/filterlineedit.h \
@@ -44,7 +46,10 @@ HEADERS  += widgets/mainwindow.h \
     widgets/autocompletelineedit.h \
     widgets/calendarpopup.h \
     widgets/textpopup.h \
-    core/clock.h
+    core/clock.h \
+util/qxtglobalshortcut.h \
+util/qxtglobalshortcut_p.h \
+    util/qxtglobalstuff.h
 
 FORMS    += widgets/ui/mainwindow.ui \
     widgets/ui/taskeditwidget.ui \
