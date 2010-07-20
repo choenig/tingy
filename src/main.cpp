@@ -10,6 +10,7 @@
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
+    a.setQuitOnLastWindowClosed(false);
 
     // init fake time
     // Clock::init(QDateTime(QDate(2010,7,17), QTime(23,59,45)));

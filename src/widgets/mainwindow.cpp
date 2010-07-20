@@ -25,9 +25,9 @@ MainWindow::MainWindow(QWidget * parent)
     initSystemTray();
     initStatusBar();
 
-//    QxtGlobalShortcut * globalShortcut = new QxtGlobalShortcut(QKeySequence("Ctrl+Shift+F9"), this);
-//    globalShortcut->setEnabled(true);
-//    connect(globalShortcut, SIGNAL(activated()), this, SLOT(globalShortcut()));
+	QxtGlobalShortcut * globalShortcut = new QxtGlobalShortcut(QKeySequence("Ctrl+Shift+F9"), this);
+	globalShortcut->setEnabled(true);
+	connect(globalShortcut, SIGNAL(activated()), this, SLOT(globalShortcut()));
 }
 
 MainWindow::~MainWindow()
@@ -120,7 +120,7 @@ void MainWindow::updateStatusBar()
 
 void MainWindow::globalShortcut()
 {
-    setVisible(true);
+//    setVisible(true);
 //    trayActivated(QSystemTrayIcon::Trigger);
     QMessageBox::information(this, "jibbi", "jibbi");
 }
