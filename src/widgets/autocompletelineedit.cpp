@@ -4,6 +4,7 @@
 #include <widgets/textpopup.h>
 
 namespace {
+// fixme move away
 TextPopup * textPopup;
 CalendarPopup * calPopup;
 }
@@ -39,7 +40,7 @@ void AutocompleteLineEdit::onTextChanged(const QString & text)
 
     if (!wdgt) return;
 
-    QFontMetrics fm(textPopup->font());
+    QFontMetrics fm(font());
     int cursorPosPx = fm.width(this->text()) + 7;
     wdgt->move(this->mapToGlobal(QPoint(cursorPosPx, this->height() - 4)));
     wdgt->setFocus();

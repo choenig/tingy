@@ -61,7 +61,7 @@ private:
     Priority priority_;
     QString description_;
     QDate dueDate_;
-    QDate plannedDate_; // adjustable by drag and drop
+    QDate plannedDate_;
     Effort effort_;
     QDateTime doneTimestamp_;
 

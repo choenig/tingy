@@ -46,6 +46,7 @@ Task Task::createFromString(const QString & string)
     task.creationTimestamp_ = Clock::currentDateTime();
     task.description_ = string;
 
+    // parse date like "*today"
     QRegExp reDue("\\*([^ ]+)");
     if (task.description_.indexOf(reDue) >= 0) {
         const QDate dueDate = parseDate(reDue.cap(1));
@@ -55,7 +56,7 @@ Task Task::createFromString(const QString & string)
         }
     }
 
-    // fixme
+    // parse effort like "$1h45m"
     QRegExp reEffort("\\$([^ ]+)");
     if (task.description_.indexOf(reEffort) >= 0) {
         const Effort effort = Effort::fromString(reEffort.cap(1));
@@ -65,6 +66,7 @@ Task Task::createFromString(const QString & string)
         }
     }
 
+    // parse priority like "!+"
     QRegExp rePriority("\\!([+-])");
     if (task.description_.indexOf(rePriority) >= 0) {
         task.setPriority(rePriority.cap(1) == "+" ? Priority::High : Priority::Low);

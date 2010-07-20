@@ -17,7 +17,7 @@ public:
     bool operator==(const TaskId & rhs) const { return uuid_ == rhs.uuid_; }
     bool operator!=(const TaskId & rhs) const { return !operator==(rhs); }
 
-    static TaskId fromString(const QString & idString) { TaskId t; t.uuid_ = QUuid(idString); return t;}
+    static TaskId fromString(const QString & idString);
     static TaskId createUniqueId();
 
 private:

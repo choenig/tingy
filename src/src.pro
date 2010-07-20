@@ -13,7 +13,6 @@ INCLUDEPATH += . core widgets util
 
 SOURCES += main.cpp \
         widgets/mainwindow.cpp \
-    widgets/filterlineedit.cpp \
     core/task.cpp \
     core/taskid.cpp \
     core/taskmodel.cpp \
@@ -33,7 +32,6 @@ util/qxtglobalshortcut_x11.cpp \
     widgets/quickadddialog.cpp
 
 HEADERS  += widgets/mainwindow.h \
-    widgets/filterlineedit.h \
     core/task.h \
     core/taskid.h \
     core/taskmodel.h \

@@ -44,7 +44,7 @@ bool TopLevelItem::operator<(const QTreeWidgetItem & rhs) const
 	if (date_.isValid() && tli->getDate().isValid()) {
 		return date_ < tli->getDate();
 	} else {
-		return date_.isValid() ? true : false;
+		return date_.isValid();
 	}
 }
 
@@ -73,78 +73,78 @@ void TaskTreeItem::update()
 {
 	const QDate today = Clock::currentDate();
 
-	if        (task_.getPriority() == Priority::High) {
-		setIcon(1, QIcon(":images/highPriority.png"));
-	} else if (task_.getPriority() == Priority::Normal) {
-		setIcon(1, QIcon(":images/normalPriority.png"));
-	} else if (task_.getPriority() == Priority::Low) {
-		setIcon(1, QIcon(":images/lowPriority.png"));
-	}
-
+	// done checkbox
 	setCheckState(0, task_.isDone() ? Qt::Checked : Qt::Unchecked);
 
+	// set priority icon
+	if        (task_.getPriority() == Priority::High) setIcon(1, QIcon(":images/highPriority.png"));
+	else if (task_.getPriority() == Priority::Normal) setIcon(1, QIcon(":images/normalPriority.png"));
+	else if (task_.getPriority() == Priority::Low)    setIcon(1, QIcon(":images/lowPriority.png"));
+
+	// format additional infos
 	QStringList infos;
 	if (task_.getEffort().isValid())
 		infos << QString::fromUtf8("\xe2\x86\xa5") + task_.getEffort().toString();
-	if (task_.getEffectiveDate().isValid() && task_.getEffectiveDate() != Clock::currentDate())
+	if (!task_.isDone() && task_.getEffectiveDate().isValid() && task_.getEffectiveDate() != Clock::currentDate())
 		infos << QString::fromUtf8("\xe2\x86\xa6%1d").arg(Clock::currentDate().daysTo(task_.getEffectiveDate()));
 	if (task_.getPlannedDate().isValid())
 		infos << QString::fromUtf8("\xe2\x86\xb4") + task_.getPlannedDate().toString("dd.MM.yyyy");
 	if (task_.getDueDate().isValid())
 		infos << QString::fromUtf8("\xe2\x8a\x9a") + task_.getDueDate().toString("dd.MM.yyyy");
 
-	QString txt = task_.getDescription();
-	if (!infos.isEmpty()) txt += " [" + infos.join(", ") + "]";
+	setText(1, task_.getDescription() + (!infos.isEmpty() ? " [" + infos.join(", ") + "]" : QString()));
 
-	setText(1, txt);
-
+	// fgColor
 	QColor fgColor = Qt::black;
-	if      (task_.getDueDate().isNull()) fgColor = Qt::darkGreen;
+	if      (task_.isDone())              fgColor = Qt::black;
+	else if (task_.getDueDate().isNull()) fgColor = Qt::darkGreen;
 	else if (task_.getDueDate() <  today) fgColor = Qt::darkRed;
 	else if (task_.getDueDate() == today) fgColor = Qt::darkBlue;
 	for (int i = 0; i < 2 ; ++i) setForeground(i, fgColor);
 
+	// bgColor
 	QColor bgColor = Qt::transparent;
-	if      (task_.getEffectiveDate().isNull()) bgColor = Qt::transparent;
+	if      (task_.isDone())                    bgColor = Qt::transparent;
+	else if (task_.getEffectiveDate().isNull()) bgColor = Qt::transparent;
 	else if (task_.getEffectiveDate() <  today) bgColor = QColor("#ffe7e9");
 	else if (task_.getEffectiveDate() == today) bgColor = QColor("#e7e7ff");
 	for (int i = 0; i < 2 ; ++i) setBackground(i, bgColor);
 
 	QFont f = font(0);
-	f.setBold(false);
+	f.setBold(task_.getPriority() == Priority::High && !task_.isDone());
 	for (int i = 0; i < 2 ; ++i) setFont(i, f);
-
-	if (task_.getPriority() == Priority::High) {
-		f.setBold(true);
-		for (int i = 0; i < 2 ; ++i) setFont(i, f);
-	}
-
-	if (task_.getDueDate() < task_.getPlannedDate()) {
-		setForeground(3, Qt::red);
-		f.setBold(true);
-		setFont(3, f);
-	}
 }
 
-bool TaskTreeItem::operator<(const QTreeWidgetItem & rhs) const
+bool TaskTreeItem::operator<(const QTreeWidgetItem & other) const
 {
-	const TaskTreeItem * tti = dynamic_cast<const TaskTreeItem*>(&rhs);
+	const TaskTreeItem * tti = dynamic_cast<const TaskTreeItem*>(&other);
 	if (!tti) return true;
 
-	QDate lhsDate = task_.getEffectiveDate();
-	QDate rhsDate = tti->getTask().getEffectiveDate();
+	// shortcuts
+	const Task & lhs = task_;
+	const Task   rhs = tti->getTask();
 
+	// done tasks are ordered by doneTimestamp
+	if (lhs.isDone() && rhs.isDone()) {
+		return lhs.getDoneTimestamp() > rhs.getDoneTimestamp();
+	}
+
+	// check effective date
+	QDate lhsDate = lhs.getEffectiveDate();
+	QDate rhsDate = rhs.getEffectiveDate();
 	if (lhsDate != rhsDate) return lhsDate < rhsDate;
 
-	lhsDate = task_.getDueDate();
-	rhsDate = tti->getTask().getDueDate();
+	// check duedate
+	lhsDate = lhs.getDueDate();
+	rhsDate = rhs.getDueDate();
 	if (lhsDate.isValid() && rhsDate.isValid()) {
 		if (lhsDate != rhsDate) return lhsDate < rhsDate;
 	} else {
 		if (lhsDate != rhsDate) return !lhsDate.isNull();
 	}
 
-	return task_.getCreationTimestamp() < tti->getTask().getCreationTimestamp();
+	// finally compare creation timestamp
+	return lhs.getCreationTimestamp() < rhs.getCreationTimestamp();
 }
 
 //
@@ -155,7 +155,7 @@ TopLevelItemDelegate::TopLevelItemDelegate(QTreeWidget * parent)
 {
 }
 
-void TopLevelItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
+void TopLevelItemDelegate::paint(QPainter * painter, const QStyleOptionViewItem & option, const QModelIndex & index) const
 {
 	TopLevelItem* tli = dynamic_cast<TopLevelItem*>(static_cast<QTreeWidgetItem*>(index.internalPointer()));
 	if (!tli) {
@@ -165,18 +165,21 @@ void TopLevelItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &
 
 	painter->save();
 
+	// draw background
 	painter->fillRect(option.rect.adjusted(0, 10, 0, 0), tli->backgroundColor(0));
 
+	// draw text
 	QFont f(painter->font());
 	f.setBold(true);
 	painter->setFont(f);
 	painter->drawText(option.rect.adjusted(10,0,0,-5), Qt::AlignBottom, tli->getString());
-	{
-		QPoint off(0,-6);
-		QLinearGradient gradient(0, 0, 300, 0);
-		gradient.setColorAt(0, Qt::blue);
-		gradient.setColorAt(1, Qt::transparent);
-		painter->fillRect(QRect(option.rect.bottomLeft()+off, option.rect.bottomRight()+off), QBrush(gradient));
-	}
+
+	// draw line
+	QPoint off(0,-4);
+	QLinearGradient gradient(0, 0, 500, 0);
+	gradient.setColorAt(0, Qt::blue);
+	gradient.setColorAt(1, Qt::transparent);
+	painter->fillRect(QRect(option.rect.bottomLeft()+off, option.rect.bottomRight()+off), QBrush(gradient));
+
 	painter->restore();
 }

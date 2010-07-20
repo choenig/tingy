@@ -55,7 +55,7 @@ public:
 	void update();
 
 private:
-	virtual bool operator<(const QTreeWidgetItem & rhs) const;
+	virtual bool operator<(const QTreeWidgetItem & other) const;
 
 private:
 	Task task_;
