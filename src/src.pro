@@ -29,7 +29,8 @@ SOURCES += main.cpp \
     widgets/textpopup.cpp \
     core/clock.cpp \
 util/qxtglobalshortcut.cpp \
-util/qxtglobalshortcut_x11.cpp
+util/qxtglobalshortcut_x11.cpp \
+    widgets/quickadddialog.cpp
 
 HEADERS  += widgets/mainwindow.h \
     widgets/filterlineedit.h \
@@ -49,11 +50,13 @@ HEADERS  += widgets/mainwindow.h \
     core/clock.h \
 util/qxtglobalshortcut.h \
 util/qxtglobalshortcut_p.h \
-    util/qxtglobalstuff.h
+    util/qxtglobalstuff.h \
+    widgets/quickadddialog.h
 
 FORMS    += widgets/ui/mainwindow.ui \
     widgets/ui/taskeditwidget.ui \
-    widgets/ui/calendarpopup.ui
+    widgets/ui/calendarpopup.ui \
+    widgets/ui/quickadddialog.ui
 
 RESOURCES += \
     tingy.qrc

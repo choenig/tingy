@@ -3,6 +3,7 @@
 #include <core/clock.h>
 #include <core/taskmodel.h>
 #include <util/qxtglobalshortcut.h>
+#include <widgets/quickadddialog.h>
 
 #include <QDebug>
 #include <QCloseEvent>
@@ -120,7 +121,6 @@ void MainWindow::updateStatusBar()
 
 void MainWindow::globalShortcut()
 {
-//    setVisible(true);
-//    trayActivated(QSystemTrayIcon::Trigger);
-    QMessageBox::information(this, "jibbi", "jibbi");
+    QuickAddDialog dlg(this);
+    dlg.exec();
 }
