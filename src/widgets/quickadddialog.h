@@ -12,6 +12,14 @@ public:
     QuickAddDialog(QWidget *parent = 0);
     ~QuickAddDialog();
 
+    void execDlg();
+
+signals:
+    void showMessage(const QString & title, const QString & msg);
+
+protected:
+    virtual void showEvent(QShowEvent * event);
+
 private slots:
     void addNewTask();
 

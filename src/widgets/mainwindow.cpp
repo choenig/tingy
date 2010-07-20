@@ -5,11 +5,11 @@
 #include <util/qxtglobalshortcut.h>
 #include <widgets/quickadddialog.h>
 
-#include <QDebug>
 #include <QCloseEvent>
+#include <QDebug>
 #include <QLabel>
-#include <QTimer>
 #include <QMessageBox>
+#include <QTimer>
 
 #include "ui_mainwindow.h"
 
@@ -19,16 +19,16 @@ MainWindow::MainWindow(QWidget * parent)
     ui->setupUi(this);
     ui->leAddTask->setPlaceholderText("Add new Task");
 
-    connect (TaskModel::instance(), SIGNAL(hasOverdueTasks(bool)), this, SLOT(updateTrayIcon(bool)));
+    connect(TaskModel::instance(), SIGNAL(hasOverdueTasks(bool)), this, SLOT(updateTrayIcon(bool)));
 
     // init stuff
     initActions();
     initSystemTray();
     initStatusBar();
 
-	QxtGlobalShortcut * globalShortcut = new QxtGlobalShortcut(QKeySequence("Ctrl+Shift+F9"), this);
-	globalShortcut->setEnabled(true);
-	connect(globalShortcut, SIGNAL(activated()), this, SLOT(globalShortcut()));
+	QxtGlobalShortcut * globalShortcutTriggered = new QxtGlobalShortcut(QKeySequence("Ctrl+Shift+F9"), this);
+	globalShortcutTriggered->setEnabled(true);
+	connect(globalShortcutTriggered, SIGNAL(activated()), this, SLOT(globalShortcutTriggered()));
 }
 
 MainWindow::~MainWindow()
@@ -119,8 +119,16 @@ void MainWindow::updateStatusBar()
     lblStatusBarTimestamp_->setText(Clock::currentDateTime().toString("dd.MM.yyyy   hh:mm:ss"));
 }
 
-void MainWindow::globalShortcut()
+void MainWindow::globalShortcutTriggered()
 {
-    QuickAddDialog dlg(this);
-    dlg.exec();
+    QuickAddDialog dlg;
+    connect(&dlg, SIGNAL(showMessage(QString,QString)), this, SLOT(showTrayMessage(QString,QString)));
+    dlg.execDlg();
 }
+
+void MainWindow::showTrayMessage(const QString & title, const QString & msg)
+{
+    trayIcon_->showMessage(title, msg, QSystemTrayIcon::NoIcon);
+}
+
+

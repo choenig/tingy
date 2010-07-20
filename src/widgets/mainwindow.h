@@ -24,8 +24,8 @@ private slots:
     void trayActivated(QSystemTrayIcon::ActivationReason reason);
     void updateTrayIcon(bool ok);
     void updateStatusBar();
-
-    void globalShortcut();
+    void globalShortcutTriggered();
+    void showTrayMessage(const QString & title, const QString & msg);
 
 private:
     void initActions();
