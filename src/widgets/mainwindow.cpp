@@ -29,6 +29,7 @@ MainWindow::MainWindow(QWidget * parent)
 	QxtGlobalShortcut * globalShortcutTriggered = new QxtGlobalShortcut(QKeySequence("Ctrl+Shift+F9"), this);
 	globalShortcutTriggered->setEnabled(true);
 	connect(globalShortcutTriggered, SIGNAL(activated()), this, SLOT(globalShortcutTriggered()));
+
 }
 
 MainWindow::~MainWindow()

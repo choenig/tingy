@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT += core gui
+QT += core gui network
 
 TARGET = ../tingy
 TEMPLATE = app
@@ -29,7 +29,8 @@ SOURCES += main.cpp \
     core/clock.cpp \
 util/qxtglobalshortcut.cpp \
 util/qxtglobalshortcut_x11.cpp \
-    widgets/quickadddialog.cpp
+    widgets/quickadddialog.cpp \
+    core/networkstorage.cpp
 
 HEADERS  += widgets/mainwindow.h \
     core/task.h \
@@ -49,7 +50,8 @@ HEADERS  += widgets/mainwindow.h \
 util/qxtglobalshortcut.h \
 util/qxtglobalshortcut_p.h \
     util/qxtglobalstuff.h \
-    widgets/quickadddialog.h
+    widgets/quickadddialog.h \
+    core/networkstorage.h
 
 FORMS    += widgets/ui/mainwindow.ui \
     widgets/ui/taskeditwidget.ui \

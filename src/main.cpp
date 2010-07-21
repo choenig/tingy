@@ -1,5 +1,6 @@
 #include <core/clock.h>
 #include <core/filestorage.h>
+#include <core/networkstorage.h>
 #include <core/taskmodel.h>
 #include <widgets/mainwindow.h>
 
@@ -17,6 +18,8 @@ int main(int argc, char *argv[])
 
     // init fake time
     Clock clock;//(QDateTime(QDate(2010,7,17), QTime(23,59,45)));
+
+    NetworkStorage netStorage;
 
     // initialize taskModel end corresponding fileStorage
     TaskModel taskModel;
