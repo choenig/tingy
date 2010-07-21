@@ -12,11 +12,11 @@ int main(int argc, char *argv[])
     QApplication a(argc, argv);
     a.setQuitOnLastWindowClosed(false);
 
-    // init fake time
-    // Clock::init(QDateTime(QDate(2010,7,17), QTime(23,59,45)));
-
     // use 'de' as default language
     QLocale::setDefault(QLocale(QLocale::German, QLocale::Germany));
+
+    // init fake time
+    Clock clock;//(QDateTime(QDate(2010,7,17), QTime(23,59,45)));
 
     // initialize taskModel end corresponding fileStorage
     TaskModel taskModel;

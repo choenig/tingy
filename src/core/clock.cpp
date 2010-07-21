@@ -1,19 +1,46 @@
 #include "clock.h"
 
 #include <QDateTime>
+#include <QTimer>
 
-namespace {
-qint64 offsetInMSecs = 0;
+Clock * Clock::instance_ = 0;
+
+Clock::Clock()
+: isFirstInstance_(instance_ == 0), offsetInMSecs_(0)
+{
+    if (isFirstInstance_) instance_ = this;
+    init();
 }
 
-void Clock::init(const QDateTime & now)
+Clock::Clock(const QDateTime &now)
+: isFirstInstance_(instance_ == 0), offsetInMSecs_(QDateTime::currentDateTime().msecsTo(now))
 {
-    offsetInMSecs = QDateTime::currentDateTime().msecsTo(now);
+    if (isFirstInstance_) instance_ = this;
+    init();
+}
+
+Clock::~Clock()
+{
+    if (isFirstInstance_) instance_ = 0;
+}
+
+void Clock::init()
+{
+    dateChangeTimer_ = new QTimer(this);
+    connect(dateChangeTimer_, SIGNAL(timeout()), this, SLOT(handleDateChange()));
+    dateChangeTimer_->setSingleShot(true);
+    dateChangeTimer_->start(msecsTillTomorrow());
+}
+
+qint64 Clock::msecsTillTomorrow() const
+{
+    QDateTime now = currentDateTime();
+    return now.msecsTo(QDateTime(now.date().addDays(1)));
 }
 
 QDateTime Clock::currentDateTime()
 {
-    return QDateTime::currentDateTime().addMSecs(offsetInMSecs);
+    return QDateTime::currentDateTime().addMSecs(instance_->offsetInMSecs_);
 }
 
 QDate Clock::currentDate()
@@ -26,8 +53,11 @@ QTime Clock::currentTime()
     return currentDateTime().time();
 }
 
-int Clock::msecsTillTomorrow()
+void Clock::handleDateChange()
 {
-    const QDateTime now = currentDateTime();
-    return now.msecsTo(QDateTime(now.date().addDays(1)));
+    // restart timer
+    dateChangeTimer_->start(msecsTillTomorrow());
+
+    // inform clients
+    emit dateChanged(currentDate());
 }

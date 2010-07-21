@@ -1,18 +1,42 @@
 #pragma once
 
-class QDateTime;
+#include <QObject>
+
 class QDate;
+class QDateTime;
 class QTime;
+class QTimer;
 
-class Clock
+class Clock : public QObject
 {
+    Q_OBJECT
 public:
-    static void init(const QDateTime & now);
+    Clock();
+    Clock(const QDateTime & now);
+    ~Clock();
 
+    static Clock * instance() { return instance_; }
+
+public:
     static QDateTime currentDateTime();
     static QDate currentDate();
     static QTime currentTime();
 
-    // returns the amount of msecs that are left today
-    static int msecsTillTomorrow();
+signals:
+    void dateChanged(const QDate & date);
+
+private slots:
+    void handleDateChange();
+
+private:
+    qint64 msecsTillTomorrow() const;
+    void init();
+
+private:
+    static Clock * instance_;
+    bool isFirstInstance_;
+
+private:
+    qint64 offsetInMSecs_;
+    QTimer * dateChangeTimer_;
 };

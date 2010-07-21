@@ -85,11 +85,8 @@ TaskTree::TaskTree(QWidget *parent)
 
     initTopLevelItems(this);
 
-    // this timer updates the tree on day change
-    QTimer * dayChangeTimer = new QTimer(this);
-    connect(dayChangeTimer, SIGNAL(timeout()), this, SLOT(handleDayChange()));
-    dayChangeTimer->setSingleShot(true);
-    dayChangeTimer->start(Clock::msecsTillTomorrow());
+    // update the tree on day change
+    connect(Clock::instance(), SIGNAL(dateChanged(QDate)), this, SLOT(handleDayChange()));
 
     QTimer::singleShot(0, this, SLOT(init()));
 }
@@ -192,9 +189,6 @@ void TaskTree::slotItemChanged(QTreeWidgetItem * item, int column)
 
 void TaskTree::handleDayChange()
 {
-    // restart timer for next run
-    static_cast<QTimer*>(sender())->start(Clock::msecsTillTomorrow());
-
     updateTopLevelItems();
 
     // first gather all items up ...
