@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>564</width>
-    <height>86</height>
+    <height>56</height>
    </rect>
   </property>
   <property name="palette">
@@ -86,9 +86,6 @@
        <bold>true</bold>
       </font>
      </property>
-     <property name="autoFillBackground">
-      <bool>true</bool>
-     </property>
      <property name="text">
       <string>Tingy - Quick Add Task</string>
      </property>
@@ -99,13 +96,6 @@
    </item>
    <item>
     <widget class="AutocompleteLineEdit" name="leAddTask"/>
-   </item>
-   <item>
-    <widget class="QDialogButtonBox" name="pbBox">
-     <property name="standardButtons">
-      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
-     </property>
-    </widget>
    </item>
   </layout>
  </widget>

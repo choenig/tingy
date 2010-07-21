@@ -18,11 +18,9 @@ QuickAddDialog::QuickAddDialog(QWidget *parent) :
 {
     ui->setupUi(this);
     ui->leAddTask->setPlaceholderText("Add new Task");
+    connect(ui->leAddTask, SIGNAL(returnPressed()), this, SLOT(addNewTask()));
 
     setWindowFlags(Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
-
-    connect(ui->pbBox, SIGNAL(accepted()), this, SLOT(addNewTask()));
-    connect(ui->pbBox, SIGNAL(rejected()), this, SLOT(close()));
 }
 
 QuickAddDialog::~QuickAddDialog()
