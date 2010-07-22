@@ -26,7 +26,7 @@ MainWindow::MainWindow(QWidget * parent)
     initSystemTray();
     initStatusBar();
 
-	QxtGlobalShortcut * globalShortcutTriggered = new QxtGlobalShortcut(QKeySequence("Ctrl+Shift+F9"), this);
+	QxtGlobalShortcut * globalShortcutTriggered = new QxtGlobalShortcut(QKeySequence("Ctrl+Alt+Home"), this);
 	globalShortcutTriggered->setEnabled(true);
 	connect(globalShortcutTriggered, SIGNAL(activated()), this, SLOT(globalShortcutTriggered()));
 
