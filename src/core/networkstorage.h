@@ -2,6 +2,8 @@
 
 #include <QObject>
 
+class Task;
+class TaskId;
 class NetworkStoragePrivate;
 
 class NetworkStorage : public QObject
@@ -11,9 +13,18 @@ class NetworkStorage : public QObject
 
 public:
     NetworkStorage(QObject *parent = 0);
+    ~NetworkStorage();
 
 public slots:
     void restoreFromFiles();
+
+private slots:
+    void addTask(const Task & task);
+    void updateTask(const Task & task);
+    void removeTask(const TaskId & taskId);
+
+private:
+    bool restoreInProgress_;
 
 private:
     Q_PRIVATE_SLOT(d_func(), void _q_listInfo(QUrlInfo));

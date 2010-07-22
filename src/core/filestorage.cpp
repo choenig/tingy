@@ -7,7 +7,6 @@
 #include <QFile>
 #include <QDir>
 #include <QDebug>
-#include <QSettings>
 
 FileStorage::FileStorage()
 : QObject(), fileDir_(QDir::homePath() + QDir::separator() + ".tingy/tasks"), restoreInProgress_(false)
@@ -32,8 +31,8 @@ void FileStorage::restoreFromFiles()
     // ... then load the tasks from files
     const QStringList files = fileDir_.entryList(QStringList("*.task"));
     foreach (const QString & fileName, files) {
-        Task task = loadFromFile(fileDir_.absolutePath() + QDir::separator() + fileName);
-        TaskModel::instance()->addTask(task);
+        Task task = Task::loadFromFile(fileDir_.absolutePath() + QDir::separator() + fileName);
+        if (task.isValid()) TaskModel::instance()->addTask(task);
     }
 
     restoreInProgress_ = false;
@@ -68,37 +67,6 @@ void FileStorage::removeTask(const TaskId & taskId)
 
 void FileStorage::saveToFile(const Task & task)
 {
-    QSettings settings(fileDir_.absolutePath() + QDir::separator() + task.getId().toString() + ".task", QSettings::IniFormat);
-    settings.setValue("fileStorageVersion", 1);
-    settings.setValue("task/id", task.getId().toString());
-    settings.setValue("task/creationTimestamp", task.getCreationTimestamp().toString(Qt::ISODate));
-    settings.setValue("task/priority", task.getPriority().toInt());
-    settings.setValue("task/description", task.getDescription());
-    settings.setValue("task/dueDate", task.getDueDate().toString(Qt::ISODate));
-    settings.setValue("task/plannedDate", task.getPlannedDate().toString(Qt::ISODate));
-    settings.setValue("task/effort", task.getEffort().toMinutes());
-    settings.setValue("task/done", task.getDoneTimestamp().toString(Qt::ISODate));
+    Task::saveToFile(fileDir_.absolutePath() + QDir::separator() + task.getId().toString() + ".task", task);
 }
 
-Task FileStorage::loadFromFile(const QString & filePath)
-{
-    QSettings settings(filePath, QSettings::IniFormat);
-
-    const int version = settings.value("fileStorageVersion").toInt();
-
-    Task task;
-    task.setId(TaskId::fromString(settings.value("task/id").toString()));
-    task.setCreationTimestamp(QDateTime::fromString(settings.value("task/creationTimestamp").toString(), Qt::ISODate));
-    task.setPriority((Priority::Level)settings.value("task/priority").toInt());
-    task.setDescription(settings.value("task/description").toString());
-    task.setDueDate(QDate::fromString(settings.value("task/dueDate").toString(),Qt::ISODate));
-    task.setPlannedDate(QDate::fromString(settings.value("task/plannedDate").toString(),Qt::ISODate));
-    task.setEffort(Effort(settings.value("task/effort").toUInt()));
-    if (version == 0) {
-        task.setDone(settings.value("task/done").toBool() ? Clock::currentDateTime() : QDateTime());
-    } else {
-        task.setDone(QDateTime::fromString(settings.value("task/done").toString(),Qt::ISODate));
-    }
-
-    return task;
-}

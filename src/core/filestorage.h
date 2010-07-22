@@ -17,13 +17,13 @@ public:
 public slots:
     void restoreFromFiles();
 
+private slots:
     void addTask(const Task & task);
     void updateTask(const Task & task);
     void removeTask(const TaskId & taskId);
 
 private:
     void saveToFile(const Task & task);
-    Task loadFromFile(const QString & filePath);
 
 private:
     QDir fileDir_;

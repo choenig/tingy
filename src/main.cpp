@@ -21,10 +21,10 @@ int main(int argc, char *argv[])
 
     // initialize taskModel end corresponding fileStorage
     TaskModel taskModel;
-//    NetworkStorage netStorage;
-//    QTimer::singleShot(0, &netStorage, SLOT(restoreFromFiles()));
-    FileStorage fileStorage;
-    QTimer::singleShot(0, &fileStorage, SLOT(restoreFromFiles()));
+    NetworkStorage netStorage;
+    QTimer::singleShot(0, &netStorage, SLOT(restoreFromFiles()));
+//    FileStorage fileStorage;
+//    QTimer::singleShot(0, &fileStorage, SLOT(restoreFromFiles()));
 
     // init the mainWindow
     MainWindow mainWindow;
