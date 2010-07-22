@@ -1,4 +1,0 @@
-$1 = (const QString::Null *) 0xb7223324
-$1 = (const QString::Null *) 0xb7223324
-$1 = (const QString::Null *) 0xb7223324
-$1 = (const QString::Null *) 0xb7223324

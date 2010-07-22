@@ -14,7 +14,7 @@ class FileStorage : public QObject
 public:
     FileStorage();
 
-private slots:
+public slots:
     void restoreFromFiles();
 
     void addTask(const Task & task);

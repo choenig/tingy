@@ -19,10 +19,10 @@ int main(int argc, char *argv[])
     // init fake time
     Clock clock;//(QDateTime(QDate(2010,7,17), QTime(23,59,45)));
 
-    NetworkStorage netStorage;
-
     // initialize taskModel end corresponding fileStorage
     TaskModel taskModel;
+//    NetworkStorage netStorage;
+//    QTimer::singleShot(0, &netStorage, SLOT(restoreFromFiles()));
     FileStorage fileStorage;
     QTimer::singleShot(0, &fileStorage, SLOT(restoreFromFiles()));
 
