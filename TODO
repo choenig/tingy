@@ -1,3 +1,1 @@
-* if a task becomes overdue due to day change time, the tray icon is
-not updated
 * implement ftp storage

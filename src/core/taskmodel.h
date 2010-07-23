@@ -32,6 +32,9 @@ signals:
     void taskRemoved(const TaskId & taskId);
     void hasOverdueTasks(bool b);
 
+private slots:
+	void handleDateChanged();
+
 private:
     QHash<TaskId, Task> tasks_;
     QSet<TaskId> overdueTasks_;

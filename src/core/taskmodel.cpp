@@ -1,11 +1,16 @@
 #include "taskmodel.h"
 
+#include <core/clock.h>
+
 TaskModel * TaskModel::instance_ = 0;
 
 TaskModel::TaskModel()
     : isFirstInstance_(instance_ == 0)
 {
     if (isFirstInstance_) instance_ = this;
+
+	connect(Clock::instance(), SIGNAL(dateChanged(QDate)),
+			this, SLOT(handleDateChanged()));
 }
 
 TaskModel::~TaskModel()
@@ -70,4 +75,21 @@ void TaskModel::removeTask(const TaskId & taskId)
 
     overdueTasks_.remove(taskId);
     if (overdueTasks_.isEmpty()) emit hasOverdueTasks(false);
+}
+
+
+void TaskModel::handleDateChanged()
+{
+	QSet<TaskId> oldOverdueTasks = overdueTasks_;
+
+	foreach (const Task & task, tasks_) {
+		if (overdueTasks_.contains(task.getId()) != task.isOverdue()) {
+			if (task.isOverdue()) overdueTasks_ << task.getId();
+			else                  overdueTasks_.remove(task.getId());
+		}
+	}
+
+	if (oldOverdueTasks.isEmpty() != overdueTasks_.isEmpty()) {
+		emit hasOverdueTasks(!overdueTasks_.isEmpty());
+	}
 }
