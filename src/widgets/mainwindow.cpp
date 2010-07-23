@@ -18,6 +18,7 @@ MainWindow::MainWindow(QWidget * parent)
 {
     ui->setupUi(this);
     ui->leAddTask->setPlaceholderText("Add new Task");
+    connect(ui->dateBeam, SIGNAL(dateHovered(QDate)), this, SLOT(showDateInStatusbar(QDate)));
 
     connect(TaskModel::instance(), SIGNAL(hasOverdueTasks(bool)), this, SLOT(updateTrayIcon(bool)));
 
@@ -123,13 +124,19 @@ void MainWindow::initStatusBar()
     statusBar()->addPermanentWidget(lblStatusBarTimestamp_);
 
     QTimer * timer = new QTimer;
-    connect(timer, SIGNAL(timeout()), this, SLOT(updateStatusBar()));
+    connect(timer, SIGNAL(timeout()), this, SLOT(updateStatusBarTime()));
     timer->start(1000);
 }
 
-void MainWindow::updateStatusBar()
+void MainWindow::updateStatusBarTime()
 {
     lblStatusBarTimestamp_->setText(Clock::currentDateTime().toString("dd.MM.yyyy   hh:mm:ss"));
+}
+
+void MainWindow::showDateInStatusbar(const QDate & date)
+{
+    if (date.isNull()) statusBar()->clearMessage();
+    else               statusBar()->showMessage(QLocale().toString(date, "dddd, dd.MM.yyyy"));
 }
 
 void MainWindow::globalShortcutTriggered()

@@ -319,7 +319,7 @@ void TaskTree::dropEvent(QDropEvent *event)
 
 Qt::DropActions TaskTree::supportedDropActions () const
 {
-    return Qt::CopyAction;
+	return Qt::CopyAction;
 }
 
 bool TaskTree::dropMimeData(QTreeWidgetItem *parent, int /*index*/, const QMimeData * data, Qt::DropAction /*action*/)

@@ -31,7 +31,7 @@ public:
     void setDescription(const QString & description) { description_ = description; }
 
     // returns the date this task is scheduled, which is either the planned or the due date
-    QDate getEffectiveDate() const { return plannedDate_.isValid() ? plannedDate_ : dueDate_; }
+    QDate getEffectiveDate() const;
 
     QDate getDueDate() const { return dueDate_; }
     void setDueDate(const QDate & dueDate) { dueDate_ = dueDate; }

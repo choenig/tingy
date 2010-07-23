@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>665</width>
-    <height>807</height>
+    <width>597</width>
+    <height>633</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -15,10 +15,48 @@
   </property>
   <widget class="QWidget" name="centralWidget">
    <layout class="QGridLayout" name="gridLayout">
-    <item row="1" column="0" colspan="2">
-     <widget class="AutocompleteLineEdit" name="leAddTask"/>
+    <item row="2" column="0" colspan="2">
+     <widget class="AutocompleteLineEdit" name="leAddTask">
+      <property name="palette">
+       <palette>
+        <active>
+         <colorrole role="Base">
+          <brush brushstyle="SolidPattern">
+           <color alpha="255">
+            <red>249</red>
+            <green>250</green>
+            <blue>237</blue>
+           </color>
+          </brush>
+         </colorrole>
+        </active>
+        <inactive>
+         <colorrole role="Base">
+          <brush brushstyle="SolidPattern">
+           <color alpha="255">
+            <red>249</red>
+            <green>250</green>
+            <blue>237</blue>
+           </color>
+          </brush>
+         </colorrole>
+        </inactive>
+        <disabled>
+         <colorrole role="Base">
+          <brush brushstyle="SolidPattern">
+           <color alpha="255">
+            <red>244</red>
+            <green>244</green>
+            <blue>244</blue>
+           </color>
+          </brush>
+         </colorrole>
+        </disabled>
+       </palette>
+      </property>
+     </widget>
     </item>
-    <item row="1" column="2">
+    <item row="2" column="2">
      <widget class="QToolButton" name="pbAddTaskInfo">
       <property name="text">
        <string>?</string>
@@ -27,6 +65,43 @@
     </item>
     <item row="0" column="0" colspan="3">
      <widget class="TaskTree" name="taskTree">
+      <property name="palette">
+       <palette>
+        <active>
+         <colorrole role="Base">
+          <brush brushstyle="SolidPattern">
+           <color alpha="255">
+            <red>249</red>
+            <green>250</green>
+            <blue>237</blue>
+           </color>
+          </brush>
+         </colorrole>
+        </active>
+        <inactive>
+         <colorrole role="Base">
+          <brush brushstyle="SolidPattern">
+           <color alpha="255">
+            <red>249</red>
+            <green>250</green>
+            <blue>237</blue>
+           </color>
+          </brush>
+         </colorrole>
+        </inactive>
+        <disabled>
+         <colorrole role="Base">
+          <brush brushstyle="SolidPattern">
+           <color alpha="255">
+            <red>244</red>
+            <green>244</green>
+            <blue>244</blue>
+           </color>
+          </brush>
+         </colorrole>
+        </disabled>
+       </palette>
+      </property>
       <attribute name="headerStretchLastSection">
        <bool>false</bool>
       </attribute>
@@ -45,6 +120,9 @@
       </column>
      </widget>
     </item>
+    <item row="1" column="0" colspan="3">
+     <widget class="DateBeam" name="dateBeam" native="true"/>
+    </item>
    </layout>
   </widget>
   <widget class="QMenuBar" name="menuBar">
@@ -52,7 +130,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>665</width>
+     <width>597</width>
      <height>23</height>
     </rect>
    </property>
@@ -78,6 +156,12 @@
    <class>AutocompleteLineEdit</class>
    <extends>QLineEdit</extends>
    <header location="global">widgets/autocompletelineedit.h</header>
+  </customwidget>
+  <customwidget>
+   <class>DateBeam</class>
+   <extends>QWidget</extends>
+   <header location="global">widgets/datebeam.h</header>
+   <container>1</container>
   </customwidget>
  </customwidgets>
  <resources/>

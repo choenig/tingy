@@ -4,6 +4,7 @@
 #include <QSystemTrayIcon>
 
 class QLabel;
+class QDate;
 
 namespace Ui { class MainWindow; }
 
@@ -25,9 +26,10 @@ private slots:
     void toggleHideDoneTasks();
     void trayActivated(QSystemTrayIcon::ActivationReason reason);
     void updateTrayIcon(bool ok);
-    void updateStatusBar();
+    void updateStatusBarTime();
     void globalShortcutTriggered();
     void showTrayMessage(const QString & title, const QString & msg);
+    void showDateInStatusbar(const QDate & date);
 
 private:
     void initActions();

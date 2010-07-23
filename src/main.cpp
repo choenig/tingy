@@ -8,6 +8,11 @@
 #include <QTimer>
 #include <QLocale>
 
+// tingy colors
+// "#f8faec" ganz hell
+// "#b7d24d" mittel grün
+// "#9ebc20" dunkel grün
+
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);

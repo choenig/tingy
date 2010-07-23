@@ -17,6 +17,13 @@ bool Task::isValid() const
     return !id_.isNull() && creationTimestamp_.isValid() && !description_.isEmpty();
 }
 
+QDate Task::getEffectiveDate() const
+{
+    if (doneTimestamp_.isValid()) return QDate();
+    if (plannedDate_.isValid()) return plannedDate_;
+    return dueDate_;
+}
+
 bool Task::isOverdue() const
 {
     const QDate effDate = getEffectiveDate();

@@ -29,11 +29,17 @@ void TopLevelItem::init()
 	setText(0, string_);
 	setSizeHint(0, QSize(0, 40));
 
+	QColor fgColor = "#9ebc20";
+	if      (date_.isNull()) fgColor = "#9ebc20";
+	else if (date_ <  today) fgColor = Qt::darkRed;
+	else if (date_ == today) fgColor = Qt::darkBlue;
+	setForeground(0, fgColor);
+
 	QColor bgColor = Qt::transparent;
 	if      (date_.isNull()) bgColor = Qt::transparent;
 	else if (date_ <  today) bgColor = QColor("#ffe7e9");
 	else if (date_ == today) bgColor = QColor("#e7e7ff");
-	setBackgroundColor(0, bgColor);
+	setBackground(0, bgColor);
 }
 
 bool TopLevelItem::operator<(const QTreeWidgetItem & rhs) const
@@ -97,7 +103,7 @@ void TaskTreeItem::update()
 	// fgColor
 	QColor fgColor = Qt::black;
 	if      (task_.isDone())              fgColor = Qt::black;
-	else if (task_.getDueDate().isNull()) fgColor = Qt::darkGreen;
+	else if (task_.getDueDate().isNull()) fgColor = "#9ebc20";
 	else if (task_.getDueDate() <  today) fgColor = Qt::darkRed;
 	else if (task_.getDueDate() == today) fgColor = Qt::darkBlue;
 	for (int i = 0; i < 2 ; ++i) setForeground(i, fgColor);
@@ -166,18 +172,19 @@ void TopLevelItemDelegate::paint(QPainter * painter, const QStyleOptionViewItem 
 	painter->save();
 
 	// draw background
-	painter->fillRect(option.rect.adjusted(0, 10, 0, 0), tli->backgroundColor(0));
+	painter->fillRect(option.rect.adjusted(0, 10, 0, 0), tli->background(0));
 
 	// draw text
 	QFont f(painter->font());
 	f.setBold(true);
 	painter->setFont(f);
+	painter->setPen(tli->foreground(0).color());
 	painter->drawText(option.rect.adjusted(10,0,0,-5), Qt::AlignBottom, tli->getString());
 
 	// draw line
 	QPoint off(0,-4);
 	QLinearGradient gradient(0, 0, 500, 0);
-	gradient.setColorAt(0, Qt::blue);
+	gradient.setColorAt(0, "#9ebc20");
 	gradient.setColorAt(1, Qt::transparent);
 	painter->fillRect(QRect(option.rect.bottomLeft()+off, option.rect.bottomRight()+off), QBrush(gradient));
 
