@@ -21,7 +21,6 @@ MainWindow::MainWindow(QWidget * parent)
     ui->leAddTask->setPlaceholderText("Add new Task");
     connect(ui->dateBeam, SIGNAL(dateHovered(QDate)), this, SLOT(showDateInStatusbar(QDate)));
 
-
     // init stuff
     initActions();
     initSystemTray();    
