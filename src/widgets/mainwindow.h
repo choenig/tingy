@@ -20,6 +20,7 @@ protected:
     virtual void closeEvent(QCloseEvent * event);
     virtual void hideEvent(QHideEvent * event);
     virtual void showEvent(QShowEvent * event);
+    virtual bool event(QEvent *event);
 
 private slots:
     void on_leAddTask_returnPressed();

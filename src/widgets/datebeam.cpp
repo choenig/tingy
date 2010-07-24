@@ -69,8 +69,8 @@ void DateBeam::paintEvent(QPaintEvent * event)
         const QDate curDate = today.addDays(i);
 
         // fill background
-        if (i == hoveredCell_ && mouseIn_) p.fillRect(cellRect.translated(i*cellWidth_,0), "#b7d24d");
-        else if (curDate.dayOfWeek()>=6)   p.fillRect(cellRect.translated(i*cellWidth_,0), "#9ebc20");
+        if (i == hoveredCell_ && mouseIn_) p.fillRect(cellRect.translated(i*cellWidth_,0), "#9ebc20");
+        else if (curDate.dayOfWeek()>=6)   p.fillRect(cellRect.translated(i*cellWidth_,0), "#b7d24d");
 
         // set pen
         if      (i == 0) p.setPen(Qt::darkBlue);
@@ -88,7 +88,7 @@ void DateBeam::paintEvent(QPaintEvent * event)
     }
 
     if (mouseIn_) {
-        p.setPen("#b7d24d");
+        p.setPen(Qt::black);//"#b7d24d");
         p.drawRect(cellRect.translated(hoveredCell_*cellWidth_,0).adjusted(0,0,0,-1));
     }
 }

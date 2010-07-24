@@ -10,23 +10,25 @@
 #include <QLocale>
 
 // tingy colors
-// "#f8faec" ganz hell
-// "#b7d24d" mittel grün
-// "#9ebc20" dunkel grün
+// "#f8faec" very light
+// "#b7d24d" middle grün
+// "#9ebc20" dark grün
+// "#96bb00" darkest green for fonts
 
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
     a.setQuitOnLastWindowClosed(false);
 
-    // use 'de' as default language
+    // use 'de' as default locale
     QLocale::setDefault(QLocale(QLocale::German, QLocale::Germany));
 
     // init fake time
     Clock clock;//(QDateTime(QDate(2010,7,23), QTime(23,59,45)));
 
-    // initialize taskModel end corresponding fileStorage
+    // initialize taskModel end corresponding storage modules
     TaskModel taskModel;
+
     NetworkStorage netStorage;
     QTimer::singleShot(0, &netStorage, SLOT(restoreFromFiles()));
 //    FileStorage fileStorage;

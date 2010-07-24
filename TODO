@@ -1,2 +1,2 @@
-* implement ftp storage
 * close main window on minimize
+* popup on DateBeam hover which show the tasks for the given date

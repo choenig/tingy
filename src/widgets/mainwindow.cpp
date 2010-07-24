@@ -10,6 +10,7 @@
 #include <QLabel>
 #include <QMessageBox>
 #include <QTimer>
+#include <QEvent>
 
 #include "ui_mainwindow.h"
 
@@ -20,17 +21,15 @@ MainWindow::MainWindow(QWidget * parent)
     ui->leAddTask->setPlaceholderText("Add new Task");
     connect(ui->dateBeam, SIGNAL(dateHovered(QDate)), this, SLOT(showDateInStatusbar(QDate)));
 
-    connect(TaskModel::instance(), SIGNAL(hasOverdueTasks(bool)), this, SLOT(updateTrayIcon(bool)));
 
     // init stuff
     initActions();
-    initSystemTray();
+    initSystemTray();    
     initStatusBar();
 
-	QxtGlobalShortcut * globalShortcutTriggered = new QxtGlobalShortcut(QKeySequence("Ctrl+Alt+Home"), this);
-	globalShortcutTriggered->setEnabled(true);
-	connect(globalShortcutTriggered, SIGNAL(activated()), this, SLOT(globalShortcutTriggered()));
-
+	QxtGlobalShortcut * globalShortcut = new QxtGlobalShortcut(QKeySequence("Ctrl+Alt+Home"), this);
+	globalShortcut->setEnabled(true);
+	connect(globalShortcut, SIGNAL(activated()), this, SLOT(globalShortcutTriggered()));
 }
 
 MainWindow::~MainWindow()
@@ -57,6 +56,17 @@ void MainWindow::showEvent(QShowEvent * event)
 {
     if (!lastPos.isNull()) move(lastPos);
     QMainWindow::showEvent(event);
+}
+
+bool MainWindow::event(QEvent * event)
+{
+//    if (event->type() == QEvent::WindowStateChange) {
+//        if (windowState() == Qt::WindowMinimized) {
+//            hide();
+//        }
+//    }
+
+    return QMainWindow::event(event);
 }
 
 void MainWindow::on_leAddTask_returnPressed()
@@ -91,10 +101,13 @@ void MainWindow::initSystemTray()
     trayIcon_ = new QSystemTrayIcon(QIcon(":images/OK.png"), this);
     connect(trayIcon_, SIGNAL(activated(QSystemTrayIcon::ActivationReason)),
             this,      SLOT(trayActivated(QSystemTrayIcon::ActivationReason)));
+    connect(TaskModel::instance(), SIGNAL(hasOverdueTasks(bool)),
+            this,      SLOT(updateTrayIcon(bool)));
 
+    // init context menu
     QMenu * contextMenu = new QMenu;
     contextMenu->addAction(QIcon(":images/exit.png"), "Quit Tingy", qApp, SLOT(quit()));
-    trayIcon_->setContextMenu(contextMenu);
+    trayIcon_->setContextMenu(contextMenu);    
 
     trayIcon_->show();
 }

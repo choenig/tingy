@@ -29,8 +29,8 @@ void TopLevelItem::init()
 	setText(0, string_);
 	setSizeHint(0, QSize(0, 40));
 
-	QColor fgColor = "#9ebc20";
-	if      (date_.isNull()) fgColor = "#9ebc20";
+	QColor fgColor = "#96bb00";
+	if      (date_.isNull()) fgColor = "#96bb00";
 	else if (date_ <  today) fgColor = Qt::darkRed;
 	else if (date_ == today) fgColor = Qt::darkBlue;
 	setForeground(0, fgColor);
@@ -103,7 +103,7 @@ void TaskTreeItem::update()
 	// fgColor
 	QColor fgColor = Qt::black;
 	if      (task_.isDone())              fgColor = Qt::black;
-	else if (task_.getDueDate().isNull()) fgColor = "#9ebc20";
+	else if (task_.getDueDate().isNull()) fgColor = "#505050";
 	else if (task_.getDueDate() <  today) fgColor = Qt::darkRed;
 	else if (task_.getDueDate() == today) fgColor = Qt::darkBlue;
 	for (int i = 0; i < 2 ; ++i) setForeground(i, fgColor);
@@ -184,7 +184,7 @@ void TopLevelItemDelegate::paint(QPainter * painter, const QStyleOptionViewItem 
 	// draw line
 	QPoint off(0,-4);
 	QLinearGradient gradient(0, 0, 500, 0);
-	gradient.setColorAt(0, "#9ebc20");
+	gradient.setColorAt(0, tli->foreground(0).color());
 	gradient.setColorAt(1, Qt::transparent);
 	painter->fillRect(QRect(option.rect.bottomLeft()+off, option.rect.bottomRight()+off), QBrush(gradient));
 
