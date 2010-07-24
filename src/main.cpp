@@ -1,6 +1,7 @@
 #include <core/clock.h>
 #include <core/filestorage.h>
 #include <core/networkstorage.h>
+#include <core/settings.h>
 #include <core/taskmodel.h>
 #include <widgets/mainwindow.h>
 

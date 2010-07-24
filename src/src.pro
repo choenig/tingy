@@ -31,7 +31,8 @@ util/qxtglobalshortcut.cpp \
 util/qxtglobalshortcut_x11.cpp \
     widgets/quickadddialog.cpp \
     core/networkstorage.cpp \
-    widgets/datebeam.cpp
+    widgets/datebeam.cpp \
+    core/settings.cpp
 
 HEADERS  += widgets/mainwindow.h \
     core/task.h \
@@ -53,7 +54,8 @@ util/qxtglobalshortcut_p.h \
     util/qxtglobalstuff.h \
     widgets/quickadddialog.h \
     core/networkstorage.h \
-    widgets/datebeam.h
+    widgets/datebeam.h \
+    core/settings.h
 
 FORMS    += widgets/ui/mainwindow.ui \
     widgets/ui/taskeditwidget.ui \
