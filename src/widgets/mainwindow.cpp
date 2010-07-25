@@ -148,7 +148,7 @@ void MainWindow::updateStatusBarTime()
 void MainWindow::showDateInStatusbar(const QDate & date)
 {
     if (date.isNull()) statusBar()->clearMessage();
-    else               statusBar()->showMessage(QLocale().toString(date, "dddd, dd.MM.yyyy"));
+    else               statusBar()->showMessage(QLocale().toString(date, "dd.MM.yyyy, dddd"));
 }
 
 void MainWindow::globalShortcutTriggered()

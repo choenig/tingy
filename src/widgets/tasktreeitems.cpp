@@ -119,6 +119,18 @@ void TaskTreeItem::update()
 	QFont f = font(0);
 	f.setBold(task_.getPriority() == Priority::High && !task_.isDone());
 	for (int i = 0; i < 2 ; ++i) setFont(i, f);
+
+	QString tooltip ;
+	tooltip += "<table>";
+	tooltip += "<tr><td><b>Priorität:</b></td><td>" + task_.getPriority().toTrString() + "</td></tr>";
+	tooltip += "<tr><td><b>Beschreibung:</b></td><td>" + task_.getDescription() + "</td></tr>";
+	tooltip += "<tr><td><b>Aufwand:</b></td><td>" + task_.getEffort().toString() + "</td></tr>";
+	tooltip += "<tr><td><b>Due:</b></td><td>" + QLocale().toString(task_.getDueDate(), "dddd, dd.MM.yyyy") + "</td></tr>";
+	tooltip += "<tr><td><b>Geplant:</b></td><td>" + QLocale().toString(task_.getPlannedDate(), "dddd, dd.MM.yyyy") + "</td></tr>";
+	tooltip += "<tr><td><b>Erledigt:</b></td><td>" + QLocale().toString(task_.getDoneTimestamp(), "dddd, dd.MM.yyyy") + "</td></tr>";
+	tooltip += "</table>";
+
+	setToolTip(1, tooltip);
 }
 
 bool TaskTreeItem::operator<(const QTreeWidgetItem & other) const

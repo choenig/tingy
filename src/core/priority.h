@@ -17,6 +17,8 @@ public:
 public:
     Priority(Level level = Normal) : level_(level) {}
 
+    QString toTrString() const;
+
     int toInt() { return (int)level_; }
 
     bool operator==(const Priority & rhs) const { return level_ == rhs.level_; }
