@@ -9,7 +9,7 @@ QT += core gui network
 TARGET = ../tingy
 TEMPLATE = app
 
-INCLUDEPATH += . core widgets util
+INCLUDEPATH += . core widgets util qtextlib
 
 SOURCES += main.cpp \
         widgets/mainwindow.cpp \
@@ -27,8 +27,6 @@ SOURCES += main.cpp \
     widgets/calendarpopup.cpp \
     widgets/textpopup.cpp \
     core/clock.cpp \
-util/qxtglobalshortcut.cpp \
-util/qxtglobalshortcut_x11.cpp \
     widgets/quickadddialog.cpp \
     core/networkstorage.cpp \
     widgets/datebeam.cpp \
@@ -49,8 +47,6 @@ HEADERS  += widgets/mainwindow.h \
     widgets/calendarpopup.h \
     widgets/textpopup.h \
     core/clock.h \
-util/qxtglobalshortcut.h \
-util/qxtglobalshortcut_p.h \
     util/qxtglobalstuff.h \
     widgets/quickadddialog.h \
     core/networkstorage.h \
@@ -64,3 +60,6 @@ FORMS    += widgets/ui/mainwindow.ui \
 
 RESOURCES += \
     tingy.qrc
+
+QMAKE_LIBDIR += $$PWD/qtextlib
+LIBS += -lqtextlib

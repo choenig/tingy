@@ -7,3 +7,4 @@ moc_*.cpp
 ui_*.h
 tingy
 src/qrc_tingy.cpp
+libqtextlib.a

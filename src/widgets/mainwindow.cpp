@@ -2,7 +2,7 @@
 
 #include <core/clock.h>
 #include <core/taskmodel.h>
-#include <util/qxtglobalshortcut.h>
+#include <qtextlib/qxtglobalshortcut.h>
 #include <widgets/quickadddialog.h>
 
 #include <QCloseEvent>

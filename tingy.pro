@@ -1,3 +1,5 @@
 TEMPLATE = subdirs
 
-SUBDIRS = src
+SUBDIRS = src src/qtextlib
+
+src.depends =src/qtextlib

@@ -3,7 +3,7 @@
 #include <QObject>
 #include <QKeySequence>
 
-#include <util/qxtglobalstuff.h>
+#include <qxtglobalstuff.h>
 
 class QxtGlobalShortcutPrivate;
 
