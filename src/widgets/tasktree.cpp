@@ -102,6 +102,17 @@ void TaskTree::hideDoneTasks(bool hide)
     doneTopLevelItem->setHidden(hide);
 }
 
+void TaskTree::highlightDate(const QDate & date)
+{
+    QTreeWidgetItemIterator it(this);
+    while (*it) {
+        if ((*it)->type() == TaskTreeItem::Type) {
+            static_cast<TaskTreeItem*>(*it)->highlightDate(date);
+        }
+        ++it;
+    }
+}
+
 void TaskTree::addTask(const Task & task)
 {
     if (task.isDone()) {

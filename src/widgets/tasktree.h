@@ -19,6 +19,7 @@ public:
 
 public slots:
 	void hideDoneTasks(bool hide);
+	void highlightDate(const QDate & date);
 
 private slots:
 	void init();

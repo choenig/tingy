@@ -129,8 +129,17 @@ void TaskTreeItem::update()
 	tooltip += "<tr><td><b>Geplant:</b></td><td>" + QLocale().toString(task_.getPlannedDate(), "dddd, dd.MM.yyyy") + "</td></tr>";
 	tooltip += "<tr><td><b>Erledigt:</b></td><td>" + QLocale().toString(task_.getDoneTimestamp(), "dddd, dd.MM.yyyy") + "</td></tr>";
 	tooltip += "</table>";
-
 	setToolTip(1, tooltip);
+}
+
+void TaskTreeItem::highlightDate(const QDate & date)
+{
+	if (task_.isDone()) return;
+
+	QFont f = font(1);
+	f.setUnderline(date.isValid() && task_.getEffectiveDate() == date);
+	f.setOverline(date.isValid() && task_.getEffectiveDate() == date);
+	setFont(1, f);
 }
 
 bool TaskTreeItem::operator<(const QTreeWidgetItem & other) const

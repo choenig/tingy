@@ -20,6 +20,7 @@ MainWindow::MainWindow(QWidget * parent)
     ui->setupUi(this);
     ui->leAddTask->setPlaceholderText("Add new Task");
     connect(ui->dateBeam, SIGNAL(dateHovered(QDate)), this, SLOT(showDateInStatusbar(QDate)));
+    connect(ui->dateBeam, SIGNAL(dateHovered(QDate)), ui->taskTree, SLOT(highlightDate(QDate)));
 
     // init stuff
     initActions();

@@ -54,6 +54,8 @@ public:
 
 	void update();
 
+	void highlightDate(const QDate & date);
+
 private:
 	virtual bool operator<(const QTreeWidgetItem & other) const;
 
