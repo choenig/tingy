@@ -234,10 +234,17 @@ void TaskTree::contextMenuEvent(QContextMenuEvent * e)
     Task task = static_cast<TaskTreeItem*>(twi)->getTask();
 
     QMenu contextMenu;
-    QAction * removeTaskAct = contextMenu.addAction("Remove Task");
+    QAction * removeTaskAct = contextMenu.addAction("Task löschen");
 
-    QAction * resetPlannedAct = contextMenu.addAction("Reset planned status");
+    QAction * resetPlannedAct = contextMenu.addAction("»Geplant«-Status zurücksetzen");
     resetPlannedAct->setEnabled(task.getPlannedDate().isValid());
+
+    contextMenu.addSeparator();
+
+    QAction * editTaskAct = contextMenu.addAction("Eigenschaften");
+    QFont f = editTaskAct->font();
+    f.setBold(true);
+    editTaskAct->setFont(f);
 
     QAction *act = contextMenu.exec(e->globalPos());
     if (!act) return;
@@ -248,6 +255,14 @@ void TaskTree::contextMenuEvent(QContextMenuEvent * e)
     else if (act == resetPlannedAct) {
         task.setPlannedDate(QDate());
         TaskModel::instance()->updateTask(task);
+    }
+    else if (act == editTaskAct) {
+        TaskEditWidget * tew = new TaskEditWidget;
+        Task newTask = tew->exec(task);
+        if (newTask.isValid()) {
+            TaskModel::instance()->updateTask(newTask);
+        }
+
     }
 }
 
