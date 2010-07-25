@@ -13,7 +13,7 @@ class DateBeam : public QWidget
 {
     Q_OBJECT
 public:
-    explicit DateBeam(QWidget *parent = 0);
+    DateBeam(QWidget *parent = 0);
 
 public:
     virtual QSize sizeHint() const;
@@ -43,4 +43,3 @@ private:
     bool mouseIn_;
     QMap<QDate, QSet<TaskId> > datesWithTasks_;
 };
-
