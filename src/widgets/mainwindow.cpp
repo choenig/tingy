@@ -133,12 +133,12 @@ void MainWindow::updateTrayIcon(bool hasOverdueTasks)
 
 void MainWindow::initStatusBar()
 {
-    lblStatusBarTimestamp_ = new QLabel;
-    statusBar()->addPermanentWidget(lblStatusBarTimestamp_);
+//    lblStatusBarTimestamp_ = new QLabel;
+//    statusBar()->addPermanentWidget(lblStatusBarTimestamp_);
 
-    QTimer * timer = new QTimer;
-    connect(timer, SIGNAL(timeout()), this, SLOT(updateStatusBarTime()));
-    timer->start(1000);
+//    QTimer * timer = new QTimer;
+//    connect(timer, SIGNAL(timeout()), this, SLOT(updateStatusBarTime()));
+//    timer->start(1000);
 }
 
 void MainWindow::updateStatusBarTime()

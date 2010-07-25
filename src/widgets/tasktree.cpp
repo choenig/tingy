@@ -11,12 +11,15 @@
 #include <QHash>
 #include <QHeaderView>
 #include <QInputDialog>
+#include <QLocale>
 #include <QMenu>
 #include <QMessageBox>
+#include <QPainter>
 #include <QTimer>
-#include <QLocale>
 
 namespace {
+
+QString timestamp;
 
 TopLevelItem * doneTopLevelItem;
 QList<TopLevelItem*> topLevelItems;
@@ -87,6 +90,11 @@ TaskTree::TaskTree(QWidget *parent)
 
     // update the tree on day change
     connect(Clock::instance(), SIGNAL(dateChanged(QDate)), this, SLOT(handleDayChange()));
+
+    // update timestamp
+    QTimer * t = new QTimer(this);
+    connect(t, SIGNAL(timeout()), this, SLOT(updateClock()));
+    t->start(1000);
 
     QTimer::singleShot(0, this, SLOT(init()));
 }
@@ -219,9 +227,32 @@ void TaskTree::handleDayChange()
     }
 }
 
+void TaskTree::updateClock()
+{
+    const QDateTime now = Clock::currentDateTime();
+    timestamp = QString(now.toString("dd.MM.yyyy '%2 KW%1 %2' hh:mm:ss ")).arg(now.date().weekNumber()).arg(QString::fromUtf8("\xe2\x80\xa2"));
+    viewport()->update(QRect(0, viewport()->height()-30,viewport()->width(),30)); // fixme
+}
+
 void TaskTree::drawBranches(QPainter * /*painter*/, const QRect & /*rect*/, const QModelIndex & /*index*/) const
 {
     // do nothing here as we don't want branches
+}
+
+void TaskTree::paintEvent(QPaintEvent * event)
+{
+    QPainter p(viewport());
+
+    // fixme enhance performance
+    QPixmap pm(":/images/grass.png");
+    for (int i = 0; i <= viewport()->width()/pm.width(); ++i) {
+        p.drawPixmap(pm.rect().translated(i*pm.width(), viewport()->height()-pm.height()), pm);
+    }
+
+    p.setPen("#f8faec");
+    p.drawText(viewport()->rect().adjusted(2,0,-2, 0), timestamp, QTextOption(Qt::AlignBottom | Qt::AlignHCenter));
+
+    QTreeWidget::paintEvent(event);
 }
 
 void TaskTree::contextMenuEvent(QContextMenuEvent * e)

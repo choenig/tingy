@@ -7,5 +7,6 @@
         <file alias="NOK.png">images/mytasks_nok.png</file>
         <file alias="OK.png">images/mytasks_ok.png</file>
         <file alias="exit.png">images/exit.png</file>
+        <file alias="grass.png">images/grass.png</file>
     </qresource>
 </RCC>

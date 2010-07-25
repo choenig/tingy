@@ -31,9 +31,11 @@ private slots:
 	void slotItemChanged(QTreeWidgetItem * item, int column);
 
 	void handleDayChange();
+	void updateClock();
 
 protected:
 	virtual void drawBranches(QPainter * painter, const QRect & rect, const QModelIndex & index) const;
+	virtual void paintEvent(QPaintEvent *event);
 
 	virtual void contextMenuEvent(QContextMenuEvent * e);
 
