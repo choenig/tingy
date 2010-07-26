@@ -15,12 +15,15 @@
 #include "ui_mainwindow.h"
 
 MainWindow::MainWindow(QWidget * parent)
-    : QMainWindow(parent), ui(new Ui::MainWindow)
+    : QMainWindow(parent), quickAddDlg_(0), ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    ui->leAddTask->setPlaceholderText("Add new Task");
+    ui->leAddTask->setPlaceholderText("Neuen Task hinzufügen");
     connect(ui->dateBeam, SIGNAL(dateHovered(QDate)), this, SLOT(showDateInStatusbar(QDate)));
     connect(ui->dateBeam, SIGNAL(dateHovered(QDate)), ui->taskTree, SLOT(highlightDate(QDate)));
+
+    quickAddDlg_ = new QuickAddDialog();
+    connect(quickAddDlg_, SIGNAL(showMessage(QString,QString)), this, SLOT(showTrayMessage(QString,QString)));
 
     // init stuff
     initActions();
@@ -83,7 +86,8 @@ void MainWindow::on_leAddTask_returnPressed()
 
 void MainWindow::initActions()
 {
-     showDoneTasksAction_ = ui->mainToolBar->addAction(QIcon(":images/done.png"), "Show done tasks", this, SLOT(toggleShowDoneTasks()));
+     showDoneTasksAction_ = ui->mainToolBar->addAction(QIcon(":images/done.png"), "Abgeschlossene Tasks einblenden",
+                                                       this, SLOT(toggleShowDoneTasks()));
      showDoneTasksAction_->setCheckable(true);
 
      // initialy hide done tasks
@@ -153,9 +157,7 @@ void MainWindow::showDateInStatusbar(const QDate & date)
 
 void MainWindow::globalShortcutTriggered()
 {
-    QuickAddDialog dlg;
-    connect(&dlg, SIGNAL(showMessage(QString,QString)), this, SLOT(showTrayMessage(QString,QString)));
-    dlg.execDlg();
+    quickAddDlg_->showDlg();
 }
 
 void MainWindow::showTrayMessage(const QString & title, const QString & msg)

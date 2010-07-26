@@ -83,7 +83,7 @@ void TaskTreeItem::update()
 	setCheckState(0, task_.isDone() ? Qt::Checked : Qt::Unchecked);
 
 	// set priority icon
-	if        (task_.getPriority() == Priority::High) setIcon(1, QIcon(":images/highPriority.png"));
+	if      (task_.getPriority() == Priority::High)   setIcon(1, QIcon(":images/highPriority.png"));
 	else if (task_.getPriority() == Priority::Normal) setIcon(1, QIcon(":images/normalPriority.png"));
 	else if (task_.getPriority() == Priority::Low)    setIcon(1, QIcon(":images/lowPriority.png"));
 
@@ -97,8 +97,7 @@ void TaskTreeItem::update()
 		infos << QString::fromUtf8("\xe2\x86\xb4") + task_.getPlannedDate().toString("dd.MM.yyyy");
 	if (task_.getDueDate().isValid())
 		infos << QString::fromUtf8("\xe2\x8a\x9a") + task_.getDueDate().toString("dd.MM.yyyy");
-
-	setText(1, task_.getDescription() + (!infos.isEmpty() ? " [" + infos.join(", ") + "]" : QString()));
+	setText(1, task_.getDescription() + (!infos.isEmpty() ? " [" + infos.join(QString::fromUtf8(" \xe2\x80\xa2 ")) + "]" : QString()));
 
 	// fgColor
 	QColor fgColor = Qt::black;

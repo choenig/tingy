@@ -3,8 +3,9 @@
 #include <QMainWindow>
 #include <QSystemTrayIcon>
 
-class QLabel;
 class QDate;
+class QLabel;
+class QuickAddDialog;
 
 namespace Ui { class MainWindow; }
 
@@ -38,6 +39,7 @@ private:
     void initStatusBar();
 
 private:
+    QuickAddDialog * quickAddDlg_;
     QAction * showDoneTasksAction_;
     QLabel  * lblStatusBarTimestamp_;
     QSystemTrayIcon * trayIcon_;

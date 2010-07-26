@@ -17,7 +17,7 @@ QuickAddDialog::QuickAddDialog(QWidget *parent) :
     ui(new Ui::QuickAddDialog)
 {
     ui->setupUi(this);
-    ui->leAddTask->setPlaceholderText("Add new Task");
+    ui->leAddTask->setPlaceholderText("Neuen Task hinzufügen");
     connect(ui->leAddTask, SIGNAL(returnPressed()), this, SLOT(addNewTask()));
 
     setWindowFlags(Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
@@ -28,12 +28,13 @@ QuickAddDialog::~QuickAddDialog()
     delete ui;
 }
 
-void QuickAddDialog::execDlg()
+void QuickAddDialog::showDlg()
 {
     QDesktopWidget wdg;
-    const QRect r = wdg.screenGeometry(QCursor::pos());
+    const QRect screenrect = wdg.screenGeometry(QCursor::pos());
 
-    const QPoint startPos = QPoint(r.x() + (r.width() - width()) / 2, r.y() - height());
+    const QPoint startPos = QPoint(screenrect.x() + (screenrect.width() - width()) / 2,
+                                   screenrect.y());
 
     move(startPos);
     show();
@@ -48,7 +49,7 @@ void QuickAddDialog::execDlg()
 //    anim.start();
 //    loop.exec();
 
-    exec();
+//    exec();
 
 //    move(startPos);
 }
@@ -61,6 +62,7 @@ void QuickAddDialog::showEvent(QShowEvent * event)
 void QuickAddDialog::addNewTask()
 {
     if (ui->leAddTask->text().isEmpty()) return;
+
     Task task = Task::createFromString(ui->leAddTask->text());
     if (task.isValid()) {
         TaskModel::instance()->addTask(task);

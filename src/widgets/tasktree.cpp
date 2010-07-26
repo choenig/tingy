@@ -50,7 +50,7 @@ void initTopLevelItems(TaskTree * tree)
     updateTopLevelItems();
 
     doneTopLevelItem = new TopLevelItem(tree);
-    doneTopLevelItem->update(QDate(), "Done");
+    doneTopLevelItem->update(QDate(), "Abgeschlossen");
 
     // initially hide all items
     setTopLevelItemsHidden(true);

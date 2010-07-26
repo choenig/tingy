@@ -12,7 +12,7 @@ public:
     QuickAddDialog(QWidget *parent = 0);
     ~QuickAddDialog();
 
-    void execDlg();
+    void showDlg();
 
 signals:
     void showMessage(const QString & title, const QString & msg);

@@ -30,9 +30,9 @@ int main(int argc, char *argv[])
     TaskModel taskModel;
 
     NetworkStorage netStorage;
+    FileStorage fileStorage; // filestorage is used as backup currently
     QTimer::singleShot(0, &netStorage, SLOT(restoreFromFiles()));
-//    FileStorage fileStorage;
-//    QTimer::singleShot(0, &fileStorage, SLOT(restoreFromFiles()));
+    //QTimer::singleShot(0, &fileStorage, SLOT(restoreFromFiles()));
 
     // init the mainWindow
     MainWindow mainWindow;
