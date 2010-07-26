@@ -291,7 +291,12 @@ void TaskTree::contextMenuEvent(QContextMenuEvent * e)
     if (!act) return;
 
     if (act == removeTaskAct) {
-        TaskModel::instance()->removeTask(task.getId());
+        int result = QMessageBox::question(this, tr("Task löschen?"),
+                                           tr("Sind Sie sicher, dass Sie den Task '%1' löschen möchten?").arg(task.getDescription()),
+                                           QMessageBox::Yes | QMessageBox::No);
+        if (result == QMessageBox::Yes) {
+            TaskModel::instance()->removeTask(task.getId());
+        }
     }
     else if (act == resetPlannedAct) {
         task.setPlannedDate(QDate());
