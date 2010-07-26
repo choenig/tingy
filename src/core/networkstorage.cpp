@@ -196,7 +196,7 @@ NetworkStorage::NetworkStorage(QObject *parent)
 
     checkForChangesTimer_ = new QTimer(this);
     connect(checkForChangesTimer_, SIGNAL(timeout()), this, SLOT(checkForChanges()));
-    checkForChangesTimer_->start(10 * 1000);
+    checkForChangesTimer_->start(60 * 1000);
 }
 
 NetworkStorage::~NetworkStorage()
