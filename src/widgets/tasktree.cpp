@@ -15,11 +15,12 @@
 #include <QMenu>
 #include <QMessageBox>
 #include <QPainter>
+#include <QTextDocument>
 #include <QTimer>
 
 namespace {
 
-QString timestamp;
+QTextDocument docTimestamp; // fixme
 
 TopLevelItem * doneTopLevelItem;
 QList<TopLevelItem*> topLevelItems;
@@ -96,6 +97,11 @@ TaskTree::TaskTree(QWidget *parent)
     connect(t, SIGNAL(timeout()), this, SLOT(updateClock()));
     t->start(1000);
 
+    // init tsDoc
+    docTimestamp.setDefaultFont(font());
+    docTimestamp.setDocumentMargin(0);
+    docTimestamp.setDefaultTextOption(QTextOption(Qt::AlignHCenter));
+
     QTimer::singleShot(0, this, SLOT(init()));
 }
 
@@ -105,9 +111,9 @@ void TaskTree::init()
     header()->setResizeMode(1, QHeaderView::Stretch);
 }
 
-void TaskTree::hideDoneTasks(bool hide)
+void TaskTree::showDoneTasks(bool show)
 {
-    doneTopLevelItem->setHidden(hide);
+    doneTopLevelItem->setHidden(!show);
 }
 
 void TaskTree::highlightDate(const QDate & date)
@@ -230,8 +236,12 @@ void TaskTree::handleDayChange()
 void TaskTree::updateClock()
 {
     const QDateTime now = Clock::currentDateTime();
-    timestamp = QString(now.toString("dd.MM.yyyy '%2 KW%1 %2' hh:mm:ss ")).arg(now.date().weekNumber()).arg(QString::fromUtf8("\xe2\x80\xa2"));
-    viewport()->update(QRect(0, viewport()->height()-30,viewport()->width(),30)); // fixme
+    QString timestamp = QString(now.toString("'<b>'dd.MM.yyyy'</b> %2 KW%1 %2 <b>'hh:mm:ss'</b>'"))
+                        .arg(now.date().weekNumber()).arg(QString::fromUtf8("\xe2\x80\xa2"));
+
+    docTimestamp.setHtml("<font color=\"#8c8c8c\">" + timestamp + "</font>");
+    viewport()->update(0, viewport()->height()-docTimestamp.size().height(), viewport()->width(), docTimestamp.size().height());
+
 }
 
 void TaskTree::drawBranches(QPainter * /*painter*/, const QRect & /*rect*/, const QModelIndex & /*index*/) const
@@ -243,14 +253,14 @@ void TaskTree::paintEvent(QPaintEvent * event)
 {
     QPainter p(viewport());
 
-    // fixme enhance performance
     QPixmap pm(":/images/grass.png");
     for (int i = 0; i <= viewport()->width()/pm.width(); ++i) {
         p.drawPixmap(pm.rect().translated(i*pm.width(), viewport()->height()-pm.height()), pm);
     }
 
-    p.setPen("#f8faec");
-    p.drawText(viewport()->rect().adjusted(2,0,-2, 0), timestamp, QTextOption(Qt::AlignBottom | Qt::AlignHCenter));
+    p.translate(0, viewport()->height()-docTimestamp.size().height()+1);
+    docTimestamp.drawContents(&p);
+    docTimestamp.setTextWidth(viewport()->width());
 
     QTreeWidget::paintEvent(event);
 }
@@ -265,14 +275,14 @@ void TaskTree::contextMenuEvent(QContextMenuEvent * e)
     Task task = static_cast<TaskTreeItem*>(twi)->getTask();
 
     QMenu contextMenu;
-    QAction * removeTaskAct = contextMenu.addAction("Task löschen");
+    QAction * removeTaskAct = contextMenu.addAction(QIcon(":/images/trash.png"), "Task löschen");
 
-    QAction * resetPlannedAct = contextMenu.addAction("»Geplant«-Status zurücksetzen");
+    QAction * resetPlannedAct = contextMenu.addAction(QIcon(":/images/reset.png"), "»Geplant«-Status zurücksetzen");
     resetPlannedAct->setEnabled(task.getPlannedDate().isValid());
 
     contextMenu.addSeparator();
 
-    QAction * editTaskAct = contextMenu.addAction("Eigenschaften");
+    QAction * editTaskAct = contextMenu.addAction(QIcon(":/images/properties.png"), "Eigenschaften");
     QFont f = editTaskAct->font();
     f.setBold(true);
     editTaskAct->setFont(f);

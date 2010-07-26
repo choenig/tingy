@@ -83,17 +83,16 @@ void MainWindow::on_leAddTask_returnPressed()
 
 void MainWindow::initActions()
 {
-     hideDoneAction_ = ui->mainToolBar->addAction(QIcon(":images/hideDone.png"), "Hide done tasks", this, SLOT(toggleHideDoneTasks()));
-     hideDoneAction_->setCheckable(true);
+     showDoneTasksAction_ = ui->mainToolBar->addAction(QIcon(":images/done.png"), "Show done tasks", this, SLOT(toggleShowDoneTasks()));
+     showDoneTasksAction_->setCheckable(true);
 
      // initialy hide done tasks
-     hideDoneAction_->setChecked(true);
-     toggleHideDoneTasks();
+     toggleShowDoneTasks();
 }
 
-void MainWindow::toggleHideDoneTasks()
+void MainWindow::toggleShowDoneTasks()
 {
-    ui->taskTree->hideDoneTasks(hideDoneAction_->isChecked());
+    ui->taskTree->showDoneTasks(showDoneTasksAction_->isChecked());
 }
 
 void MainWindow::initSystemTray()

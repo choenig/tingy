@@ -18,7 +18,7 @@ public:
 	TaskTree(QWidget * parent = 0);
 
 public slots:
-	void hideDoneTasks(bool hide);
+	void showDoneTasks(bool hide);
 	void highlightDate(const QDate & date);
 
 private slots:

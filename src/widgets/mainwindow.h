@@ -24,7 +24,7 @@ protected:
 
 private slots:
     void on_leAddTask_returnPressed();
-    void toggleHideDoneTasks();
+    void toggleShowDoneTasks();
     void trayActivated(QSystemTrayIcon::ActivationReason reason);
     void updateTrayIcon(bool ok);
     void updateStatusBarTime();
@@ -38,7 +38,7 @@ private:
     void initStatusBar();
 
 private:
-    QAction * hideDoneAction_;
+    QAction * showDoneTasksAction_;
     QLabel  * lblStatusBarTimestamp_;
     QSystemTrayIcon * trayIcon_;
     QPoint lastPos;
