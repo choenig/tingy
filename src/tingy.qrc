@@ -1,13 +1,13 @@
 <RCC>
     <qresource prefix="/images">
+        <file alias="grass.png">images/grass.png</file>
+        <file alias="OK.png">images/mytasks_ok.png</file>
+        <file alias="NOK.png">images/mytasks_nok.png</file>
+        <file alias="exit.png">images/exit.png</file>
         <file alias="done.png">images/done.png</file>
         <file alias="highPriority.png">images/priority_high.png</file>
         <file alias="normalPriority.png">images/priority_normal.png</file>
         <file alias="lowPriority.png">images/priority_low.png</file>
-        <file alias="NOK.png">images/mytasks_nok.png</file>
-        <file alias="OK.png">images/mytasks_ok.png</file>
-        <file alias="exit.png">images/exit.png</file>
-        <file alias="grass.png">images/grass.png</file>
         <file alias="trash.png">images/trash.png</file>
         <file alias="properties.png">images/properties.png</file>
         <file alias="reset.png">images/reset.png</file>

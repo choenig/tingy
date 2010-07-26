@@ -6,22 +6,22 @@
 Clock * Clock::instance_ = 0;
 
 Clock::Clock()
-: isFirstInstance_(instance_ == 0), offsetInMSecs_(0)
+    :  offsetInMSecs_(0)
 {
-    if (isFirstInstance_) instance_ = this;
+    if (instance_ == 0) instance_ = this;
     init();
 }
 
 Clock::Clock(const QDateTime &now)
-: isFirstInstance_(instance_ == 0), offsetInMSecs_(QDateTime::currentDateTime().msecsTo(now))
+    : offsetInMSecs_(QDateTime::currentDateTime().msecsTo(now))
 {
-    if (isFirstInstance_) instance_ = this;
+    if (instance_ == 0) instance_ = this;
     init();
 }
 
 Clock::~Clock()
 {
-    if (isFirstInstance_) instance_ = 0;
+    if (instance_ == this) instance_ = 0;
 }
 
 void Clock::init()

@@ -13,8 +13,6 @@
 class Task
 {
 public:
-    Task() {}
-
     bool isNull() const;
     bool isValid() const;
 
@@ -40,12 +38,13 @@ public:
 
     QDate getPlannedDate() const { return plannedDate_; }
     void setPlannedDate(const QDate & plannedDate) { plannedDate_ = plannedDate; }
+    void resetPlannedDate() { plannedDate_ = QDate(); }
 
     Effort getEffort() const { return effort_; }
     void setEffort(const Effort & effort) { effort_ = effort; }
 
     bool isDone() const { return doneTimestamp_.isValid(); }
-    void setDone(const QDateTime & now) { doneTimestamp_ = now; }
+    void setDone(const QDateTime & timestamp) { doneTimestamp_ = timestamp; }
     QDateTime getDoneTimestamp() const { return doneTimestamp_; }
 
     QString toString() const;
@@ -60,13 +59,13 @@ public:
     static Task loadFromFile(const QString & filePath);
 
 private:
-    TaskId id_;
+    TaskId    id_;
     QDateTime creationTimestamp_;
-    Priority priority_;
-    QString description_;
-    QDate dueDate_;
-    QDate plannedDate_;
-    Effort effort_;
+    Priority  priority_;
+    QString   description_;
+    QDate     dueDate_;
+    QDate     plannedDate_;
+    Effort    effort_;
     QDateTime doneTimestamp_;
 
     friend QDataStream & operator<<( QDataStream & out, const Task & task);
@@ -77,8 +76,7 @@ private:
 // stream operators
 
 inline QDataStream & operator<<(QDataStream & out, const Task & task) {
-    out
-        << task.id_
+    out << task.id_
         << task.creationTimestamp_
         << task.priority_
         << task.description_
@@ -89,8 +87,7 @@ inline QDataStream & operator<<(QDataStream & out, const Task & task) {
     return out;
 }
 inline QDataStream & operator>>(QDataStream & in, Task & task) {
-    in
-        >> task.id_
+    in  >> task.id_
         >> task.creationTimestamp_
         >> task.priority_
         >> task.description_

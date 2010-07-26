@@ -30,7 +30,7 @@ private slots:
 	void slotItemDoubleClicked(QTreeWidgetItem * item, int column);
 	void slotItemChanged(QTreeWidgetItem * item, int column);
 
-	void handleDayChange();
+	void handleDateChange();
 	void updateClock();
 
 protected:

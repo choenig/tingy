@@ -33,10 +33,9 @@ private:
     void init();
 
 private:
-    static Clock * instance_;
-    bool isFirstInstance_;
-
-private:
     qint64 offsetInMSecs_;
     QTimer * dateChangeTimer_;
+
+private:
+    static Clock * instance_;
 };

@@ -288,6 +288,7 @@
   </layout>
  </widget>
  <tabstops>
+  <tabstop>cbPrio</tabstop>
   <tabstop>leDescription</tabstop>
   <tabstop>leEffort</tabstop>
   <tabstop>chkDue</tabstop>

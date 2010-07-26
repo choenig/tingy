@@ -2,6 +2,7 @@
 
 #include <core/clock.h>
 
+#include <QCalendarWidget>
 #include <QDebug>
 #include <QLocale>
 #include <QPainter>
@@ -19,6 +20,11 @@ TaskEditWidget::TaskEditWidget(QWidget *parent) :
     ui->cbPrio->addItem("Normal",  Priority::Normal);
     ui->cbPrio->addItem("Niedrig", Priority::Low);
 
+    ui->calDue->setDisplayFormat("dd.MM.yyyy");
+    ui->calPlanned->setDisplayFormat("dd.MM.yyyy");
+    ui->calDue->calendarWidget()->setFirstDayOfWeek(Qt::Monday);
+    ui->calPlanned->calendarWidget()->setFirstDayOfWeek(Qt::Monday);
+
     // connect main signals
     connect(ui->btnGroup, SIGNAL(accepted()), this, SLOT(accept()));
     connect(ui->btnGroup, SIGNAL(rejected()), this, SLOT(reject()));
@@ -35,8 +41,9 @@ Task TaskEditWidget::exec(const Task & task)
     ui->calDue->setDate(Clock::currentDate());
     ui->calPlanned->setDate(Clock::currentDate());
 
+    const QString timeformat = QString("dddd %1 dd.MM.yyyy %1 hh:mm:ss").arg(QString::fromUtf8("\xe2\x80\xa2"));
     // write the task into the GUI
-    ui->lblCreated->setText(QLocale().toString(task.getCreationTimestamp(), "dddd, dd.MM.yyyy, hh:mm:ss"));
+    ui->lblCreated->setText(QLocale().toString(task.getCreationTimestamp(), timeformat));
     ui->cbPrio->setCurrentIndex(ui->cbPrio->findData(task.getPriority().toInt()));
     ui->leDescription->setPlainText(task.getDescription());
     ui->leEffort->setText(task.getEffort().toString());
@@ -45,8 +52,8 @@ Task TaskEditWidget::exec(const Task & task)
     ui->chkPlanned->setChecked(task.getPlannedDate().isValid());
     ui->calPlanned->setDate(task.getPlannedDate());
     ui->chkDone->setChecked(task.isDone());
+    ui->lblDoneTimestamp->setText(QLocale().toString(task.getDoneTimestamp(), "[" + timeformat + "]"));
     ui->lblDoneTimestamp->setVisible(task.isDone());
-    ui->lblDoneTimestamp->setText(QLocale().toString(task.getDoneTimestamp(), "[dddd, dd.MM.yyyy, hh:mm:ss]"));
 
     if (QDialog::exec() != QDialog::Accepted) {
         return Task();
@@ -55,11 +62,11 @@ Task TaskEditWidget::exec(const Task & task)
     // load task from GUI
     Task retval = task;
     retval.setPriority((Priority::Level)ui->cbPrio->itemData(ui->cbPrio->currentIndex()).toInt());
-    retval.setDescription(ui->leDescription->toPlainText());
+    retval.setDescription(ui->leDescription->toPlainText().simplified());
     retval.setEffort(Effort::fromString(ui->leEffort->text()));
     retval.setDueDate(ui->chkDue->isChecked() ? ui->calDue->date() : QDate());
     retval.setPlannedDate(ui->chkPlanned->isChecked() ? ui->calPlanned->date() : QDate());
-    retval.setDone(ui->chkDone->isChecked() ? Clock::currentDateTime() : QDateTime());
+    retval.setDone(task.isDone() ? task.getDoneTimestamp() : ui->chkDone->isChecked() ? Clock::currentDateTime() : QDateTime());
     return retval;
 }
 

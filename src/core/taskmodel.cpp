@@ -5,17 +5,15 @@
 TaskModel * TaskModel::instance_ = 0;
 
 TaskModel::TaskModel()
-    : isFirstInstance_(instance_ == 0)
 {
-    if (isFirstInstance_) instance_ = this;
+	if (instance_ == 0) instance_ = this;
 
-	connect(Clock::instance(), SIGNAL(dateChanged(QDate)),
-			this, SLOT(handleDateChanged()));
+	connect(Clock::instance(), SIGNAL(dateChanged(QDate)), this, SLOT(handleDateChanged()));
 }
 
 TaskModel::~TaskModel()
 {
-    if (isFirstInstance_) instance_ = 0;
+	if (instance_ == this) instance_ = 0;
 }
 
 void TaskModel::clear()
@@ -46,8 +44,7 @@ void TaskModel::addTask(const Task & task)
 void TaskModel::updateTask(const Task & task)
 {
     Task oldTask = tasks_.value(task.getId());
-
-    if (oldTask == task) return;
+    if (task == oldTask) return;
 
     tasks_[task.getId()] = task;
     emit taskUpdated(task);
@@ -66,9 +63,6 @@ void TaskModel::updateTask(const Task & task)
 void TaskModel::removeTask(const TaskId & taskId)
 {
     if (!tasks_.contains(taskId)) return;
-
-    // remember task for debug output
-    Task oldTask = tasks_.value(taskId);
 
     tasks_.remove(taskId);
     emit taskRemoved(taskId);

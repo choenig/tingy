@@ -7,11 +7,7 @@
 #include <widgets/tasktreeitems.h>
 
 #include <QContextMenuEvent>
-#include <QDebug>
-#include <QHash>
 #include <QHeaderView>
-#include <QInputDialog>
-#include <QLocale>
 #include <QMenu>
 #include <QMessageBox>
 #include <QPainter>
@@ -39,8 +35,8 @@ void updateTopLevelItems()
 
     QMutableListIterator<TopLevelItem*> it(topLevelItems);
     it.next()->update(QDate(1970,1,1),   "Überfällig");
-    it.next()->update(today,             QString("Heute, %1") .arg(QLocale().toString(today,            "dddd, dd.MM.yyyy")));
-    it.next()->update(today.addDays(1),  QString("Morgen, %1").arg(QLocale().toString(today.addDays(1), "dddd, dd.MM.yyyy")));
+    it.next()->update(today,             QLocale().toString(today,            "'Heute %1 'dddd' %1 'dd.MM.yyyy").arg(QString::fromUtf8("\xe2\x80\xa2")));
+    it.next()->update(today.addDays(1),  QLocale().toString(today.addDays(1), "'Morgen %1 'dddd' %1 'dd.MM.yyyy").arg(QString::fromUtf8("\xe2\x80\xa2")));
     it.next()->update(today.addDays(2),  "Nächste Woche");
     it.next()->update(today.addDays(7),  "Nächster Monat");
     it.next()->update(today.addDays(30), "Zukunft ...");
@@ -90,7 +86,7 @@ TaskTree::TaskTree(QWidget *parent)
     initTopLevelItems(this);
 
     // update the tree on day change
-    connect(Clock::instance(), SIGNAL(dateChanged(QDate)), this, SLOT(handleDayChange()));
+    connect(Clock::instance(), SIGNAL(dateChanged(QDate)), this, SLOT(handleDateChange()));
 
     // update timestamp
     QTimer * t = new QTimer(this);
@@ -118,12 +114,11 @@ void TaskTree::showDoneTasks(bool show)
 
 void TaskTree::highlightDate(const QDate & date)
 {
-    QTreeWidgetItemIterator it(this);
-    while (*it) {
+    for (QTreeWidgetItemIterator it(this) ; *it ; ++it)
+    {
         if ((*it)->type() == TaskTreeItem::Type) {
             static_cast<TaskTreeItem*>(*it)->highlightDate(date);
         }
-        ++it;
     }
 }
 
@@ -197,11 +192,11 @@ void TaskTree::slotItemDoubleClicked(QTreeWidgetItem * item, int column)
 
 void TaskTree::slotItemChanged(QTreeWidgetItem * item, int column)
 {
-    TaskTreeItem * tti = dynamic_cast<TaskTreeItem*>(item);
-    if (!tti) return;
-
     // only look for changes of the 'done'-checkbox
     if (column != 0) return;
+
+    TaskTreeItem * tti = dynamic_cast<TaskTreeItem*>(item);
+    if (!tti) return;
 
     bool doneIsChecked = tti->checkState(0) == Qt::Checked;
     if (doneIsChecked != tti->getTask().isDone()) {
@@ -212,22 +207,21 @@ void TaskTree::slotItemChanged(QTreeWidgetItem * item, int column)
     }
 }
 
-void TaskTree::handleDayChange()
+void TaskTree::handleDateChange()
 {
-    updateTopLevelItems();
-
     // first gather all items up ...
-    QList<TaskTreeItem *> taskItems;
-    QTreeWidgetItemIterator it(this);
-    while (*it) {
+    QList<TaskTreeItem *> allTaskItems;
+    for (QTreeWidgetItemIterator it(this) ; *it ; ++it)
+    {
         if ((*it)->type() == TaskTreeItem::Type) {
-            taskItems << static_cast<TaskTreeItem*>(*it);
+            allTaskItems << static_cast<TaskTreeItem*>(*it);
         }
-        ++it;
     }
 
+    updateTopLevelItems();
+
     // ... then reparent and update them
-    foreach (TaskTreeItem * tti, taskItems) {
+    foreach (TaskTreeItem * tti, allTaskItems) {
         reparentUpdatedItem(tti);
         tti->update();
     }
@@ -268,29 +262,28 @@ void TaskTree::paintEvent(QPaintEvent * event)
 void TaskTree::contextMenuEvent(QContextMenuEvent * e)
 {
     QTreeWidgetItem* twi = itemAt(e->pos());
-    if (!twi) return;
-
-    if (twi->type() != TaskTreeItem::Type) return;
+    if (!twi || twi->type() != TaskTreeItem::Type) return;
 
     Task task = static_cast<TaskTreeItem*>(twi)->getTask();
 
     QMenu contextMenu;
-    QAction * removeTaskAct = contextMenu.addAction(QIcon(":/images/trash.png"), "Task löschen");
-
+    // reset planned status
     QAction * resetPlannedAct = contextMenu.addAction(QIcon(":/images/reset.png"), "»Geplant«-Status zurücksetzen");
     resetPlannedAct->setEnabled(task.getPlannedDate().isValid());
 
-    contextMenu.addSeparator();
+    // remove task
+    QAction * removeTaskAct = contextMenu.addAction(QIcon(":/images/trash.png"), "Task löschen");
 
+    // edit task
+    contextMenu.addSeparator();
     QAction * editTaskAct = contextMenu.addAction(QIcon(":/images/properties.png"), "Eigenschaften");
     QFont f = editTaskAct->font();
     f.setBold(true);
     editTaskAct->setFont(f);
 
     QAction *act = contextMenu.exec(e->globalPos());
-    if (!act) return;
-
-    if (act == removeTaskAct) {
+    if (act == removeTaskAct)
+    {
         int result = QMessageBox::question(this, tr("Task löschen?"),
                                            tr("Sind Sie sicher, dass Sie den Task '%1' löschen möchten?").arg(task.getDescription()),
                                            QMessageBox::Yes | QMessageBox::No);
@@ -298,11 +291,13 @@ void TaskTree::contextMenuEvent(QContextMenuEvent * e)
             TaskModel::instance()->removeTask(task.getId());
         }
     }
-    else if (act == resetPlannedAct) {
-        task.setPlannedDate(QDate());
+    else if (act == resetPlannedAct)
+    {
+        task.resetPlannedDate();
         TaskModel::instance()->updateTask(task);
     }
-    else if (act == editTaskAct) {
+    else if (act == editTaskAct)
+    {
         TaskEditWidget * tew = new TaskEditWidget;
         Task newTask = tew->exec(task);
         if (newTask.isValid()) {
@@ -428,15 +423,15 @@ bool TaskTree::dropMimeData(QTreeWidgetItem *parent, int /*index*/, const QMimeD
 
 TaskTreeItem * TaskTree::findTaskTreeItem(const TaskId & taskId) const
 {
-    QTreeWidgetItemIterator it(const_cast<TaskTree*>(this));
-    while (*it) {
-        TaskTreeItem * tti = dynamic_cast<TaskTreeItem*>(*it);
-        if (tti && tti->getTask().getId() == taskId) {
-            return tti;
+    for (QTreeWidgetItemIterator it(const_cast<TaskTree*>(this)) ; *it ; ++it)
+    {
+        if ((*it)->type() == TaskTreeItem::Type) {
+            TaskTreeItem * tti = static_cast<TaskTreeItem*>(*it);
+            if (tti->getTask().getId() == taskId) {
+                return tti;
+            }
         }
-        ++it;
     }
-
     return 0;
 }
 
@@ -461,7 +456,7 @@ void TaskTree::reparentUpdatedItem(TaskTreeItem * updatedTaskTreeItem)
     QTreeWidgetItem * parent = updatedTaskTreeItem->parent();
     if (parent) {
         parent->removeChild(updatedTaskTreeItem);
-        if (parent->childCount() == 0 && parent != doneTopLevelItem) parent->setHidden(true);
+        if (parent != doneTopLevelItem && parent->childCount() == 0) parent->setHidden(true);
     } else {
         invisibleRootItem()->removeChild(updatedTaskTreeItem);
     }

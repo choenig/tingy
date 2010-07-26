@@ -19,8 +19,7 @@
 class NetworkStoragePrivate
 {
 public:
-    NetworkStoragePrivate() : ftp(0) {
-    }
+    NetworkStoragePrivate() : ftp(0) {}
 
     ~NetworkStoragePrivate() {
         delete ftp;
@@ -52,7 +51,7 @@ public:
     {
         availableTasks.clear();
 
-        ftp->cd(Settings::NetworkStorage::Taskdir());
+        ftp->cd( Settings::NetworkStorage::Taskdir() );
         waitForId = ftp->list();
 
         loop.exec();
@@ -104,10 +103,12 @@ public:
     {
         const QString filename = taskId.toString() + ".task";
 
-        waitForId = ftp->remove(filename);
-        loop.exec();
+        if (availableTasks.contains(filename)) {
+            waitForId = ftp->remove(filename);
+            loop.exec();
 
-        availableTasks.remove(filename);
+            availableTasks.remove(filename);
+        }
     }
 
     void checkForChanges()
@@ -195,7 +196,7 @@ NetworkStorage::NetworkStorage(QObject *parent)
 
     checkForChangesTimer_ = new QTimer(this);
     connect(checkForChangesTimer_, SIGNAL(timeout()), this, SLOT(checkForChanges()));
-    checkForChangesTimer_->start(60 * 1000);
+    checkForChangesTimer_->start(10 * 1000);
 }
 
 NetworkStorage::~NetworkStorage()
@@ -205,12 +206,12 @@ NetworkStorage::~NetworkStorage()
 
 void NetworkStorage::restoreFromFiles()
 {
-    restoreInProgress_ = true;
-
     Q_D(NetworkStorage);
 
     // make sure we are connected
     if (!d->isConnected()) d->connect();
+
+    restoreInProgress_ = true;
 
     // reload task files
     d->reloadListOfAvailableTasks();
@@ -265,5 +266,10 @@ void NetworkStorage::checkForChanges()
     // make sure we are connected
     if (!d->isConnected()) d->connect();
 
+    restoreInProgress_ = true;
+
+    // check for changes
     d->checkForChanges();
+
+    restoreInProgress_ = false;
 }

@@ -40,6 +40,5 @@ private:
     QSet<TaskId> overdueTasks_;
 
 private:
-    bool isFirstInstance_;
     static TaskModel * instance_;
 };

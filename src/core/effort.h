@@ -11,7 +11,7 @@ class Effort
 public:
     explicit Effort(quint32 minutes = 0);
 
-    bool isNull() const { return effortInMinutes_ == 0; }
+    bool isNull()  const { return effortInMinutes_ == 0; }
     bool isValid() const { return !isNull(); }
 
     QString toString() const;
