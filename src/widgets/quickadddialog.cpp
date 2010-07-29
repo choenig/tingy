@@ -36,6 +36,7 @@ void QuickAddDialog::showDlg()
     const QPoint startPos = QPoint(screenrect.x() + (screenrect.width() - width()) / 2,
                                    screenrect.y());
 
+    ui->leAddTask->clear();
     move(startPos);
     show();
 
