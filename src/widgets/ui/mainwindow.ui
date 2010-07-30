@@ -54,6 +54,9 @@
         </disabled>
        </palette>
       </property>
+      <property name="verticalScrollMode">
+       <enum>QAbstractItemView::ScrollPerPixel</enum>
+      </property>
       <attribute name="headerStretchLastSection">
        <bool>false</bool>
       </attribute>

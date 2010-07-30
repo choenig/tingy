@@ -1,2 +1,3 @@
+* if tingy is in suspend to ram, toplevelitems don't get upated on date change
 * close main window on minimize
 * popup on DateBeam hover which show the tasks for the given date

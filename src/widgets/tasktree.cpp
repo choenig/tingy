@@ -11,6 +11,7 @@
 #include <QMenu>
 #include <QMessageBox>
 #include <QPainter>
+#include <QScrollBar>
 #include <QTextDocument>
 #include <QTimer>
 
@@ -87,6 +88,9 @@ TaskTree::TaskTree(QWidget *parent)
 
     // update the tree on day change
     connect(Clock::instance(), SIGNAL(dateChanged(QDate)), this, SLOT(handleDateChange()));
+
+    // update the viewport when scrolling (this is a workaround for the bg image beeing garbeled)
+    connect(verticalScrollBar(), SIGNAL(valueChanged(int)), viewport(), SLOT(update()));
 
     // update timestamp
     QTimer * t = new QTimer(this);
