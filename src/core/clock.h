@@ -1,9 +1,8 @@
 #pragma once
 
 #include <QObject>
+#include <QDate>
 
-class QDate;
-class QDateTime;
 class QTime;
 class QTimer;
 
@@ -35,6 +34,7 @@ private:
 private:
     qint64 offsetInMSecs_;
     QTimer * dateChangeTimer_;
+    QDate lastDate_;
 
 private:
     static Clock * instance_;

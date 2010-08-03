@@ -7,6 +7,7 @@
 #include <widgets/tasktreeitems.h>
 
 #include <QContextMenuEvent>
+#include <QDebug>
 #include <QHeaderView>
 #include <QMenu>
 #include <QMessageBox>
@@ -213,6 +214,8 @@ void TaskTree::slotItemChanged(QTreeWidgetItem * item, int column)
 
 void TaskTree::handleDateChange()
 {
+    qDebug() << "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx TaskTree::handleDateChange();";
+
     // first gather all items up ...
     QList<TaskTreeItem *> allTaskItems;
     for (QTreeWidgetItemIterator it(this) ; *it ; ++it)

@@ -26,10 +26,16 @@ Clock::~Clock()
 
 void Clock::init()
 {
+    lastDate_ = currentDate();
+
     dateChangeTimer_ = new QTimer(this);
     connect(dateChangeTimer_, SIGNAL(timeout()), this, SLOT(handleDateChange()));
     dateChangeTimer_->setSingleShot(true);
     dateChangeTimer_->start(msecsTillTomorrow());
+
+    QTimer * highFreqTimer = new QTimer(this);
+    connect(highFreqTimer, SIGNAL(timeout()), this, SLOT(handleDateChange()));
+    highFreqTimer->start(60*1000);
 }
 
 qint64 Clock::msecsTillTomorrow() const
@@ -55,6 +61,10 @@ QTime Clock::currentTime()
 
 void Clock::handleDateChange()
 {
+    if (currentDate() == lastDate_) return;
+
+    lastDate_ = currentDate();
+
     // restart timer
     dateChangeTimer_->start(msecsTillTomorrow());
 
