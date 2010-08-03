@@ -47,7 +47,6 @@ HEADERS  += widgets/mainwindow.h \
     widgets/calendarpopup.h \
     widgets/textpopup.h \
     core/clock.h \
-    util/qxtglobalstuff.h \
     widgets/quickadddialog.h \
     core/networkstorage.h \
     widgets/datebeam.h \

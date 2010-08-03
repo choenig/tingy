@@ -15,5 +15,6 @@ SOURCES += \
     qxtglobalshortcut_x11.cpp
 
 HEADERS  += \
+    qxtglobalstuff.h \
     qxtglobalshortcut.h \
     qxtglobalshortcut_p.h
