@@ -31,25 +31,46 @@ void setTopLevelItemsHidden(bool hide, bool ignoreWithChildren = false)
     }
 }
 
-void updateTopLevelItems()
+void updateNext(TaskTree * tree, QMutableListIterator<TopLevelItem*> & it, const QDate & date, const QString & string)
 {
-    const QDate today = Clock::currentDate();
+    if (!it.hasNext())
+    {
+        it.insert(new TopLevelItem(tree));
+        it.previous();
+    }
 
+    it.next()->update(date, string);
+}
+
+void updateTopLevelItems(TaskTree * tree)
+{
     QMutableListIterator<TopLevelItem*> it(topLevelItems);
-    it.next()->update(QDate(1970,1,1),   "Überfällig");
-    it.next()->update(today,             QLocale().toString(today,            "'Heute %1 'dddd' %1 'dd.MM.yyyy").arg(QString::fromUtf8("\xe2\x80\xa2")));
-    it.next()->update(today.addDays(1),  QLocale().toString(today.addDays(1), "'Morgen %1 'dddd' %1 'dd.MM.yyyy").arg(QString::fromUtf8("\xe2\x80\xa2")));
-    it.next()->update(today.addDays(2),  "Nächste Woche");
-    it.next()->update(today.addDays(7),  "Nächster Monat");
-    it.next()->update(today.addDays(30), "Zukunft ...");
+    updateNext(tree, it, QDate(1970,1,1),   "Überfällig");
+
+    // add for current week
+    const QDate today = Clock::currentDate();
+    const int offset = today.dayOfWeek();
+    for (int i = offset ; i <= 7 ; ++i) {
+        const QDate date = today.addDays(i-offset);
+        updateNext(tree, it, date, QLocale().toString(date, "dddd' %1 'dd.MM.yyyy").arg(QString::fromUtf8("\xe2\x80\xa2")));
+    }
+
+    // add 'next week'
+    QDate nextWeekDate = today.addDays(7-today.dayOfWeek()+1);
+    updateNext(tree, it, nextWeekDate, "Nächste Woche");
+
+    // add 'future'
+    updateNext(tree, it, nextWeekDate.addDays(7), "Zukunft ...");
+
+    while (it.hasNext()) {
+        it.next();
+        it.remove();
+    }
 }
 
 void initTopLevelItems(TaskTree * tree)
 {
-    for (int i = 0 ; i < 6; ++i) {
-        topLevelItems <<   new TopLevelItem(tree);
-    }
-    updateTopLevelItems();
+    updateTopLevelItems(tree);
 
     doneTopLevelItem = new TopLevelItem(tree);
     doneTopLevelItem->update(QDate(), "Abgeschlossen");
@@ -225,7 +246,7 @@ void TaskTree::handleDateChange()
         }
     }
 
-    updateTopLevelItems();
+    updateTopLevelItems(this);
 
     // ... then reparent and update them
     foreach (TaskTreeItem * tti, allTaskItems) {
