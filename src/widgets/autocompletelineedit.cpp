@@ -3,20 +3,14 @@
 #include <widgets/calendarpopup.h>
 #include <widgets/textpopup.h>
 
-namespace {
-// fixme move away
-TextPopup * textPopup;
-CalendarPopup * calPopup;
-}
-
 AutocompleteLineEdit::AutocompleteLineEdit(QWidget *parent) :
     QLineEdit(parent)
 {
-    textPopup = new TextPopup(this);
-    connect(textPopup, SIGNAL(textSelected(QString)), this, SLOT(doneTextCompletion(QString)));
+    textPopup_ = new TextPopup(this);
+    connect(textPopup_, SIGNAL(textSelected(QString)), this, SLOT(doneTextCompletion(QString)));
 
-    calPopup = new CalendarPopup(this);
-    connect(calPopup, SIGNAL(dateSelected(QDate)), this, SLOT(doneCalCompletion(QDate)));
+    calPopup_ = new CalendarPopup(this);
+    connect(calPopup_, SIGNAL(dateSelected(QDate)), this, SLOT(doneCalCompletion(QDate)));
 
     connect(this, SIGNAL(textChanged(QString)), this, SLOT(onTextChanged(QString)));
 }
@@ -27,15 +21,15 @@ void AutocompleteLineEdit::onTextChanged(const QString & text)
 
     if (text.endsWith("!")) {
         QStringList choices; choices << "+" << "-";
-        textPopup->setChoices(choices, QRegExp("[+-]"));
-        wdgt = textPopup;
+        textPopup_->setChoices(choices, QRegExp("[+-]"));
+        wdgt = textPopup_;
     } else if (text.endsWith("$")) {
         QStringList choices; choices << "m" << "h"<< "d"<< "w"<< "y";
-        textPopup->setChoices(choices, QRegExp("[0-9]+([mhdwy]?[0-9]*)*"));
-        wdgt = textPopup;
+        textPopup_->setChoices(choices, QRegExp("[0-9]+([mhdwy]?[0-9]*)*"));
+        wdgt = textPopup_;
     } else if (text.endsWith("*")) {
-        calPopup->reset();
-        wdgt = calPopup;
+        calPopup_->reset();
+        wdgt = calPopup_;
     }
 
     if (!wdgt) return;

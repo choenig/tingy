@@ -2,7 +2,9 @@
 
 #include <QLineEdit>
 
+class CalendarPopup;
 class QDate;
+class TextPopup;
 
 class AutocompleteLineEdit : public QLineEdit
 {
@@ -14,4 +16,8 @@ private slots:
     void onTextChanged(const QString & text);
     void doneTextCompletion(const QString & text);
     void doneCalCompletion(const QDate & date);
+
+private:
+    TextPopup * textPopup_;
+    CalendarPopup * calPopup_;
 };
