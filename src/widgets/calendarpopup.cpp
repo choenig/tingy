@@ -10,17 +10,8 @@
 
 #include "ui_calendarpopup.h"
 
-namespace {
-
-enum {
-    ColCount = 7,
-    RowCount = 5
-};
-
-}
-
-CalendarPopup::CalendarPopup(QWidget * parent)
-    : QWidget(parent), ui(new Ui::CalendarPopup)
+CalendarPopup::CalendarPopup(QWidget * parent, int colCount, int rowCount)
+    : QWidget(parent), colCount_(colCount), rowCount_(rowCount), ui(new Ui::CalendarPopup)
 {
     ui->setupUi(this);
 
@@ -40,11 +31,11 @@ void CalendarPopup::reset()
 {
     const QDate now = Clock::currentDate();
 
-    updateVisibleDates(now.addDays(-ColCount));
+    updateVisibleDates(now.addDays(-colCount_));
 
     // select today
     selectedIdx_ = QPoint();
-    moveSelectedIndex(now.dayOfWeek() - 1 + ColCount);
+    moveSelectedIndex(now.dayOfWeek() - 1 + colCount_);
 }
 
 void CalendarPopup::updateVisibleDates(const QDate & dateInFirstRow)
@@ -53,10 +44,10 @@ void CalendarPopup::updateVisibleDates(const QDate & dateInFirstRow)
 
     // init dates
     const QDate now = Clock::currentDate();
-    for (int r = 0; r < RowCount; ++r)  {
-        for (int c = 0; c < ColCount; ++c)
+    for (int r = 0; r < rowCount_; ++r)  {
+        for (int c = 0; c < colCount_; ++c)
         {
-            const QDate date = currentStartDate_.addDays(r*ColCount + c);
+            const QDate date = currentStartDate_.addDays(r*colCount_ + c);
             QLabel * lbl = getDateLabel(QPoint(c, r));
 
             // set text
@@ -71,39 +62,39 @@ void CalendarPopup::updateVisibleDates(const QDate & dateInFirstRow)
 
     // update kalender wochen
     const int kw0 = dateInFirstRow.weekNumber();
-    for (int r = 0; r < RowCount; ++r) {
+    for (int r = 0; r < rowCount_; ++r) {
         getKWLable(QPoint(0,r))->setText(QString::number(kw0 + r));
     }
 }
 
 void CalendarPopup::moveSelectedIndex(int offsetInDays)
 {
-    int newX = selectedIdx_.x() + offsetInDays % ColCount;
-    int newY = selectedIdx_.y() + offsetInDays / ColCount;
+    int newX = selectedIdx_.x() + offsetInDays % colCount_;
+    int newY = selectedIdx_.y() + offsetInDays / colCount_;
 
     if (newX < 0) {
         newY -= 1;
-        newX += ColCount;
+        newX += colCount_;
     }
-    if (newX > ColCount-1) {
+    if (newX > colCount_-1) {
         newY += 1;
-        newX -= ColCount;
+        newX -= colCount_;
     }
 
-    if (newY < 0)          updateVisibleDates(currentStartDate_.addDays(newY * ColCount));
-    if (newY > RowCount-1) updateVisibleDates(currentStartDate_.addDays((newY-RowCount+1) * ColCount));
+    if (newY < 0)          updateVisibleDates(currentStartDate_.addDays(newY * colCount_));
+    if (newY > rowCount_-1) updateVisibleDates(currentStartDate_.addDays((newY-rowCount_+1) * colCount_));
 
-    selectedIdx_ = QPoint(qMax(0, qMin(ColCount-1, newX)), qMax(0, qMin(RowCount-1, newY)));
+    selectedIdx_ = QPoint(qMax(0, qMin(colCount_-1, newX)), qMax(0, qMin(rowCount_-1, newY)));
 
     // update selected date
-    selectedDate_ = currentStartDate_.addDays(selectedIdx_.x() + selectedIdx_.y()*ColCount);
+    selectedDate_ = currentStartDate_.addDays(selectedIdx_.x() + selectedIdx_.y()*colCount_);
     ui->lblSelectedDate->setText(QLocale().toString(selectedDate_, "dd.  MMMM  yyyy"));
 
     // update label colors
-    for (int r = 0; r < RowCount; ++r)  {
-        for (int c = 0; c < ColCount; ++c)
+    for (int r = 0; r < rowCount_; ++r)  {
+        for (int c = 0; c < colCount_; ++c)
         {
-            const QDate date = currentStartDate_.addDays(r*ColCount + c);
+            const QDate date = currentStartDate_.addDays(r*colCount_ + c);
             QLabel * lbl = getDateLabel(QPoint(c, r));
 
             // set text color
@@ -125,8 +116,8 @@ void CalendarPopup::paintEvent(QPaintEvent *event)
         QRegion region;
         region += ui->lblSelectedDate->geometry().united(ui->lblDayOfWeek1->geometry());       // Mo-Sa
         region += ui->lblKW0->geometry().united(ui->lblKW4->geometry());                       // KWs
-        for (int r = 0; r < RowCount; ++r) region += getDateLabel(QPoint(5, r))->geometry();   // Saturdays
-        for (int r = 0; r < RowCount; ++r) region += getDateLabel(QPoint(6, r))->geometry();   // Sundays
+        for (int r = 0; r < rowCount_; ++r) region += getDateLabel(QPoint(5, r))->geometry();   // Saturdays
+        for (int r = 0; r < rowCount_; ++r) region += getDateLabel(QPoint(6, r))->geometry();   // Sundays
         QPainterPath pp; pp.addRegion(region);
         p.fillPath(pp, Qt::lightGray);
     }
@@ -134,8 +125,8 @@ void CalendarPopup::paintEvent(QPaintEvent *event)
     // highlight selection
     {
         QRegion region;
-        for (int c = 0; c < ColCount; ++c) region += getDateLabel(QPoint(c, selectedIdx_.y()))->geometry(); // row
-        for (int r = 0; r < RowCount; ++r) region += getDateLabel(QPoint(selectedIdx_.x(), r))->geometry(); // col
+        for (int c = 0; c < colCount_; ++c) region += getDateLabel(QPoint(c, selectedIdx_.y()))->geometry(); // row
+        for (int r = 0; r < rowCount_; ++r) region += getDateLabel(QPoint(selectedIdx_.x(), r))->geometry(); // col
         region += getKWLable(selectedIdx_)->geometry();
         region += getDayOfWeekLable(selectedIdx_)->geometry();
         QPainterPath pp; pp.addRegion(region);
@@ -203,7 +194,7 @@ void CalendarPopup::keyPressEvent(QKeyEvent * keyEvent)
 
 QLabel * CalendarPopup::getDateLabel(QPoint pos)
 {
-    switch (pos.x() + pos.y()*ColCount) {
+    switch (pos.x() + pos.y()*colCount_) {
     case  0: return ui->lblDay0;
     case  1: return ui->lblDay1;
     case  2: return ui->lblDay2;

@@ -9,9 +9,8 @@
 
 #include "ui_taskeditwidget.h"
 
-TaskEditWidget::TaskEditWidget(QWidget *parent) :
-    QDialog(parent),
-    ui(new Ui::TaskEditWidget)
+TaskEditWidget::TaskEditWidget(QWidget *parent)
+    : QDialog(parent), ui(new Ui::TaskEditWidget)
 {
     ui->setupUi(this);
 

@@ -20,8 +20,8 @@ namespace {
 
 QTextDocument docTimestamp; // fixme
 
-TopLevelItem * doneTopLevelItem;
-QList<TopLevelItem*> topLevelItems;
+TopLevelItem * doneTopLevelItem;    // fixme
+QList<TopLevelItem*> topLevelItems; // fixme
 
 void setTopLevelItemsHidden(bool hide, bool ignoreWithChildren = false)
 {
@@ -45,9 +45,9 @@ void updateNext(TaskTree * tree, QMutableListIterator<TopLevelItem*> & it, const
 void updateTopLevelItems(TaskTree * tree)
 {
     QMutableListIterator<TopLevelItem*> it(topLevelItems);
-    updateNext(tree, it, QDate(1970,1,1),   "Überfällig");
+    updateNext(tree, it, QDate(1970,1,1), "Überfällig");
 
-    // add for current week
+    // add entries for current week
     const QDate today = Clock::currentDate();
     const int offset = today.dayOfWeek();
     for (int i = offset ; i <= 7 ; ++i) {
@@ -56,7 +56,7 @@ void updateTopLevelItems(TaskTree * tree)
     }
 
     // add 'next week'
-    QDate nextWeekDate = today.addDays(7-today.dayOfWeek()+1);
+    const QDate nextWeekDate = today.addDays(7-today.dayOfWeek()+1);
     updateNext(tree, it, nextWeekDate, "Nächste Woche");
 
     // add 'future'

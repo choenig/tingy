@@ -12,7 +12,7 @@ class CalendarPopup : public QWidget
     Q_OBJECT
 
 public:
-    CalendarPopup(QWidget * parent = 0);
+    CalendarPopup(QWidget * parent, int colCount = 7, int rowCount = 5);
     ~CalendarPopup();
 
     void reset();
@@ -35,6 +35,9 @@ private:
     QPoint selectedIdx_;
     QDate  selectedDate_;
     QDate  currentStartDate_;
+    int    colCount_;
+    int    rowCount_;
+
 
 private:
     Ui::CalendarPopup * ui;
