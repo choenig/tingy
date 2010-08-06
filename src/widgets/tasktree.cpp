@@ -3,6 +3,7 @@
 #include <core/clock.h>
 #include <core/task.h>
 #include <core/taskmodel.h>
+#include <util/log.h>
 #include <widgets/taskeditwidget.h>
 #include <widgets/tasktreeitems.h>
 
@@ -235,7 +236,7 @@ void TaskTree::slotItemChanged(QTreeWidgetItem * item, int column)
 
 void TaskTree::handleDateChange()
 {
-    qDebug() << "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx TaskTree::handleDateChange();";
+    log << "TaskTree::handleDateChange();";
 
     // first gather all items up ...
     QList<TaskTreeItem *> allTaskItems;
