@@ -30,7 +30,8 @@ SOURCES += main.cpp \
     widgets/quickadddialog.cpp \
     core/networkstorage.cpp \
     widgets/datebeam.cpp \
-    core/settings.cpp
+    core/settings.cpp \
+    util/log.cpp
 
 HEADERS  += widgets/mainwindow.h \
     core/task.h \
@@ -50,7 +51,8 @@ HEADERS  += widgets/mainwindow.h \
     widgets/quickadddialog.h \
     core/networkstorage.h \
     widgets/datebeam.h \
-    core/settings.h
+    core/settings.h \
+    util/log.h
 
 FORMS    += widgets/ui/mainwindow.ui \
     widgets/ui/taskeditwidget.ui \

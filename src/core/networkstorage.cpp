@@ -4,6 +4,7 @@
 #include <core/filestorage.h>
 #include <core/settings.h>
 #include <core/taskmodel.h>
+#include <util/log.h>
 
 #include <QDebug>
 #include <QEventLoop>
@@ -190,7 +191,7 @@ private:
 
     void _q_commandFinished(int id, bool error)
     {
-        qDebug() << "_q_commandFinished();" << id << error << _q_toString(ftp->currentCommand());
+        log << "_q_commandFinished();" << id << error << _q_toString(ftp->currentCommand());
 
         if (error) {
             qDebug() << ftp->errorString();
@@ -276,7 +277,7 @@ void NetworkStorage::removeTask(const TaskId & taskId)
 
 void NetworkStorage::checkForChanges()
 {
-    qDebug() << Clock::currentDateTime() << "checking for changes ...";
+    log << "checking for changes ...";
 
     if (restoreInProgress_) return;
 
@@ -288,5 +289,5 @@ void NetworkStorage::checkForChanges()
 
     restoreInProgress_ = false;
 
-    qDebug() << Clock::currentDateTime() << "checking for changes ... [done]";
+    log << "checking for changes ... [done]";
 }

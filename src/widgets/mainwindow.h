@@ -32,6 +32,7 @@ private slots:
     void globalShortcutTriggered();
     void showTrayMessage(const QString & title, const QString & msg);
     void showDateInStatusbar(const QDate & date);
+    void dumpLog();
 
 private:
     void initActions();

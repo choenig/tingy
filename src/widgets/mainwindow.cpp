@@ -3,6 +3,7 @@
 #include <core/clock.h>
 #include <core/taskmodel.h>
 #include <qtextlib/qxtglobalshortcut.h>
+#include <util/log.h>
 #include <widgets/quickadddialog.h>
 
 #include <QCloseEvent>
@@ -11,6 +12,7 @@
 #include <QMessageBox>
 #include <QTimer>
 #include <QEvent>
+#include <QShortcut>
 
 #include "ui_mainwindow.h"
 
@@ -33,6 +35,8 @@ MainWindow::MainWindow(QWidget * parent)
 	QxtGlobalShortcut * globalShortcut = new QxtGlobalShortcut(QKeySequence("Ctrl+Alt+Home"), this);
 	globalShortcut->setEnabled(true);
 	connect(globalShortcut, SIGNAL(activated()), this, SLOT(globalShortcutTriggered()));
+
+	new QShortcut(QKeySequence("Ctrl+Shift+D"), this, SLOT(dumpLog()));
 }
 
 MainWindow::~MainWindow()
@@ -165,4 +169,7 @@ void MainWindow::showTrayMessage(const QString & title, const QString & msg)
     trayIcon_->showMessage(title, msg, QSystemTrayIcon::NoIcon);
 }
 
-
+void MainWindow::dumpLog()
+{
+    Log::dumpLog();
+}
