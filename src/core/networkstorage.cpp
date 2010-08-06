@@ -15,6 +15,14 @@
 #include <QTimer>
 #include <QUrlInfo>
 
+namespace {
+
+QString filenameFromTaskId(const TaskId & taskId) {
+    return taskId.toString() + ".task";
+}
+
+}
+
 class NetworkStoragePrivate
 {
 public:
@@ -55,7 +63,7 @@ public:
 
         Task::saveToFile(tempFile.fileName(), task);
 
-        QString filename = task.getId().toString() + ".task";
+        const QString filename = filenameFromTaskId(task.getId());
 
         ftp->cd(Settings::NetworkStorage::Taskdir());
         waitFor( ftp->put(&tempFile, filename) );
@@ -69,12 +77,24 @@ public:
     {
         _q_reconnect();
 
-        const QString filename = taskId.toString() + ".task";
+        const QString filename = filenameFromTaskId(taskId);
         if (availableTasks.contains(filename)) {
             ftp->cd( Settings::NetworkStorage::Taskdir() );
             waitFor( ftp->remove(filename) );
             availableTasks.remove(filename);
         }
+
+        _q_disconnect();
+    }
+
+    void moveToAttic(const TaskId & taskId)
+    {
+        _q_reconnect();
+
+        const QString filename = filenameFromTaskId(taskId);
+
+        ftp->cd(Settings::NetworkStorage::Taskdir());
+        waitFor( ftp->rename(filename, filename + ".attic") );
 
         _q_disconnect();
     }
