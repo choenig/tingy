@@ -52,7 +52,8 @@ HEADERS  += widgets/mainwindow.h \
     core/networkstorage.h \
     widgets/datebeam.h \
     core/settings.h \
-    util/log.h
+    util/log.h \
+    util/util.h
 
 FORMS    += widgets/ui/mainwindow.ui \
     widgets/ui/taskeditwidget.ui \

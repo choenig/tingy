@@ -245,10 +245,12 @@ NetworkStorage::NetworkStorage(QObject *parent)
     d->q_ptr = this;
     d->init();
 
+    // use Qt::QueuedConnection to make sure to loop the event loop on every action to have instant gui updates before
+    // updating the network files
     TaskModel * tm = TaskModel::instance();
-    connect(tm, SIGNAL(taskAdded(Task)), this, SLOT(addTask(Task)));
-    connect(tm, SIGNAL(taskUpdated(Task)), this, SLOT(updateTask(Task)));
-    connect(tm, SIGNAL(taskRemoved(TaskId)), this, SLOT(removeTask(TaskId)));
+    connect(tm, SIGNAL(taskAdded(Task)), this, SLOT(addTask(Task)), Qt::QueuedConnection);
+    connect(tm, SIGNAL(taskUpdated(Task)), this, SLOT(updateTask(Task)), Qt::QueuedConnection);
+    connect(tm, SIGNAL(taskRemoved(TaskId)), this, SLOT(removeTask(TaskId)), Qt::QueuedConnection);
 
     checkForChangesTimer_ = new QTimer(this);
     connect(checkForChangesTimer_, SIGNAL(timeout()), this, SLOT(checkForChanges()));

@@ -66,8 +66,8 @@ void QuickAddDialog::addNewTask()
 
     Task task = Task::createFromString(ui->leAddTask->text());
     if (task.isValid()) {
-        TaskModel::instance()->addTask(task);
         emit showMessage("Added new Task", task.getDescription());
+        TaskModel::instance()->addTask(task);
         accept();
     } else {
         reject();

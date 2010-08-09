@@ -2,10 +2,13 @@
 
 #include <core/clock.h>
 #include <util/parsetimestamp.h>
+#include <util/util.h>
 
 #include <QDebug>
 #include <QRegExp>
 #include <QSettings>
+
+QT_REGISTER_TYPE(Task);
 
 bool Task::isNull() const
 {
