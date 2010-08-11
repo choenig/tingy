@@ -63,6 +63,9 @@ private:
 	Task task_;
 };
 
+//
+// TopLevelItemDelegate
+
 class TopLevelItemDelegate : public QItemDelegate
 {
 public:

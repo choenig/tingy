@@ -15,9 +15,11 @@
 // "#9ebc20" dark grün
 // "#96bb00" darkest green for fonts
 
-int main(int argc, char *argv[])
+int main(int argc, char * argv[])
 {
     QApplication a(argc, argv);
+
+    // do not close the applicaton when the quicktingy is closed
     a.setQuitOnLastWindowClosed(false);
 
     // use 'de' as default locale

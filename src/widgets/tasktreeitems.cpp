@@ -6,15 +6,6 @@
 #include <QPainter>
 #include <QDebug>
 
-//
-// TopLevelItem
-
-//TopLevelItem::TopLevelItem(QTreeWidget * treeWidget, QTreeWidgetItem * itmBefore)
-//	: QTreeWidgetItem(treeWidget, itmBefore, Type)
-//{
-//	init(string);
-//}
-
 TopLevelItem::TopLevelItem(QTreeWidget * treeWidget)
 	: QTreeWidgetItem(treeWidget, Type)
 {
@@ -139,7 +130,7 @@ void TaskTreeItem::highlightDate(const QDate & date)
 
 	QFont f = font(1);
 	f.setUnderline(date.isValid() && task_.getEffectiveDate() == date);
-	f.setOverline(date.isValid() && task_.getEffectiveDate() == date);
+	f.setOverline( date.isValid() && task_.getEffectiveDate() == date);
 	setFont(1, f);
 }
 
