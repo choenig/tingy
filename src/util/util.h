@@ -1,6 +1,6 @@
 #pragma once
 
-#include <QtGlobal>
+#include <QtCore/qmetatype.h>
 
 #define QT_REGISTER_TYPE(ClassName) \
 	Q_DECLARE_METATYPE(ClassName) \
