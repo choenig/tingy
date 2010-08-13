@@ -2,7 +2,7 @@
 
 #include <util/util.h>
 
-QT_REGISTER_TYPE(TaskId);
+QT_REGISTER_TYPE(TaskId)
 
 TaskId TaskId::fromString(const QString &idString)
 {

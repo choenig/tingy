@@ -11,54 +11,57 @@ TEMPLATE = app
 
 INCLUDEPATH += . core widgets util qtextlib
 
-SOURCES += main.cpp \
-        widgets/mainwindow.cpp \
+SOURCES += \
+    core/clock.cpp \
+    core/effort.cpp \
+    core/filestorage.cpp \
+    core/networkstorage.cpp \
+    core/priority.cpp \
+    core/settings.cpp \
     core/task.cpp \
     core/taskid.cpp \
     core/taskmodel.cpp \
-    core/priority.cpp \
-    widgets/tasktree.cpp \
+    main.cpp \
+    util/log.cpp \
     util/parsetimestamp.cpp \
-    core/filestorage.cpp \
-    widgets/tasktreeitems.cpp \
-    core/effort.cpp \
-    widgets/taskeditwidget.cpp \
     widgets/autocompletelineedit.cpp \
     widgets/calendarpopup.cpp \
-    widgets/textpopup.cpp \
-    core/clock.cpp \
-    widgets/quickadddialog.cpp \
-    core/networkstorage.cpp \
     widgets/datebeam.cpp \
-    core/settings.cpp \
-    util/log.cpp
+    widgets/mainwindow.cpp \
+    widgets/quickadddialog.cpp \
+    widgets/taskeditwidget.cpp \
+    widgets/tasktree.cpp \
+    widgets/tasktreeitems.cpp \
+    widgets/textpopup.cpp
 
-HEADERS  += widgets/mainwindow.h \
+HEADERS  += \
+    core/clock.h \
+    core/effort.h \
+    core/filestorage.h \
+    core/networkstorage.h \
+    core/priority.h \
+    core/settings.h \
     core/task.h \
     core/taskid.h \
     core/taskmodel.h \
-    core/priority.h \
-    widgets/tasktree.h \
+    util/log.h \
     util/parsetimestamp.h \
-    core/filestorage.h \
-    widgets/tasktreeitems.h \
-    core/effort.h \
-    widgets/taskeditwidget.h \
+    util/util.h \
     widgets/autocompletelineedit.h \
     widgets/calendarpopup.h \
-    widgets/textpopup.h \
-    core/clock.h \
-    widgets/quickadddialog.h \
-    core/networkstorage.h \
     widgets/datebeam.h \
-    core/settings.h \
-    util/log.h \
-    util/util.h
+    widgets/mainwindow.h \
+    widgets/quickadddialog.h \
+    widgets/taskeditwidget.h \
+    widgets/tasktree.h \
+    widgets/tasktreeitems.h \
+    widgets/textpopup.h
 
-FORMS    += widgets/ui/mainwindow.ui \
-    widgets/ui/taskeditwidget.ui \
-    widgets/ui/calendarpopup.ui \
-    widgets/ui/quickadddialog.ui
+FORMS += \
+widgets/ui/calendarpopup.ui \
+widgets/ui/mainwindow.ui \
+widgets/ui/quickadddialog.ui \
+widgets/ui/taskeditwidget.ui
 
 RESOURCES += \
     tingy.qrc
