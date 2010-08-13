@@ -11,8 +11,10 @@ CONFIG += staticlib
 INCLUDEPATH += . qtextlib
 
 SOURCES += \
-    qxtglobalshortcut.cpp \
-    qxtglobalshortcut_x11.cpp
+    qxtglobalshortcut.cpp
+
+unix:SOURCES  += qxtglobalshortcut_x11.cpp
+win32:SOURCES += qxtglobalshortcut_win.cpp
 
 HEADERS  += \
     qxtglobalstuff.h \
