@@ -4,6 +4,8 @@
 #
 #-------------------------------------------------
 
+include(../../config.pri)
+
 TARGET = qtextlib
 TEMPLATE = lib
 CONFIG += staticlib
