@@ -26,11 +26,11 @@ private slots:
     void checkForChanges();
 
 private:
-    bool restoreInProgress_;
     QTimer * checkForChangesTimer_;
 
+    // list of tasks used to handle initial restore
+    QList<Task> newTasks_;
+
 private:
-    Q_PRIVATE_SLOT(d_func(), void _q_listInfo(QUrlInfo));
-    Q_PRIVATE_SLOT(d_func(), void _q_commandFinished(int,bool));
     NetworkStoragePrivate * const d_ptr;
 };

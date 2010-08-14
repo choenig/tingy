@@ -1,15 +1,19 @@
 #include "settings.h"
 
 #include <QSettings>
+#include <QDir>
 
 namespace {
-QString org = "tingy";
-QString app = "tingy";
+QString settingsPath = Settings::dataPath() + "tingy.conf";
 }
 
 
 namespace Settings
 {
+
+QString dataPath() {
+    return QDir::homePath() + QDir::separator() + ".tingy" + QDir::separator();
+}
 
 //
 // NetworkStorage
@@ -18,24 +22,29 @@ namespace NetworkStorage
 {
     QString ns = "NetworkStorage/";
 
+    bool Enabled() {
+        QSettings settings(settingsPath, QSettings::IniFormat);
+        return settings.value(ns + "Enabled", 0).toBool();
+    }
+
     QString Hostname() {
-        QSettings settings(org, app);
+        QSettings settings(settingsPath, QSettings::IniFormat);
         return settings.value(ns + "Hostname", "ftp.tingy.de").toString();
     }
 
     QString Username() {
-        QSettings settings(org, app);
-        return settings.value(ns + "Username", "tingy").toString();
+        QSettings settings(settingsPath, QSettings::IniFormat);
+        return settings.value(ns + "Username").toString();
     }
 
     QString Password() {
-        QSettings settings(org, app);
-        return settings.value(ns + "Password").toString(); // "Ym9VblJpcDc="
+        QSettings settings(settingsPath, QSettings::IniFormat);
+        return settings.value(ns + "Password").toString();
     }
 
     QString Taskdir() {
-        QSettings settings(org, app);
-        return settings.value(ns + "Taskdir", "/home/tingy/tasks").toString();
+        QSettings settings(settingsPath, QSettings::IniFormat);
+        return settings.value(ns + "Taskdir").toString();
     }
 }
 

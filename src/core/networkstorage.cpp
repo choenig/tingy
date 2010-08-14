@@ -2,6 +2,7 @@
 
 #include <core/clock.h>
 #include <core/filestorage.h>
+#include <core/ftp.h>
 #include <core/settings.h>
 #include <core/taskmodel.h>
 #include <util/log.h>
@@ -23,88 +24,58 @@ QString filenameFromTaskId(const TaskId & taskId) {
 
 }
 
+//
+// NetworkStoragePrivate
+
 class NetworkStoragePrivate
 {
 public:
-    NetworkStoragePrivate() : ftp(0) {}
-    ~NetworkStoragePrivate() { delete ftp; }
-
-    void init()
+    QList<Task> loadAllAvailableTasks()
     {
-        Q_Q(NetworkStorage);
-
-        ftp = new QFtp();
-        q->connect(ftp, SIGNAL(listInfo(QUrlInfo)),        q, SLOT(_q_listInfo(QUrlInfo)));
-        q->connect(ftp, SIGNAL(commandFinished(int,bool)), q, SLOT(_q_commandFinished(int,bool)));
-    }
-
-    void loadAllAvailableTasks()
-    {
-        _q_reconnect();
+        Ftp ftp;
 
         _q_reloadListOfAvailableTasks();
 
-        ftp->cd( Settings::NetworkStorage::Taskdir() );
-
+        QList<Task> retval;
         foreach (const QString & fileName, availableTasks.keys()) {
             Task task = _q_loadTaskFromFile(fileName);
-            if (task.isValid()) TaskModel::instance()->addTask(task);
+            if (task.isValid()) retval << task;
         }
 
-       _q_disconnect();
+       return retval;
     }
 
     void saveTaskToFile(const Task & task)
     {
-        _q_reconnect();
-
         QTemporaryFile tempFile;
         tempFile.open();
-
         Task::saveToFile(tempFile.fileName(), task);
 
         const QString filename = filenameFromTaskId(task.getId());
 
-        ftp->cd(Settings::NetworkStorage::Taskdir());
-        waitFor( ftp->put(&tempFile, filename) );
+        Ftp ftp;
+        ftp.put(filename, &tempFile);
 
-        availableTasks[filename] = QDateTime();
-
-        _q_disconnect();
+        availableTasks[filename] = QDateTime::currentDateTime();
     }
 
     void removeTask(const TaskId & taskId)
     {
-        _q_reconnect();
-
         const QString filename = filenameFromTaskId(taskId);
-        if (availableTasks.contains(filename)) {
-            ftp->cd( Settings::NetworkStorage::Taskdir() );
-            waitFor( ftp->remove(filename) );
-            availableTasks.remove(filename);
-        }
+        if (!availableTasks.contains(filename)) return;
 
-        _q_disconnect();
+        Ftp ftp;
+        ftp.remove(filename);
+        availableTasks.remove(filename);
     }
 
-    void moveToAttic(const TaskId & taskId)
+
+    void checkForChanges(QList<Task> & changedTasks)
     {
-        _q_reconnect();
-
-        const QString filename = filenameFromTaskId(taskId);
-
-        ftp->cd(Settings::NetworkStorage::Taskdir());
-        waitFor( ftp->rename(filename, filename + ".attic") );
-
-        _q_disconnect();
-    }
-
-    void checkForChanges()
-    {
-        _q_reconnect();
-
         // remember old list
         const QMap<QString, QDateTime> oldAvailableTasks = availableTasks;
+
+        Ftp ftp;
 
         // reload list of tasks
         _q_reloadListOfAvailableTasks();
@@ -115,14 +86,20 @@ public:
             // task is new, add it
             if (!oldAvailableTasks.contains(filename)) {
                 Task task = _q_loadTaskFromFile(filename);
-                if (task.isValid()) TaskModel::instance()->addTask(task);
+                if (task.isValid()) {
+                    changedTasks << task;
+                    TaskModel::instance()->addTask(task);
+                }
                 continue;
             }
 
             // task changed
             if (oldAvailableTasks[filename] != availableTasks[filename]) {
                 Task task = _q_loadTaskFromFile(filename);
-                if (task.isValid()) TaskModel::instance()->updateTask(task);
+                if (task.isValid()) {
+                    changedTasks << task;
+                    TaskModel::instance()->updateTask(task);
+                }
                 continue;
             }
         }
@@ -130,39 +107,23 @@ public:
         // check for removed tasks
         foreach (const QString & filename, oldAvailableTasks.keys()) {
             if (!availableTasks.contains(filename)) {
-                TaskModel::instance()->removeTask(TaskId::fromString(QString(filename).remove(".task")));
+                TaskId taskId = TaskId::fromString(QString(filename).remove(".task"));
+                changedTasks << Task(taskId);
+                TaskModel::instance()->removeTask(taskId);
             }
         }
-
-        _q_disconnect();
-    }
-
-    void waitFor(int id) {
-        waitForId = id;
-        loop.exec();
     }
 
 private:
-    void _q_reconnect()
-    {
-        if (ftp->state() == QFtp::LoggedIn) ftp->close();
-
-        ftp->connectToHost(Settings::NetworkStorage::Hostname());
-        waitFor( ftp->login(Settings::NetworkStorage::Username(),
-                            QByteArray::fromBase64(Settings::NetworkStorage::Password().toLatin1())) );
-    }
-
-    void _q_disconnect()
-    {
-        waitFor( ftp->close() );
-    }
-
     void _q_reloadListOfAvailableTasks()
     {
         availableTasks.clear();
 
-        ftp->cd( Settings::NetworkStorage::Taskdir() );
-        waitFor( ftp->list() );
+        Ftp ftp;
+        QList<QUrlInfo> urlInfos = ftp.ls(QRegExp("*.task", Qt::CaseSensitive, QRegExp::Wildcard));
+        foreach (const QUrlInfo & urlInfo, urlInfos) {
+            availableTasks[urlInfo.name()] = urlInfo.lastModified();
+        }
     }
 
     Task _q_loadTaskFromFile(const QString & fileName)
@@ -170,7 +131,8 @@ private:
         QTemporaryFile tempFile;
         tempFile.open();
 
-        waitFor( ftp->get(fileName, &tempFile) );
+        Ftp ftp;
+        ftp.get(fileName, &tempFile);
 
         tempFile.close();
 
@@ -179,54 +141,8 @@ private:
         return Task();
     }
 
-    void _q_listInfo(const QUrlInfo & urlInfo)
-    {
-        const QRegExp re("*.task", Qt::CaseSensitive, QRegExp::Wildcard);
-        if (re.exactMatch(urlInfo.name())) {
-            availableTasks[urlInfo.name()] = urlInfo.lastModified();
-        }
-    }
-
-    QString _q_toString(QFtp::Command cmd)
-    {
-        switch (cmd) {
-        case QFtp::None:            return "None";
-        case QFtp::SetTransferMode: return "SetTransferMode";
-        case QFtp::SetProxy:        return "SetProxy";
-        case QFtp::ConnectToHost:   return "ConnectToHost";
-        case QFtp::Login:           return "Login";
-        case QFtp::Close:           return "Close";
-        case QFtp::List:            return "List";
-        case QFtp::Cd:              return "Cd";
-        case QFtp::Get:             return "Get";
-        case QFtp::Put:             return "Put";
-        case QFtp::Remove:          return "Remove";
-        case QFtp::Mkdir:           return "Mkdir";
-        case QFtp::Rmdir:           return "Rmdir";
-        case QFtp::Rename:          return "Rename";
-        case QFtp::RawCommand:      return "RawCommand";
-        }
-        return "";
-    }
-
-    void _q_commandFinished(int id, bool error)
-    {
-        log << "_q_commandFinished();" << id << error << _q_toString(ftp->currentCommand());
-
-        if (error) {
-            qDebug() << ftp->errorString();
-            loop.exit(1);
-        } else if (id == waitForId) {
-            loop.exit(0);
-        }
-    }
-
 private:
-    QFtp * ftp;
     QMap<QString, QDateTime> availableTasks;
-
-    int waitForId;
-    QEventLoop loop;
 
 public:
     Q_DECLARE_PUBLIC(NetworkStorage)
@@ -239,11 +155,10 @@ public:
 // NetworkStorage
 
 NetworkStorage::NetworkStorage(QObject *parent)
-    : QObject(parent), restoreInProgress_(false), checkForChangesTimer_(0), d_ptr(new NetworkStoragePrivate)
+    : QObject(parent), checkForChangesTimer_(0), d_ptr(new NetworkStoragePrivate)
 {
     Q_D(NetworkStorage);
     d->q_ptr = this;
-    d->init();
 
     // use Qt::QueuedConnection to make sure to loop the event loop on every action to have instant gui updates before
     // updating the network files
@@ -254,7 +169,7 @@ NetworkStorage::NetworkStorage(QObject *parent)
 
     checkForChangesTimer_ = new QTimer(this);
     connect(checkForChangesTimer_, SIGNAL(timeout()), this, SLOT(checkForChanges()));
-    checkForChangesTimer_->start(60 * 1000);
+    checkForChangesTimer_->start(30 * 1000);
 }
 
 NetworkStorage::~NetworkStorage()
@@ -264,18 +179,20 @@ NetworkStorage::~NetworkStorage()
 
 void NetworkStorage::restoreFromFiles()
 {
-    restoreInProgress_ = true;
+    newTasks_.clear();
 
     // reload all task files
     Q_D(NetworkStorage);
-    d->loadAllAvailableTasks();
-
-    restoreInProgress_ = false;
+    newTasks_ = d->loadAllAvailableTasks();
+    TaskModel::instance()->init(newTasks_);
 }
 
 void NetworkStorage::addTask(const Task & task)
 {
-    if (restoreInProgress_) return;
+    if (newTasks_.contains(task)) {
+        newTasks_.removeOne(task);
+        return;
+    }
 
     Q_D(NetworkStorage);
     d->saveTaskToFile(task);
@@ -283,7 +200,10 @@ void NetworkStorage::addTask(const Task & task)
 
 void NetworkStorage::updateTask(const Task & task)
 {
-    if (restoreInProgress_) return;
+    if (newTasks_.contains(task)) {
+        newTasks_.removeOne(task);
+        return;
+    }
 
     Q_D(NetworkStorage);
     d->saveTaskToFile(task);
@@ -291,7 +211,12 @@ void NetworkStorage::updateTask(const Task & task)
 
 void NetworkStorage::removeTask(const TaskId & taskId)
 {
-    if (restoreInProgress_) return;
+    foreach (const Task & task, newTasks_) {
+        if (task.getId() == taskId) {
+            newTasks_.removeOne(task);
+            return;
+        }
+    }
 
     Q_D(NetworkStorage);
     d->removeTask(taskId);
@@ -301,15 +226,12 @@ void NetworkStorage::checkForChanges()
 {
     log << "checking for changes ...";
 
-    if (restoreInProgress_) return;
-
-    restoreInProgress_ = true;
+    // seems initial reload is in progress
+    if (!newTasks_.isEmpty()) return;
 
     // check for changes
     Q_D(NetworkStorage);
-    d->checkForChanges();
-
-    restoreInProgress_ = false;
+    d->checkForChanges(newTasks_);
 
     log << "checking for changes ... [done]";
 }

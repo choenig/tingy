@@ -13,11 +13,12 @@
 class Task
 {
 public:
+    Task(const TaskId & taskId = TaskId());
+
     bool isNull() const;
     bool isValid() const;
 
     TaskId getId() const { return id_; }
-    void setId(const TaskId & taskId) { id_ = taskId; }
 
     QDateTime getCreationTimestamp() const { return creationTimestamp_; }
     void setCreationTimestamp(const QDateTime & timestamp) { creationTimestamp_ = timestamp; }

@@ -10,6 +10,12 @@
 
 QT_REGISTER_TYPE(Task);
 
+Task::Task(const TaskId & taskId)
+    : id_(taskId)
+{
+
+}
+
 bool Task::isNull() const
 {
     return id_.isNull() && creationTimestamp_.isNull() && description_.isNull();
@@ -108,8 +114,7 @@ Task Task::loadFromFile(const QString & filePath)
     const QSettings settings(filePath, QSettings::IniFormat);
     const int version = settings.value("fileStorageVersion").toInt();
 
-    Task task;
-    task.setId(TaskId::fromString(settings.value("task/id").toString()));
+    Task task(TaskId::fromString(settings.value("task/id").toString()));
     task.setCreationTimestamp(QDateTime::fromString(settings.value("task/creationTimestamp").toString(), Qt::ISODate));
     task.setPriority((Priority::Level)settings.value("task/priority").toInt());
     task.setDescription(settings.value("task/description").toString());

@@ -12,9 +12,14 @@
 class Logger
 {
 public:
-    void add(const QDateTime & now, const QString & file, int line, const QString & str)
+    void add(const QDateTime & now, const QString & file, int line, const QString & msg, bool print = false)
     {
-        logBuffer[now] = "| " + file.leftJustified(24, ' ', true) + " " + QString::number(line).rightJustified(4) + " |" + str;
+        QString logStr = "| " + file.leftJustified(24, ' ', true) + " " + QString::number(line).rightJustified(4) + " |" + msg;
+        logBuffer[now] = logStr;
+
+        if (print) {
+            qDebug() << now.toString("dd.MM.yyyy hh:mm:ss.zzz") << logStr;
+        }
 
         // clean up: remove all entries that are older then two days
         const QDateTime past = now.addDays(-2);

@@ -17,11 +17,9 @@ public:
 
     static TaskModel * instance() { return instance_; }
 
-    bool saveToFile() const;
-    bool restoreFromFile();
+    void init(const QList<Task> tasks);
 
 public slots:
-    void clear();
     void addTask(const Task & task);
     void updateTask(const Task & task);
     void removeTask(const TaskId & taskId);

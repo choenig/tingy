@@ -12,7 +12,7 @@ class FileStorage : public QObject
     Q_OBJECT
 
 public:
-    FileStorage();
+    FileStorage(QObject * parent = 0);
 
 public slots:
     void restoreFromFiles();
@@ -27,5 +27,7 @@ private:
 
 private:
     QDir fileDir_;
-    bool restoreInProgress_;
+
+    // list of tasks used to handle initial restore
+    QList<Task> newTasks_;
 };

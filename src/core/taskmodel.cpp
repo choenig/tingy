@@ -16,10 +16,12 @@ TaskModel::~TaskModel()
 	if (instance_ == this) instance_ = 0;
 }
 
-void TaskModel::clear()
+void TaskModel::init(const QList<Task> tasks)
 {
-    foreach (const TaskId & taskId, tasks_.keys()) {
-        removeTask(taskId);
+    Q_ASSERT(tasks_.isEmpty());
+
+    foreach (const Task & task, tasks) {
+        addTask(task);
     }
 }
 
