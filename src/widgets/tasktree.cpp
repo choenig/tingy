@@ -103,9 +103,9 @@ TaskTree::TaskTree(QWidget *parent)
 	connect(this, SIGNAL(itemChanged(QTreeWidgetItem*,int)), this, SLOT(slotItemChanged(QTreeWidgetItem*,int)));
 
     TaskModel * tm = TaskModel::instance();
-    connect(tm, SIGNAL(taskAdded(Task)), this, SLOT(addTask(Task)));
-    connect(tm, SIGNAL(taskUpdated(Task)), this, SLOT(updateTask(Task)));
-    connect(tm, SIGNAL(taskRemoved(TaskId)), this, SLOT(removeTask(TaskId)));
+    connect(tm, SIGNAL(taskAdded(Task)),        this, SLOT(addTask(Task)));
+    connect(tm, SIGNAL(taskUpdated(Task,bool)), this, SLOT(updateTask(Task,bool)));
+    connect(tm, SIGNAL(taskRemoved(TaskId)),    this, SLOT(removeTask(TaskId)));
 
     initTopLevelItems(this);
 
@@ -169,8 +169,10 @@ void TaskTree::addTask(const Task & task)
 
 }
 
-void TaskTree::updateTask(const Task & task)
+void TaskTree::updateTask(const Task & task, bool doneChanged)
 {
+    Q_UNUSED(doneChanged)
+
     TaskTreeItem * updatedTaskTreeItem = findTaskTreeItem(task.getId());
     if (!updatedTaskTreeItem) return;
 

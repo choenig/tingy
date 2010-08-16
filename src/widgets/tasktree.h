@@ -24,7 +24,7 @@ public slots:
 private slots:
 	void init();
 	void addTask(const Task & task);
-	void updateTask(const Task & task);
+	void updateTask(const Task & task, bool doneChanged);
 	void removeTask(const TaskId & taskId);
 
 	void slotItemDoubleClicked(QTreeWidgetItem * item, int column);

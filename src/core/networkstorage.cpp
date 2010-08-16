@@ -17,11 +17,9 @@
 #include <QUrlInfo>
 
 namespace {
-
 QString filenameFromTaskId(const TaskId & taskId) {
     return taskId.toString() + ".task";
 }
-
 }
 
 //
@@ -30,103 +28,26 @@ QString filenameFromTaskId(const TaskId & taskId) {
 class NetworkStoragePrivate
 {
 public:
+    NetworkStoragePrivate(NetworkStorage * q_ptr) : q_ptr(q_ptr)
+    {
+    }
+
     QList<Task> loadAllAvailableTasks()
     {
         Ftp ftp;
 
-        _q_reloadListOfAvailableTasks();
+        availableTasks_ = lsAvailableTasks();
 
         QList<Task> retval;
-        foreach (const QString & fileName, availableTasks.keys()) {
-            Task task = _q_loadTaskFromFile(fileName);
+        foreach (const QString & fileName, availableTasks_.keys()) {
+            Task task = loadTaskFromFile(fileName);
             if (task.isValid()) retval << task;
         }
 
        return retval;
     }
 
-    void saveTaskToFile(const Task & task)
-    {
-        QTemporaryFile tempFile;
-        tempFile.open();
-        Task::saveToFile(tempFile.fileName(), task);
-
-        const QString filename = filenameFromTaskId(task.getId());
-
-        Ftp ftp;
-        ftp.put(filename, &tempFile);
-
-        availableTasks[filename] = QDateTime::currentDateTime();
-    }
-
-    void removeTask(const TaskId & taskId)
-    {
-        const QString filename = filenameFromTaskId(taskId);
-        if (!availableTasks.contains(filename)) return;
-
-        Ftp ftp;
-        ftp.remove(filename);
-        availableTasks.remove(filename);
-    }
-
-
-    void checkForChanges(QList<Task> & changedTasks)
-    {
-        // remember old list
-        const QMap<QString, QDateTime> oldAvailableTasks = availableTasks;
-
-        Ftp ftp;
-
-        // reload list of tasks
-        _q_reloadListOfAvailableTasks();
-
-        // check for new and updated tasks
-        foreach (const QString & filename, availableTasks.keys())
-        {
-            // task is new, add it
-            if (!oldAvailableTasks.contains(filename)) {
-                Task task = _q_loadTaskFromFile(filename);
-                if (task.isValid()) {
-                    changedTasks << task;
-                    TaskModel::instance()->addTask(task);
-                }
-                continue;
-            }
-
-            // task changed
-            if (oldAvailableTasks[filename] != availableTasks[filename]) {
-                Task task = _q_loadTaskFromFile(filename);
-                if (task.isValid()) {
-                    changedTasks << task;
-                    TaskModel::instance()->updateTask(task);
-                }
-                continue;
-            }
-        }
-
-        // check for removed tasks
-        foreach (const QString & filename, oldAvailableTasks.keys()) {
-            if (!availableTasks.contains(filename)) {
-                TaskId taskId = TaskId::fromString(QString(filename).remove(".task"));
-                changedTasks << Task(taskId);
-                TaskModel::instance()->removeTask(taskId);
-            }
-        }
-    }
-
-private:
-    void _q_reloadListOfAvailableTasks()
-    {
-        availableTasks.clear();
-
-        Ftp ftp;
-        QList<QUrlInfo> urlInfos = ftp.ls(QRegExp("*.task", Qt::CaseSensitive, QRegExp::Wildcard));
-        foreach (const QUrlInfo & urlInfo, urlInfos) {
-            availableTasks[urlInfo.name()] = urlInfo.lastModified();
-        }
-    }
-
-    Task _q_loadTaskFromFile(const QString & fileName)
+    Task loadTaskFromFile(const QString & fileName)
     {
         QTemporaryFile tempFile;
         tempFile.open();
@@ -141,8 +62,90 @@ private:
         return Task();
     }
 
+    void saveTaskToFile(const Task & task)
+    {
+        QTemporaryFile tempFile;
+        tempFile.open();
+        Task::saveToFile(tempFile.fileName(), task);
+
+        const QString filename = filenameFromTaskId(task.getId()) + (task.isDone() ? ".done" : "");
+
+        Ftp ftp;
+        ftp.put(filename, &tempFile);
+
+        availableTasks_[filename] = QDateTime::currentDateTime();
+    }
+
+    void removeTask(const QString & filename)
+    {
+        if (!availableTasks_.contains(filename)) return;
+
+        Ftp ftp;
+        ftp.remove(filename);
+
+        availableTasks_.remove(filename);
+    }
+
+
+    void checkForChanges(QList<Task> & changedTasks)
+    {
+        // remember old list
+        const QMap<QString, QDateTime> oldAvailableTasks = availableTasks_;
+
+        Ftp ftp;
+
+        // reload list of tasks
+        availableTasks_ = lsAvailableTasks();
+
+        // check for new and updated tasks
+        foreach (const QString & filename, availableTasks_.keys())
+        {
+            // task is new, add it
+            if (!oldAvailableTasks.contains(filename)) {
+                Task task = loadTaskFromFile(filename);
+                if (task.isValid()) {
+                    changedTasks << task;
+                    TaskModel::instance()->addTask(task);
+                }
+                continue;
+            }
+
+            // task changed
+            if (oldAvailableTasks[filename] != availableTasks_[filename]) {
+                Task task = loadTaskFromFile(filename);
+                if (task.isValid()) {
+                    changedTasks << task;
+                    TaskModel::instance()->updateTask(task);
+                }
+                continue;
+            }
+        }
+
+        // check for removed tasks
+        foreach (const QString & filename, oldAvailableTasks.keys()) {
+            if (!availableTasks_.contains(filename)) {
+                TaskId taskId = TaskId::fromString(QString(filename).remove(".task"));
+                changedTasks << Task(taskId);
+                TaskModel::instance()->removeTask(taskId);
+            }
+        }
+    }
+
+    QMap<QString, QDateTime> lsAvailableTasks()
+    {
+        QMap<QString, QDateTime> retval;
+
+        Ftp ftp;
+        QList<QUrlInfo> urlInfos = ftp.ls( QRegExp("*.task", Qt::CaseSensitive, QRegExp::Wildcard) );
+        foreach (const QUrlInfo & urlInfo, urlInfos) {
+            retval[urlInfo.name()] = urlInfo.lastModified();
+        }
+
+        return retval;
+    }
+
 private:
-    QMap<QString, QDateTime> availableTasks;
+    QMap<QString, QDateTime> availableTasks_;
 
 public:
     Q_DECLARE_PUBLIC(NetworkStorage)
@@ -155,17 +158,14 @@ public:
 // NetworkStorage
 
 NetworkStorage::NetworkStorage(QObject *parent)
-    : QObject(parent), checkForChangesTimer_(0), d_ptr(new NetworkStoragePrivate)
+    : QObject(parent), checkForChangesTimer_(0), d_ptr(new NetworkStoragePrivate(this))
 {
-    Q_D(NetworkStorage);
-    d->q_ptr = this;
-
     // use Qt::QueuedConnection to make sure to loop the event loop on every action to have instant gui updates before
     // updating the network files
     TaskModel * tm = TaskModel::instance();
-    connect(tm, SIGNAL(taskAdded(Task)), this, SLOT(addTask(Task)), Qt::QueuedConnection);
-    connect(tm, SIGNAL(taskUpdated(Task)), this, SLOT(updateTask(Task)), Qt::QueuedConnection);
-    connect(tm, SIGNAL(taskRemoved(TaskId)), this, SLOT(removeTask(TaskId)), Qt::QueuedConnection);
+    connect(tm, SIGNAL(taskAdded(Task)),        this, SLOT(addTask(Task)),         Qt::QueuedConnection);
+    connect(tm, SIGNAL(taskUpdated(Task,bool)), this, SLOT(updateTask(Task,bool)), Qt::QueuedConnection);
+    connect(tm, SIGNAL(taskRemoved(TaskId)),    this, SLOT(removeTask(TaskId)),    Qt::QueuedConnection);
 
     checkForChangesTimer_ = new QTimer(this);
     connect(checkForChangesTimer_, SIGNAL(timeout()), this, SLOT(checkForChanges()));
@@ -198,7 +198,7 @@ void NetworkStorage::addTask(const Task & task)
     d->saveTaskToFile(task);
 }
 
-void NetworkStorage::updateTask(const Task & task)
+void NetworkStorage::updateTask(const Task & task, bool doneChanged)
 {
     if (newTasks_.contains(task)) {
         newTasks_.removeOne(task);
@@ -206,6 +206,11 @@ void NetworkStorage::updateTask(const Task & task)
     }
 
     Q_D(NetworkStorage);
+
+    // remove 'other' file
+    if (doneChanged) d->removeTask(filenameFromTaskId(task.getId()) + (task.isDone() ? "" : ".done"));
+
+    // save new task
     d->saveTaskToFile(task);
 }
 
@@ -219,7 +224,7 @@ void NetworkStorage::removeTask(const TaskId & taskId)
     }
 
     Q_D(NetworkStorage);
-    d->removeTask(taskId);
+    d->removeTask(filenameFromTaskId(taskId));
 }
 
 void NetworkStorage::checkForChanges()

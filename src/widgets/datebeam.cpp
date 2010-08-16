@@ -21,9 +21,9 @@ DateBeam::DateBeam(QWidget *parent) :
     // fixme cleanup tasks from the past in datesWithTasks_
 
     TaskModel * tm = TaskModel::instance();
-    connect(tm, SIGNAL(taskAdded(Task)), this, SLOT(addTask(Task)));
-    connect(tm, SIGNAL(taskUpdated(Task)), this, SLOT(updateTask(Task)));
-    connect(tm, SIGNAL(taskRemoved(TaskId)), this, SLOT(removeTask(TaskId)));
+    connect(tm, SIGNAL(taskAdded(Task)),        this, SLOT(addTask(Task)));
+    connect(tm, SIGNAL(taskUpdated(Task,bool)), this, SLOT(updateTask(Task,bool)));
+    connect(tm, SIGNAL(taskRemoved(TaskId)),    this, SLOT(removeTask(TaskId)));
 }
 
 QSize DateBeam::sizeHint() const
@@ -153,8 +153,10 @@ void DateBeam::addTask(const Task & task)
 	update();
 }
 
-void DateBeam::updateTask(const Task & task)
+void DateBeam::updateTask(const Task & task, bool doneChanged)
 {
+	Q_UNUSED(doneChanged);
+
 	QDate oldEffDate;
 	foreach (const QDate & d, datesWithTasks_.keys()) {
 		if (datesWithTasks_[d].contains(task.getId())) {

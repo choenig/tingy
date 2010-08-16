@@ -49,7 +49,7 @@ void TaskModel::updateTask(const Task & task)
     if (task == oldTask) return;
 
     tasks_[task.getId()] = task;
-    emit taskUpdated(task);
+    emit taskUpdated(task, oldTask.isDone() != task.isDone());
 
     if (overdueTasks_.contains(task.getId()) != task.isOverdue()) {
         if (task.isOverdue()) {

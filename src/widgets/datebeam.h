@@ -34,7 +34,7 @@ protected:
 
 private slots:
     void addTask(const Task & task);
-    void updateTask(const Task & task);
+    void updateTask(const Task & task, bool doneChanged);
     void removeTask(const TaskId & taskId);
 
 private:

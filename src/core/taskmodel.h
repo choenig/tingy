@@ -26,7 +26,7 @@ public slots:
 
 signals:
     void taskAdded(const Task & task);
-    void taskUpdated(const Task & task);
+    void taskUpdated(const Task & task, bool doneChanged);
     void taskRemoved(const TaskId & taskId);
     void hasOverdueTasks(bool b);
 
