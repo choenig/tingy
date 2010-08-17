@@ -72,3 +72,4 @@ RESOURCES += \
 
 QMAKE_LIBDIR += $$PWD/qtextlib
 LIBS += -lqtextlib
+win32:RC_FILE = images/tingy.rc
