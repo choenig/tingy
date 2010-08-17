@@ -17,7 +17,9 @@ QuickAddDialog::QuickAddDialog(QWidget *parent) :
     ui(new Ui::QuickAddDialog)
 {
     ui->setupUi(this);
+#if QT_VERSION >= 0x040700
     ui->leAddTask->setPlaceholderText("Neuen Task hinzufügen");
+#endif
     connect(ui->leAddTask, SIGNAL(returnPressed()), this, SLOT(addNewTask()));
 
     setWindowFlags(Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);

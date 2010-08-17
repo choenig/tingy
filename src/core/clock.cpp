@@ -13,7 +13,11 @@ Clock::Clock()
 }
 
 Clock::Clock(const QDateTime &now)
+#if QT_VERSION >= 0x040700
     : offsetInMSecs_(QDateTime::currentDateTime().msecsTo(now))
+#else
+    : offsetInMSecs_(QDateTime::currentDateTime().secsTo(now)*1000)
+#endif
 {
     if (instance_ == 0) instance_ = this;
     init();
@@ -41,7 +45,11 @@ void Clock::init()
 qint64 Clock::msecsTillTomorrow() const
 {
     QDateTime now = currentDateTime();
+#if QT_VERSION >= 0x040700
     return now.msecsTo(QDateTime(now.date().addDays(1)));
+#else
+    return now.secsTo(QDateTime(now.date().addDays(1)))*1000;
+#endif
 }
 
 QDateTime Clock::currentDateTime()
