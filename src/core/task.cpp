@@ -63,6 +63,9 @@ Task Task::createFromString(const QString & string)
     task.creationTimestamp_ = Clock::currentDateTime();
     task.description_ = string;
 
+    // replace '\\' by newlines
+    task.description_.replace(QRegExp("\\s*//\\s*"), "\n");
+
     // parse date like "*today"
     QRegExp reDue("\\*([^ ]+)");
     if (task.description_.indexOf(reDue) >= 0) {
@@ -90,7 +93,7 @@ Task Task::createFromString(const QString & string)
         task.description_.remove(rePriority);
     }
 
-    task.description_ = task.description_.simplified();
+    task.description_ = task.description_.trimmed();
 
     return task;
 }
