@@ -61,7 +61,7 @@ Task TaskEditWidget::exec(const Task & task)
     // load task from GUI
     Task retval = task;
     retval.setPriority((Priority::Level)ui->cbPrio->itemData(ui->cbPrio->currentIndex()).toInt());
-    retval.setDescription(ui->leDescription->toPlainText().simplified());
+    retval.setDescription(ui->leDescription->toPlainText().trimmed());
     retval.setEffort(Effort::fromString(ui->leEffort->text()));
     retval.setDueDate(ui->chkDue->isChecked() ? ui->calDue->date() : QDate());
     retval.setPlannedDate(ui->chkPlanned->isChecked() ? ui->calPlanned->date() : QDate());
