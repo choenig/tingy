@@ -13,7 +13,6 @@ QT_REGISTER_TYPE(Task);
 Task::Task(const TaskId & taskId)
     : id_(taskId)
 {
-
 }
 
 bool Task::isNull() const
@@ -63,7 +62,7 @@ Task Task::createFromString(const QString & string)
     task.creationTimestamp_ = Clock::currentDateTime();
     task.description_ = string;
 
-    // replace '\\' by newlines
+    // replace '//' by newlines
     task.description_.replace(QRegExp("\\s*//\\s*"), "\n");
 
     // parse date like "*today"

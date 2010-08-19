@@ -6,13 +6,13 @@
 Clock * Clock::instance_ = 0;
 
 Clock::Clock()
-    :  offsetInMSecs_(0)
+    : offsetInMSecs_(0)
 {
     if (instance_ == 0) instance_ = this;
     init();
 }
 
-Clock::Clock(const QDateTime &now)
+Clock::Clock(const QDateTime & now)
 #if QT_VERSION >= 0x040700
     : offsetInMSecs_(QDateTime::currentDateTime().msecsTo(now))
 #else

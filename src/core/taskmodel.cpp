@@ -16,7 +16,7 @@ TaskModel::~TaskModel()
 	if (instance_ == this) instance_ = 0;
 }
 
-void TaskModel::init(const QList<Task> tasks)
+void TaskModel::init(const QList<Task> & tasks)
 {
     Q_ASSERT(tasks_.isEmpty());
 

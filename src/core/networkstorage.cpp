@@ -49,7 +49,9 @@ public:
 
     Task loadTaskFromFile(const QString & fileName)
     {
-        QTemporaryFile tempFile;
+        // try to enforce a really uniq tempfileName as QSettings tries to cache and seems not to reload the file in some cases
+        QString templateName = QDir::tempPath() + QDir::separator() + "tingy." + QString::number(qrand()%1000);
+        QTemporaryFile tempFile(templateName);
         tempFile.open();
 
         Ftp ftp;

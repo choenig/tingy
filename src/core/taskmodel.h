@@ -17,7 +17,7 @@ public:
 
     static TaskModel * instance() { return instance_; }
 
-    void init(const QList<Task> tasks);
+    void init(const QList<Task> & tasks);
 
 public slots:
     void addTask(const Task & task);
