@@ -18,6 +18,8 @@ QuickAddDialog::QuickAddDialog(QWidget *parent) :
 {
     ui->setupUi(this);
     ui->leAddTask->setInfoText("Neuen Task hinzufügen");
+    ui->leAddTask->setLeftIcon(QPixmap(":/images/add.png"));
+    ui->leAddTask->setRightIcon(QPixmap(":/images/clear.png"));
     connect(ui->leAddTask, SIGNAL(returnPressed()), this, SLOT(addNewTask()));
 
     setWindowFlags(Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
