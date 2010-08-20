@@ -88,7 +88,7 @@ void TaskTreeItem::update()
 		infos << QString::fromUtf8("\xe2\x86\xb4") + task_.getPlannedDate().toString("dd.MM.yyyy");
 	if (task_.getDueDate().isValid())
 		infos << QString::fromUtf8("\xe2\x8a\x9a") + task_.getDueDate().toString("dd.MM.yyyy");
-	setText(1, task_.getDescription() + (!infos.isEmpty() ? " [" + infos.join(QString::fromUtf8(" \xe2\x80\xa2 ")) + "]" : QString()));
+	setText(1, task_.getTitle() + (!infos.isEmpty() ? " [" + infos.join(QString::fromUtf8(" \xe2\x80\xa2 ")) + "]" : QString()));
 
 	// fgColor
 	QColor fgColor = Qt::black;
@@ -113,6 +113,7 @@ void TaskTreeItem::update()
 	QString tooltip ;
 	tooltip += "<table>";
 	tooltip += "<tr><td><b>Priorität:</b></td><td>" + task_.getPriority().toTrString() + "</td></tr>";
+	tooltip += "<tr><td><b>Title:</b></td><td>" + task_.getTitle() + "</td></tr>";
 	tooltip += "<tr><td><b>Beschreibung:</b></td><td>" + task_.getDescription() + "</td></tr>";
 	tooltip += "<tr><td><b>Aufwand:</b></td><td>" + task_.getEffort().toString() + "</td></tr>";
 	tooltip += "<tr><td><b>Due:</b></td><td>" + QLocale().toString(task_.getDueDate(), "dddd, dd.MM.yyyy") + "</td></tr>";

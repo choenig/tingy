@@ -326,7 +326,7 @@ void TaskTree::contextMenuEvent(QContextMenuEvent * e)
     if (act == removeTaskAct)
     {
         int result = QMessageBox::question(this, tr("Task löschen?"),
-                                           tr("Sind Sie sicher, dass Sie den Task '%1' löschen möchten?").arg(task.getDescription()),
+                                           tr("Sind Sie sicher, dass Sie den Task '%1' löschen möchten?").arg(task.getTitle()),
                                            QMessageBox::Yes | QMessageBox::No);
         if (result == QMessageBox::Yes) {
             TaskModel::instance()->removeTask(task.getId());

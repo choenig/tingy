@@ -26,6 +26,9 @@ public:
     Priority getPriority() const { return priority_; }
     void setPriority(const Priority & priority) { priority_ = priority; }
 
+    QString getTitle() const { return title_; }
+    void setTitle(const QString & title) { title_ = title; }
+
     QString getDescription() const { return description_; }
     void setDescription(const QString & description) { description_ = description; }
 
@@ -63,6 +66,7 @@ private:
     TaskId    id_;
     QDateTime creationTimestamp_;
     Priority  priority_;
+    QString   title_;
     QString   description_;
     QDate     dueDate_;
     QDate     plannedDate_;
@@ -80,6 +84,7 @@ inline QDataStream & operator<<(QDataStream & out, const Task & task) {
     out << task.id_
         << task.creationTimestamp_
         << task.priority_
+        << task.title_
         << task.description_
         << task.dueDate_
         << task.plannedDate_
@@ -91,6 +96,7 @@ inline QDataStream & operator>>(QDataStream & in, Task & task) {
     in  >> task.id_
         >> task.creationTimestamp_
         >> task.priority_
+        >> task.title_
         >> task.description_
         >> task.dueDate_
         >> task.plannedDate_

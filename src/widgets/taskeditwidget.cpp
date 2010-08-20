@@ -44,6 +44,7 @@ Task TaskEditWidget::exec(const Task & task)
     // write the task into the GUI
     ui->lblCreated->setText(QLocale().toString(task.getCreationTimestamp(), timeformat));
     ui->cbPrio->setCurrentIndex(ui->cbPrio->findData(task.getPriority().toInt()));
+    ui->leTitle->setText(task.getTitle());
     ui->leDescription->setPlainText(task.getDescription());
     ui->leEffort->setText(task.getEffort().toString());
     ui->chkDue->setChecked(task.getDueDate().isValid());
@@ -61,6 +62,7 @@ Task TaskEditWidget::exec(const Task & task)
     // load task from GUI
     Task retval = task;
     retval.setPriority((Priority::Level)ui->cbPrio->itemData(ui->cbPrio->currentIndex()).toInt());
+    retval.setTitle(ui->leTitle->text().trimmed());
     retval.setDescription(ui->leDescription->toPlainText().trimmed());
     retval.setEffort(Effort::fromString(ui->leEffort->text()));
     retval.setDueDate(ui->chkDue->isChecked() ? ui->calDue->date() : QDate());
