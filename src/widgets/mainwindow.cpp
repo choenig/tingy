@@ -41,6 +41,9 @@ MainWindow::MainWindow(QWidget * parent)
 	connect(globalShortcut, SIGNAL(activated()), this, SLOT(globalShortcutTriggered()));
 
 	new QShortcut(QKeySequence("Ctrl+Shift+D"), this, SLOT(dumpLog()));
+
+	// hide window on Escape
+	new QShortcut(QKeySequence("Esc"), this, SLOT(hide()));
 }
 
 MainWindow::~MainWindow()
