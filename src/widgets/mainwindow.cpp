@@ -31,11 +31,6 @@ MainWindow::MainWindow(QWidget * parent)
     quickAddDlg_ = new QuickAddDialog();
     connect(quickAddDlg_, SIGNAL(showMessage(QString,QString)), this, SLOT(showTrayMessage(QString,QString)));
 
-    ui->leFilter->setInfoText("Filter");
-    ui->leFilter->setLeftIcon(QPixmap(":/images/mag.png"));
-    ui->leFilter->setRightIcon(QPixmap(":/images/clear.png"));
-    connect(ui->leFilter, SIGNAL(textChanged(QString)), ui->taskTree, SLOT(filterItems(QString)));
-
     // init stuff
     initActions();
     initSystemTray();    
@@ -99,12 +94,27 @@ void MainWindow::on_leAddTask_returnPressed()
 
 void MainWindow::initActions()
 {
-     showDoneTasksAction_ = ui->mainToolBar->addAction(QIcon(":/images/done.png"), "Abgeschlossene Tasks einblenden",
-                                                       this, SLOT(toggleShowDoneTasks()));
-     showDoneTasksAction_->setCheckable(true);
+    showDoneTasksAction_ = ui->mainToolBar->addAction(QIcon(":/images/done.png"), "Abgeschlossene Tasks einblenden",
+                                                      this, SLOT(toggleShowDoneTasks()));
+    showDoneTasksAction_->setCheckable(true);
 
-     // initialy hide done tasks
-     toggleShowDoneTasks();
+    // spacer used to 'squeeze' the filterLineEdit
+    QWidget * spacerWidget = new QWidget(this);
+    spacerWidget->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Ignored);
+    ui->mainToolBar->addWidget(spacerWidget);
+
+    LineEdit * filterLineEdit = new LineEdit(this);
+    filterLineEdit->setInfoText("Filter");
+    filterLineEdit->setLeftIcon(QPixmap(":/images/mag.png"));
+    filterLineEdit->setRightIcon(QPixmap(":/images/clear.png"));
+    connect(filterLineEdit, SIGNAL(textChanged(QString)), ui->taskTree, SLOT(filterItems(QString)));
+    filterLineEdit->setMaximumWidth(250);
+    ui->mainToolBar->addWidget(filterLineEdit);
+
+    new QShortcut(QKeySequence("Ctrl+F"), filterLineEdit, SLOT(setFocus()));
+
+    // initialy hide done tasks
+    toggleShowDoneTasks();
 }
 
 void MainWindow::toggleShowDoneTasks()
