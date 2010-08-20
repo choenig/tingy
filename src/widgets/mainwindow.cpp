@@ -25,6 +25,8 @@ MainWindow::MainWindow(QWidget * parent)
     ui->leAddTask->setLeftIcon(QPixmap(":/images/add.png"));
     ui->leAddTask->setRightIcon(QPixmap(":/images/clear.png"));
 
+    ui->pbInfo->setIcon(QPixmap(":/images/info.png"));
+
     connect(ui->dateBeam, SIGNAL(dateHovered(QDate)), this, SLOT(showDateInStatusbar(QDate)));
     connect(ui->dateBeam, SIGNAL(dateHovered(QDate)), ui->taskTree, SLOT(highlightDate(QDate)));
 
@@ -93,6 +95,50 @@ void MainWindow::on_leAddTask_returnPressed()
     ui->leAddTask->clear();
 
     statusBar()->showMessage("Task added successfully", 5 * 1000);
+}
+
+void MainWindow::on_pbInfo_clicked()
+{
+    QString msg;
+    msg =
+            "<b>Informationen</b>"
+            "<table>"
+            "<tr>"
+            "  <th>&nbsp;&nbsp;Tag&nbsp;&nbsp;</th>"
+            "  <th align=left>Beschreibung</th>"
+            "  <th align=left>Beispiele</th>"
+            "</tr>"
+            "<tr>"
+            "  <td align=center>*</td>"
+            "  <td>Due Date</td>"
+            "  <td>*12.03.1978<br>*today<br>*tomorrow<br>*+5d</td>"
+            "</tr>"
+            "<tr>"
+            "  <td align=center>!</td>"
+            "  <td>Wichtigkeit</td>"
+            "  <td>!+<br>!-</td>"
+            "</tr>"
+            "<tr>"
+            "  <td align=center>$</td>"
+            "  <td>Aufwand</td>"
+            "  <td>$1h45m</td>"
+            "</tr>"
+            "<tr>"
+            "  <td align=center>//</td>"
+            "  <td>Zeilenumbruch</td>"
+            "  <td>Neue // Zeile</td>"
+            "</tr>"
+            "<tr>"
+            "  <td align=center>///</td>"
+            "  <td>Trenner zwischen Titel und Beschreibung</td>"
+            "  <td>Titel /// Beschreibung</td>"
+            "</tr>"
+            "</table>"
+            ;
+
+    QMessageBox msgBox;
+    msgBox.setText(msg);
+    msgBox.exec();
 }
 
 void MainWindow::initActions()

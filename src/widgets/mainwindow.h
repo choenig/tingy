@@ -25,6 +25,7 @@ protected:
 
 private slots:
     void on_leAddTask_returnPressed();
+    void on_pbInfo_clicked();
     void toggleShowDoneTasks();
     void trayActivated(QSystemTrayIcon::ActivationReason reason);
     void updateTrayIcon(bool ok);

@@ -14,5 +14,6 @@
         <file alias="mag.png">images/magnifier.png</file>
         <file alias="add.png">images/add.png</file>
         <file alias="clear.png">images/clear.png</file>
+        <file alias="info.png">images/info.png</file>
     </qresource>
 </RCC>
