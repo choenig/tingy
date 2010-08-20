@@ -1,14 +1,40 @@
 #include "tasktreeitems.h"
 
 #include <core/clock.h>
+#include <core/taskmodel.h>
+#include <widgets/taskeditwidget.h>
 #include <widgets/tasktree.h>
 
-#include <QPainter>
 #include <QDebug>
+#include <QMenu>
+#include <QMessageBox>
+#include <QPainter>
 
 TopLevelItem::TopLevelItem(QTreeWidget * treeWidget)
 	: QTreeWidgetItem(treeWidget, Type)
 {
+}
+
+void TopLevelItem::invokeContextMenu(const QPoint & pos)
+{
+    QMenu contextMenu;
+    // reset planned status
+    QAction * printAct = contextMenu.addAction(QIcon(":/images/print.png"), "Tasks ausdrucken");
+
+    QAction *act = contextMenu.exec(pos);
+    if (act == printAct)
+    {
+//        const QDate date = date_;
+//        TaskModel::instance()
+    }
+
+}
+
+void TopLevelItem::update(const QDate & date, const QString & string)
+{
+	date_ = date;
+	string_ = string;
+	init();
 }
 
 void TopLevelItem::init()
@@ -64,6 +90,48 @@ void TaskTreeItem::setTask(const Task & task)
 {
 	task_ = task;
 	update();
+}
+
+void TaskTreeItem::invokeContextMenu(const QPoint & pos)
+{
+    QMenu contextMenu;
+    // reset planned status
+    QAction * resetPlannedAct = contextMenu.addAction(QIcon(":/images/reset.png"), "»Geplant«-Status zurücksetzen");
+    resetPlannedAct->setEnabled(task_.getPlannedDate().isValid());
+
+    // remove task
+    QAction * removeTaskAct = contextMenu.addAction(QIcon(":/images/trash.png"), "Task löschen");
+
+    // edit task
+    contextMenu.addSeparator();
+    QAction * editTaskAct = contextMenu.addAction(QIcon(":/images/properties.png"), "Eigenschaften");
+    QFont f = editTaskAct->font();
+    f.setBold(true);
+    editTaskAct->setFont(f);
+
+    QAction *act = contextMenu.exec(pos);
+    if (act == removeTaskAct)
+    {
+        int result = QMessageBox::question(0,"Task löschen?",
+                                           QString("Sind Sie sicher, dass Sie den Task '%1' löschen möchten?").arg(task_.getTitle()),
+                                           QMessageBox::Yes | QMessageBox::No);
+        if (result == QMessageBox::Yes) {
+            TaskModel::instance()->removeTask(task_.getId());
+        }
+    }
+    else if (act == resetPlannedAct)
+    {
+        task_.resetPlannedDate();
+        TaskModel::instance()->updateTask(task_);
+    }
+    else if (act == editTaskAct)
+    {
+        TaskEditWidget * tew = new TaskEditWidget;
+        Task newTask = tew->exec(task_);
+        if (newTask.isValid()) {
+            TaskModel::instance()->updateTask(newTask);
+        }
+    }
 }
 
 void TaskTreeItem::update()
@@ -157,31 +225,7 @@ bool TaskTreeItem::operator<(const QTreeWidgetItem & other) const
 	const TaskTreeItem * tti = dynamic_cast<const TaskTreeItem*>(&other);
 	if (!tti) return true;
 
-	// shortcuts
-	const Task & lhs = task_;
-	const Task   rhs = tti->getTask();
-
-	// done tasks are ordered by doneTimestamp
-	if (lhs.isDone() && rhs.isDone()) {
-		return lhs.getDoneTimestamp() > rhs.getDoneTimestamp();
-	}
-
-	// check effective date
-	QDate lhsDate = lhs.getEffectiveDate();
-	QDate rhsDate = rhs.getEffectiveDate();
-	if (lhsDate != rhsDate) return lhsDate < rhsDate;
-
-	// check duedate
-	lhsDate = lhs.getDueDate();
-	rhsDate = rhs.getDueDate();
-	if (lhsDate.isValid() && rhsDate.isValid()) {
-		if (lhsDate != rhsDate) return lhsDate < rhsDate;
-	} else {
-		if (lhsDate != rhsDate) return !lhsDate.isNull();
-	}
-
-	// finally compare creation timestamp
-	return lhs.getCreationTimestamp() < rhs.getCreationTimestamp();
+	return task_ < tti->getTask();
 }
 
 //

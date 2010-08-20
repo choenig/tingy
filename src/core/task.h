@@ -55,8 +55,11 @@ public:
 
     bool operator==(const Task & rhs) const;
     bool operator!=(const Task & rhs) const { return !operator==(rhs); }
+    bool operator<(const Task & rhs) const;
+    bool operator>=(const Task & rhs) const { return !operator<(rhs); }
 
     static Task createFromString(const QString & string);
+
 
 public:
     static void saveToFile(const QString & filename, const Task & task);

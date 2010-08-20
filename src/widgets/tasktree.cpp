@@ -10,8 +10,7 @@
 #include <QContextMenuEvent>
 #include <QDebug>
 #include <QHeaderView>
-#include <QMenu>
-#include <QMessageBox>
+
 #include <QPainter>
 #include <QScrollBar>
 #include <QTextDocument>
@@ -303,48 +302,17 @@ void TaskTree::paintEvent(QPaintEvent * event)
 void TaskTree::contextMenuEvent(QContextMenuEvent * e)
 {
     QTreeWidgetItem* twi = itemAt(e->pos());
-    if (!twi || twi->type() != TaskTreeItem::Type) return;
+    if (!twi) return;
 
-    Task task = static_cast<TaskTreeItem*>(twi)->getTask();
-
-    QMenu contextMenu;
-    // reset planned status
-    QAction * resetPlannedAct = contextMenu.addAction(QIcon(":/images/reset.png"), "»Geplant«-Status zurücksetzen");
-    resetPlannedAct->setEnabled(task.getPlannedDate().isValid());
-
-    // remove task
-    QAction * removeTaskAct = contextMenu.addAction(QIcon(":/images/trash.png"), "Task löschen");
-
-    // edit task
-    contextMenu.addSeparator();
-    QAction * editTaskAct = contextMenu.addAction(QIcon(":/images/properties.png"), "Eigenschaften");
-    QFont f = editTaskAct->font();
-    f.setBold(true);
-    editTaskAct->setFont(f);
-
-    QAction *act = contextMenu.exec(e->globalPos());
-    if (act == removeTaskAct)
-    {
-        int result = QMessageBox::question(this, tr("Task löschen?"),
-                                           tr("Sind Sie sicher, dass Sie den Task '%1' löschen möchten?").arg(task.getTitle()),
-                                           QMessageBox::Yes | QMessageBox::No);
-        if (result == QMessageBox::Yes) {
-            TaskModel::instance()->removeTask(task.getId());
-        }
-    }
-    else if (act == resetPlannedAct)
-    {
-        task.resetPlannedDate();
-        TaskModel::instance()->updateTask(task);
-    }
-    else if (act == editTaskAct)
-    {
-        TaskEditWidget * tew = new TaskEditWidget;
-        Task newTask = tew->exec(task);
-        if (newTask.isValid()) {
-            TaskModel::instance()->updateTask(newTask);
-        }
-
+    switch (twi->type()) {
+    case TaskTreeItem::Type:
+        static_cast<TaskTreeItem*>(twi)->invokeContextMenu(e->globalPos());
+        break;
+    case TopLevelItem::Type:
+        static_cast<TopLevelItem*>(twi)->invokeContextMenu(e->globalPos());
+        break;
+    default:
+        break;
     }
 }
 

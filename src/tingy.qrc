@@ -15,5 +15,6 @@
         <file alias="add.png">images/add.png</file>
         <file alias="clear.png">images/clear.png</file>
         <file alias="info.png">images/info.png</file>
+        <file alias="print.png">images/print.png</file>
     </qresource>
 </RCC>

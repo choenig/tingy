@@ -57,6 +57,33 @@ bool Task::operator==(const Task & rhs) const
            doneTimestamp_     == rhs.doneTimestamp_;
 }
 
+bool Task::operator <(const Task & rhs) const
+{
+	const Task & lhs = *this;
+
+	// done tasks are ordered by doneTimestamp
+	if (lhs.isDone() && rhs.isDone()) {
+		return lhs.getDoneTimestamp() > rhs.getDoneTimestamp();
+	}
+
+	// check effective date
+	QDate lhsDate = lhs.getEffectiveDate();
+	QDate rhsDate = rhs.getEffectiveDate();
+	if (lhsDate != rhsDate) return lhsDate < rhsDate;
+
+	// check duedate
+	lhsDate = lhs.getDueDate();
+	rhsDate = rhs.getDueDate();
+	if (lhsDate.isValid() && rhsDate.isValid()) {
+		if (lhsDate != rhsDate) return lhsDate < rhsDate;
+	} else {
+		if (lhsDate != rhsDate) return !lhsDate.isNull();
+	}
+
+	// finally compare creation timestamp
+	return lhs.getCreationTimestamp() < rhs.getCreationTimestamp();
+}
+
 Task Task::createFromString(const QString & string)
 {
     Task task;

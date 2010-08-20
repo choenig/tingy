@@ -19,11 +19,9 @@ public:
 public:
 	TopLevelItem(QTreeWidget * treeWidget);
 
-	void update(const QDate & date, const QString & string) {
-		date_ = date;
-		string_ = string;
-		init();
-	}
+	void invokeContextMenu(const QPoint & pos);
+
+	void update(const QDate & date, const QString & string);
 
 	QString getString() const { return string_; }
 	QDate getDate() const { return date_; }
@@ -51,6 +49,8 @@ public:
 
 	Task getTask() const { return task_; }
 	void setTask(const Task & task);
+
+	void invokeContextMenu(const QPoint & pos);
 
 	void update();
 
