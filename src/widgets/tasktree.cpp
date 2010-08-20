@@ -92,8 +92,8 @@ TaskTree::TaskTree(QWidget *parent)
 	setIndentation(0);
 
 	// used for top level items
-	TopLevelItemDelegate * dlg = new TopLevelItemDelegate(this);
-	for (int i = 0; i < 2 ; ++i) setItemDelegateForColumn(i, dlg);
+	setItemDelegateForColumn(0, new TopLevelItemDelegate(this));
+	setItemDelegateForColumn(1, new TaskTreeItemDelegate(this));
 
 	// drag and drop
 	setAcceptDrops( true );
@@ -145,6 +145,16 @@ void TaskTree::highlightDate(const QDate & date)
     {
         if ((*it)->type() == TaskTreeItem::Type) {
             static_cast<TaskTreeItem*>(*it)->highlightDate(date);
+        }
+    }
+}
+
+void TaskTree::filterItems(const QString & filterText)
+{
+    for (QTreeWidgetItemIterator it(this) ; *it ; ++it)
+    {
+        if ((*it)->type() == TaskTreeItem::Type) {
+            static_cast<TaskTreeItem*>(*it)->filterYourself(filterText);
         }
     }
 }

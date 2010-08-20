@@ -134,6 +134,23 @@ void TaskTreeItem::highlightDate(const QDate & date)
 	setFont(1, f);
 }
 
+void TaskTreeItem::filterYourself(const QString & filterText)
+{
+	filterHits.clear();
+
+	if (!filterText.isEmpty()) {
+		const int len = filterText.size();
+		const QString txt = text(1);
+		int idx = 0;
+		while ((idx = txt.indexOf(filterText, idx, Qt::CaseInsensitive)) != -1) {
+			filterHits << QPoint(idx, len);
+			idx += len;
+		}
+	}
+
+	setHidden(filterHits.isEmpty() && !filterText.isEmpty());
+}
+
 bool TaskTreeItem::operator<(const QTreeWidgetItem & other) const
 {
 	const TaskTreeItem * tti = dynamic_cast<const TaskTreeItem*>(&other);
@@ -169,15 +186,10 @@ bool TaskTreeItem::operator<(const QTreeWidgetItem & other) const
 //
 // TopLevelItemDelegate
 
-TopLevelItemDelegate::TopLevelItemDelegate(QTreeWidget * parent)
-	: QItemDelegate(parent)
-{
-}
-
 void TopLevelItemDelegate::paint(QPainter * painter, const QStyleOptionViewItem & option, const QModelIndex & index) const
 {
-	TopLevelItem* tli = dynamic_cast<TopLevelItem*>(static_cast<QTreeWidgetItem*>(index.internalPointer()));
-	if (!tli) {
+	QTreeWidgetItem * twi = static_cast<QTreeWidgetItem*>(index.internalPointer());
+	if (twi->type() != TopLevelItem::Type) {
 		QItemDelegate::paint(painter, option, index);
 		return;
 	}
@@ -185,21 +197,56 @@ void TopLevelItemDelegate::paint(QPainter * painter, const QStyleOptionViewItem 
 	painter->save();
 
 	// draw background
-	painter->fillRect(option.rect.adjusted(0, 10, 0, 0), tli->background(0));
+	painter->fillRect(option.rect.adjusted(0, 10, 0, 0), index.data(Qt::BackgroundRole).value<QBrush>().color());
 
 	// draw text
 	QFont f(painter->font());
 	f.setBold(true);
 	painter->setFont(f);
-	painter->setPen(tli->foreground(0).color());
-	painter->drawText(option.rect.adjusted(10,0,0,-5), Qt::AlignBottom, tli->getString());
+	painter->setPen(index.data(Qt::ForegroundRole).value<QBrush>().color());
+	painter->drawText(option.rect.adjusted(10,0,0,-5), Qt::AlignBottom, index.data().toString());
 
 	// draw line
 	QPoint off(0,-4);
 	QLinearGradient gradient(0, 0, 500, 0);
-	gradient.setColorAt(0, tli->foreground(0).color());
+	gradient.setColorAt(0, index.data(Qt::ForegroundRole).value<QBrush>().color());
 	gradient.setColorAt(1, Qt::transparent);
 	painter->fillRect(QRect(option.rect.bottomLeft()+off, option.rect.bottomRight()+off), QBrush(gradient));
 
 	painter->restore();
+}
+
+
+//
+// TaskTreeItemDelegate
+
+
+void TaskTreeItemDelegate::paint(QPainter * painter, const QStyleOptionViewItem & option, const QModelIndex & index) const
+{
+	TaskTreeItem * tti = dynamic_cast<TaskTreeItem*>(static_cast<QTreeWidgetItem*>(index.internalPointer()));
+
+	if (tti) filters = tti->getFilterHits();
+	else     filters.clear();
+
+	QItemDelegate::paint(painter, option, index);
+}
+
+
+void TaskTreeItemDelegate::drawDisplay(QPainter * painter, const QStyleOptionViewItem & option, const QRect & rect, const QString & text) const
+{
+	if (!filters.isEmpty())
+	{
+		painter->save();
+
+		QFontMetrics fm(option.fontMetrics);
+		foreach (const QPoint & f, filters) {
+			int x = fm.size(Qt::TextSingleLine, text.left(f.x()))        .width()     + 3; // margin
+			int w = fm.size(Qt::TextSingleLine, text.left(f.x() + f.y())).width() - x + 1;
+			painter->fillRect(rect.x() + x, rect.y(), w, rect.height(), Qt::yellow);
+		}
+
+		painter->restore();
+	}
+
+	QItemDelegate::drawDisplay(painter, option, rect, text);
 }

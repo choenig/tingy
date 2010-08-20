@@ -20,12 +20,16 @@ MainWindow::MainWindow(QWidget * parent)
     : QMainWindow(parent), quickAddDlg_(0), ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+
     ui->leAddTask->setInfoText("Neuen Task hinzufügen");
+
     connect(ui->dateBeam, SIGNAL(dateHovered(QDate)), this, SLOT(showDateInStatusbar(QDate)));
     connect(ui->dateBeam, SIGNAL(dateHovered(QDate)), ui->taskTree, SLOT(highlightDate(QDate)));
 
     quickAddDlg_ = new QuickAddDialog();
     connect(quickAddDlg_, SIGNAL(showMessage(QString,QString)), this, SLOT(showTrayMessage(QString,QString)));
+
+    connect(ui->leFilter, SIGNAL(textChanged(QString)), ui->taskTree, SLOT(filterItems(QString)));
 
     // init stuff
     initActions();

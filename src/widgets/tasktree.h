@@ -20,6 +20,7 @@ public:
 public slots:
 	void showDoneTasks(bool hide);
 	void highlightDate(const QDate & date);
+	void filterItems(const QString & filter);
 
 private slots:
 	void init();

@@ -55,12 +55,16 @@ public:
 	void update();
 
 	void highlightDate(const QDate & date);
+	void filterYourself(const QString &filterText);
+
+	QList<QPoint> getFilterHits() const { return filterHits; }
 
 private:
 	virtual bool operator<(const QTreeWidgetItem & other) const;
 
 private:
 	Task task_;
+	QList<QPoint> filterHits;
 };
 
 //
@@ -69,7 +73,22 @@ private:
 class TopLevelItemDelegate : public QItemDelegate
 {
 public:
-	TopLevelItemDelegate(QTreeWidget * parent = 0);
+	TopLevelItemDelegate(QTreeWidget * parent = 0) : QItemDelegate(parent) {}
+	void paint(QPainter * painter, const QStyleOptionViewItem & option, const QModelIndex & index) const;
+};
 
-	void paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const;
+//
+// TaskTreeItemDelegate
+
+class TaskTreeItemDelegate : public QItemDelegate
+{
+public:
+	TaskTreeItemDelegate(QTreeWidget * parent = 0) : QItemDelegate(parent) {}
+	void paint(QPainter * painter, const QStyleOptionViewItem & option, const QModelIndex & index) const;
+
+protected:
+	void drawDisplay(QPainter * painter, const QStyleOptionViewItem & option, const QRect & rect, const QString & text) const;
+
+private:
+	mutable QList<QPoint> filters;
 };
