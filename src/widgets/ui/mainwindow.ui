@@ -123,7 +123,7 @@
      <widget class="DateBeam" name="dateBeam" native="true"/>
     </item>
     <item row="0" column="1">
-     <widget class="QLineEdit" name="leFilter"/>
+     <widget class="LineEdit" name="leFilter"/>
     </item>
     <item row="0" column="0">
      <spacer name="horizontalSpacer">
@@ -177,6 +177,11 @@
    <extends>QWidget</extends>
    <header location="global">widgets/datebeam.h</header>
    <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>LineEdit</class>
+   <extends>QLineEdit</extends>
+   <header location="global">widgets/lineedit.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

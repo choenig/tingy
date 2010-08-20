@@ -5,8 +5,8 @@
 
 #include <QPainter>
 
-AutocompleteLineEdit::AutocompleteLineEdit(QWidget *parent) :
-    QLineEdit(parent)
+AutocompleteLineEdit::AutocompleteLineEdit(QWidget *parent)
+    : LineEdit(parent)
 {
     textPopup_ = new TextPopup(this);
     connect(textPopup_, SIGNAL(textSelected(QString)), this, SLOT(doneTextCompletion(QString)));
@@ -15,31 +15,6 @@ AutocompleteLineEdit::AutocompleteLineEdit(QWidget *parent) :
     connect(calPopup_, SIGNAL(dateSelected(QDate)), this, SLOT(doneCalCompletion(QDate)));
 
     connect(this, SIGNAL(textChanged(QString)), this, SLOT(onTextChanged(QString)));
-}
-
-void AutocompleteLineEdit::paintEvent(QPaintEvent * event)
-{
-    QLineEdit::paintEvent(event);
-
-    // draw the default text if needed
-    bool showDefaultText = text().isEmpty() && !infoText_.isEmpty();
-    if (showDefaultText) {
-        QPainter p(this);
-        p.setPen(Qt::gray);
-        const QMargins margins = textMargins();
-
-        p.drawText(QRect(margins.left() + 8,
-                         margins.top(),
-                         width() - margins.left() - margins.right() - 8,
-                         height() - margins.top() - margins.bottom()),
-                   infoText_,
-                   Qt::AlignLeft | Qt::AlignVCenter);
-    }
-}
-
-void AutocompleteLineEdit::setInfoText(const QString &infoText)
-{
-    infoText_ = infoText;
 }
 
 void AutocompleteLineEdit::onTextChanged(const QString & text)

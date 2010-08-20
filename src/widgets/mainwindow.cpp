@@ -22,6 +22,8 @@ MainWindow::MainWindow(QWidget * parent)
     ui->setupUi(this);
 
     ui->leAddTask->setInfoText("Neuen Task hinzufügen");
+    ui->leAddTask->setLeftIcon(QPixmap(":/images/add.png"));
+    ui->leAddTask->setRightIcon(QPixmap(":/images/clear.png"));
 
     connect(ui->dateBeam, SIGNAL(dateHovered(QDate)), this, SLOT(showDateInStatusbar(QDate)));
     connect(ui->dateBeam, SIGNAL(dateHovered(QDate)), ui->taskTree, SLOT(highlightDate(QDate)));
@@ -29,6 +31,9 @@ MainWindow::MainWindow(QWidget * parent)
     quickAddDlg_ = new QuickAddDialog();
     connect(quickAddDlg_, SIGNAL(showMessage(QString,QString)), this, SLOT(showTrayMessage(QString,QString)));
 
+    ui->leFilter->setInfoText("Filter");
+    ui->leFilter->setLeftIcon(QPixmap(":/images/mag.png"));
+    ui->leFilter->setRightIcon(QPixmap(":/images/clear.png"));
     connect(ui->leFilter, SIGNAL(textChanged(QString)), ui->taskTree, SLOT(filterItems(QString)));
 
     // init stuff
@@ -94,7 +99,7 @@ void MainWindow::on_leAddTask_returnPressed()
 
 void MainWindow::initActions()
 {
-     showDoneTasksAction_ = ui->mainToolBar->addAction(QIcon(":images/done.png"), "Abgeschlossene Tasks einblenden",
+     showDoneTasksAction_ = ui->mainToolBar->addAction(QIcon(":/images/done.png"), "Abgeschlossene Tasks einblenden",
                                                        this, SLOT(toggleShowDoneTasks()));
      showDoneTasksAction_->setCheckable(true);
 
@@ -109,7 +114,7 @@ void MainWindow::toggleShowDoneTasks()
 
 void MainWindow::initSystemTray()
 {
-    trayIcon_ = new QSystemTrayIcon(QIcon(":images/OK.png"), this);
+    trayIcon_ = new QSystemTrayIcon(QIcon(":/images/OK.png"), this);
     connect(trayIcon_, SIGNAL(activated(QSystemTrayIcon::ActivationReason)),
             this,      SLOT(trayActivated(QSystemTrayIcon::ActivationReason)));
     connect(TaskModel::instance(), SIGNAL(hasOverdueTasks(bool)),
@@ -117,7 +122,7 @@ void MainWindow::initSystemTray()
 
     // init context menu
     QMenu * contextMenu = new QMenu;
-    contextMenu->addAction(QIcon(":images/exit.png"), "Quit Tingy", qApp, SLOT(quit()));
+    contextMenu->addAction(QIcon(":/images/exit.png"), "Quit Tingy", qApp, SLOT(quit()));
     trayIcon_->setContextMenu(contextMenu);    
 
     trayIcon_->show();
@@ -139,7 +144,7 @@ void MainWindow::trayActivated(QSystemTrayIcon::ActivationReason reason)
 
 void MainWindow::updateTrayIcon(bool hasOverdueTasks)
 {
-	trayIcon_->setIcon( hasOverdueTasks ? QIcon(":images/NOK.png") : QIcon(":images/OK.png") );
+	trayIcon_->setIcon( hasOverdueTasks ? QIcon(":/images/NOK.png") : QIcon(":/images/OK.png") );
 }
 
 void MainWindow::initStatusBar()

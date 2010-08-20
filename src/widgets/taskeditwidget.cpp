@@ -15,9 +15,9 @@ TaskEditWidget::TaskEditWidget(QWidget *parent)
     ui->setupUi(this);
 
     // init the Priority combo box
-    ui->cbPrio->addItem("Hoch",    Priority::High);
-    ui->cbPrio->addItem("Normal",  Priority::Normal);
-    ui->cbPrio->addItem("Niedrig", Priority::Low);
+    ui->cbPrio->addItem(QPixmap(":/images/highPriority.png"),   "Hoch",    Priority::High);
+    ui->cbPrio->addItem(QPixmap(":/images/normalPriority.png"), "Normal",  Priority::Normal);
+    ui->cbPrio->addItem(QPixmap(":/images/lowPriority.png"),    "Niedrig", Priority::Low);
 
     ui->calDue->setDisplayFormat("dd.MM.yyyy");
     ui->calPlanned->setDisplayFormat("dd.MM.yyyy");

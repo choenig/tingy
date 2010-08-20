@@ -74,9 +74,9 @@ void TaskTreeItem::update()
 	setCheckState(0, task_.isDone() ? Qt::Checked : Qt::Unchecked);
 
 	// set priority icon
-	if      (task_.getPriority() == Priority::High)   setIcon(1, QIcon(":images/highPriority.png"));
-	else if (task_.getPriority() == Priority::Normal) setIcon(1, QIcon(":images/normalPriority.png"));
-	else if (task_.getPriority() == Priority::Low)    setIcon(1, QIcon(":images/lowPriority.png"));
+	if      (task_.getPriority() == Priority::High)   setIcon(1, QIcon(":/images/highPriority.png"));
+	else if (task_.getPriority() == Priority::Normal) setIcon(1, QIcon(":/images/normalPriority.png"));
+	else if (task_.getPriority() == Priority::Low)    setIcon(1, QIcon(":/images/lowPriority.png"));
 
 	// format additional infos
 	QStringList infos;

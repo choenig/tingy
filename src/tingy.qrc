@@ -11,5 +11,8 @@
         <file alias="trash.png">images/trash.png</file>
         <file alias="properties.png">images/properties.png</file>
         <file alias="reset.png">images/reset.png</file>
+        <file alias="mag.png">images/magnifier.png</file>
+        <file alias="add.png">images/add.png</file>
+        <file alias="clear.png">images/clear.png</file>
     </qresource>
 </RCC>
