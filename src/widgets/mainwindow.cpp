@@ -20,9 +20,7 @@ MainWindow::MainWindow(QWidget * parent)
     : QMainWindow(parent), quickAddDlg_(0), ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-#if QT_VERSION >= 0x040700
-    ui->leAddTask->setPlaceholderText("Neuen Task hinzufügen");
-#endif
+    ui->leAddTask->setInfoText("Neuen Task hinzufügen");
     connect(ui->dateBeam, SIGNAL(dateHovered(QDate)), this, SLOT(showDateInStatusbar(QDate)));
     connect(ui->dateBeam, SIGNAL(dateHovered(QDate)), ui->taskTree, SLOT(highlightDate(QDate)));
 

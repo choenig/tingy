@@ -12,6 +12,12 @@ class AutocompleteLineEdit : public QLineEdit
 public:
     AutocompleteLineEdit(QWidget * parent = 0);
 
+    void setInfoText(const QString & infoText);
+    QString infoText() const { return infoText_; }
+
+protected:
+    void paintEvent(QPaintEvent * event);
+
 private slots:
     void onTextChanged(const QString & text);
     void doneTextCompletion(const QString & text);
@@ -20,4 +26,6 @@ private slots:
 private:
     TextPopup * textPopup_;
     CalendarPopup * calPopup_;
+
+    QString infoText_;
 };
