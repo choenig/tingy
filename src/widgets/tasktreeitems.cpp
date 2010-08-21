@@ -9,6 +9,11 @@
 #include <QMenu>
 #include <QMessageBox>
 #include <QPainter>
+#include <QPrintDialog>
+#include <QPrinter>
+#include <QTextDocument>
+#include <QTextEdit>
+#include <QTextTable>
 
 TopLevelItem::TopLevelItem(QTreeWidget * treeWidget)
 	: QTreeWidgetItem(treeWidget, Type)
@@ -18,16 +23,121 @@ TopLevelItem::TopLevelItem(QTreeWidget * treeWidget)
 void TopLevelItem::invokeContextMenu(const QPoint & pos)
 {
     QMenu contextMenu;
-    // reset planned status
     QAction * printAct = contextMenu.addAction(QIcon(":/images/print.png"), "Tasks ausdrucken");
 
     QAction *act = contextMenu.exec(pos);
     if (act == printAct)
     {
-//        const QDate date = date_;
-//        TaskModel::instance()
-    }
+        QList<Task> tasks;
+        for (int i = 0 ; i < childCount() ; ++i) {
+            tasks << static_cast<TaskTreeItem*>(child(i))->getTask();
+        }
+        qSort(tasks);
 
+        QTextDocument doc;
+        QTextCursor cursor(&doc);
+
+        {   // tingy header
+            QVector<QTextLength> headerWidthConstraints;
+            headerWidthConstraints << QTextLength(QTextLength::PercentageLength, 50);
+            headerWidthConstraints << QTextLength(QTextLength::PercentageLength, 50);
+
+            QTextTableFormat headerFormat;
+            headerFormat.setBorder(0);
+            headerFormat.setAlignment(Qt::AlignCenter);
+            headerFormat.setColumnWidthConstraints(headerWidthConstraints);
+
+            QTextTable * headerTable = cursor.insertTable(1, 2, headerFormat);
+
+            QTextBlockFormat leftFormat;
+            leftFormat.setAlignment(Qt::AlignLeft);
+            headerTable->cellAt(0,0).firstCursorPosition().setBlockFormat(leftFormat);
+            headerTable->cellAt(0,0).firstCursorPosition().insertText("Tingy");
+
+            QTextBlockFormat rightFormat;
+            rightFormat.setAlignment(Qt::AlignRight);
+            headerTable->cellAt(0,1).firstCursorPosition().setBlockFormat(rightFormat);
+            headerTable->cellAt(0,1).firstCursorPosition().insertHtml(Clock::currentDateTime().toString("dd.MM.yyyy'&nbsp;%1&nbsp;'hh:mm:ss' Uhr'").arg(QString::fromUtf8("\xe2\x80\xa2")));
+            cursor.movePosition(QTextCursor::Down);
+        }
+
+        cursor.insertBlock();
+        cursor.insertBlock();
+
+        {   // date header
+            QTextFrameFormat headerFrameFormat;
+            headerFrameFormat.setBackground(QColor("#d4d4d4"));
+            cursor.insertFrame(headerFrameFormat);
+
+            QFont f;
+            f.setPointSize(16);
+            f.setBold(true);
+
+            QTextCharFormat boldFormat;
+            boldFormat.setFont(f);
+
+            cursor.insertText(text(0), boldFormat);
+            cursor.movePosition(QTextCursor::Down);
+        }
+
+        QVector<QTextLength> dataWidthConstraints;
+        dataWidthConstraints << QTextLength(QTextLength::PercentageLength, 3);
+        dataWidthConstraints << QTextLength(QTextLength::PercentageLength, 74);
+        dataWidthConstraints << QTextLength(QTextLength::PercentageLength, 10);
+        dataWidthConstraints << QTextLength(QTextLength::PercentageLength, 13);
+
+        QTextTableFormat dataTableFormat;
+        dataTableFormat.setBorder(0);
+        dataTableFormat.setAlignment(Qt::AlignCenter);
+        dataTableFormat.setColumnWidthConstraints(dataWidthConstraints);
+
+        QTextTable * dataTable = cursor.insertTable(tasks.size()*2, 4, dataTableFormat);
+        int idx = 0;
+        foreach (const Task & task, tasks)
+        {
+            {   // empty small line
+                QFont smallFont;
+                smallFont.setPixelSize(4);
+                QTextCharFormat smallFormat;
+                smallFormat.setFont(smallFont);
+                dataTable->mergeCells(idx,0,1,4);
+                dataTable->cellAt(idx,0).setFormat(smallFormat);
+                ++idx;
+            }
+
+            QString txt = task.isDone() ? QString::fromUtf8("\xe2\x98\x91") : QString::fromUtf8("\xe2\x98\x90");
+            QTextBlockFormat centerFormat;
+            centerFormat.setAlignment(Qt::AlignHCenter);
+            dataTable->cellAt(idx,0).firstCursorPosition().setBlockFormat(centerFormat);
+            dataTable->cellAt(idx,0).firstCursorPosition().insertHtml(txt);
+
+            txt = task.getTitle();
+            if (task.getPriority() == Priority::High) txt.prepend("<b>").append("</b>");
+            if (!task.getDescription().isEmpty()) txt += "<br><i>" + task.getDescription() + "</i>";
+            dataTable->cellAt(idx,1).firstCursorPosition().insertHtml(txt);
+
+            txt = task.getEffort().toString();
+            if (task.getPriority() == Priority::High) txt.prepend("<b>").append("</b>");
+            dataTable->cellAt(idx,2).firstCursorPosition().insertHtml(txt);
+
+            txt = task.getDueDate().toString("dd.MM.yyyy");
+            if (task.getPriority() == Priority::High) txt.prepend("<b>").append("</b>");
+            dataTable->cellAt(idx,3).firstCursorPosition().insertHtml(txt);
+            ++idx;
+        }
+
+        // for debugging
+        // QTextEdit te;
+        // te.setDocument(&doc);
+        // te.show();
+
+        // finally print the document
+        QPrinter printer;
+        QPrintDialog printDialog(&printer, this->treeWidget());
+        if (printDialog.exec() == QDialog::Accepted) {
+             doc.print(&printer);
+        }
+    }
 }
 
 void TopLevelItem::update(const QDate & date, const QString & string)
