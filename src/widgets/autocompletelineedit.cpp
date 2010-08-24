@@ -25,7 +25,7 @@ void AutocompleteLineEdit::onTextChanged(const QString & text)
         QStringList choices; choices << "+" << "-";
         textPopup_->setChoices(choices, QRegExp("[+-]"));
         wdgt = textPopup_;
-    } else if (text.endsWith("$")) {
+    } else if (text.endsWith("$") || text.endsWith("*+")) {
         QStringList choices; choices << "m" << "h"<< "d"<< "w"<< "y";
         textPopup_->setChoices(choices, QRegExp("[0-9]+([mhdwy]?[0-9]*)*"));
         wdgt = textPopup_;
