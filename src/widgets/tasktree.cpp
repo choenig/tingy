@@ -4,6 +4,7 @@
 #include <core/task.h>
 #include <core/taskmodel.h>
 #include <util/log.h>
+#include <util/util.h>
 #include <widgets/taskeditwidget.h>
 #include <widgets/tasktreeitems.h>
 
@@ -52,7 +53,8 @@ void updateTopLevelItems(TaskTree * tree)
     const int offset = today.dayOfWeek();
     for (int i = offset ; i <= 7 ; ++i) {
         const QDate date = today.addDays(i-offset);
-        updateNext(tree, it, date, QLocale().toString(date, "dddd' %1 'dd.MM.yyyy").arg(QString::fromUtf8("\xe2\x80\xa2")));
+        const QString str = QLocale().toString(date, dot(QString(date == today ? "Heute * " : "") + "dddd' * 'dd.MM.yyyy"));
+        updateNext(tree, it, date, str);
     }
 
     // add 'next week'
@@ -270,8 +272,7 @@ void TaskTree::handleDateChange()
 void TaskTree::updateClock()
 {
     const QDateTime now = Clock::currentDateTime();
-    QString timestamp = QString(now.toString("'<b>'dd.MM.yyyy'</b> %2 KW%1 %2 <b>'hh:mm:ss'</b>'"))
-                        .arg(now.date().weekNumber()).arg(QString::fromUtf8("\xe2\x80\xa2"));
+    QString timestamp = dot(now.toString("'<b>'dd.MM.yyyy'</b> * KW%1 * <b>'hh:mm:ss'</b>'")).arg(now.date().weekNumber());
 
     docTimestamp.setHtml("<font color=\"#8c8c8c\">" + timestamp + "</font>");
     viewport()->update(0, viewport()->height()-docTimestamp.size().height(), viewport()->width(), docTimestamp.size().height());

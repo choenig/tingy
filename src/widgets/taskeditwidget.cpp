@@ -1,6 +1,7 @@
 #include "taskeditwidget.h"
 
 #include <core/clock.h>
+#include <util/util.h>
 
 #include <QCalendarWidget>
 #include <QDebug>
@@ -40,7 +41,7 @@ Task TaskEditWidget::exec(const Task & task)
     ui->calDue->setDate(Clock::currentDate());
     ui->calPlanned->setDate(Clock::currentDate());
 
-    const QString timeformat = QString("dddd %1 dd.MM.yyyy %1 hh:mm:ss").arg(QString::fromUtf8("\xe2\x80\xa2"));
+    const QString timeformat = dot("dddd * dd.MM.yyyy * hh:mm:ss");
     // write the task into the GUI
     ui->lblCreated->setText(QLocale().toString(task.getCreationTimestamp(), timeformat));
     ui->cbPrio->setCurrentIndex(ui->cbPrio->findData(task.getPriority().toInt()));

@@ -6,3 +6,7 @@
 	Q_DECLARE_METATYPE(ClassName) \
 	static int QT_REGISTER_TYPE_##ClassName() { qRegisterMetaType<ClassName>(#ClassName); return 0; } \
 	Q_CONSTRUCTOR_FUNCTION(QT_REGISTER_TYPE_##ClassName)
+
+inline QString dot(QString str) {
+	return str.replace('*', QString::fromUtf8("\xe2\x80\xa2"));
+}

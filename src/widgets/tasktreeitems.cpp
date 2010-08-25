@@ -2,6 +2,7 @@
 
 #include <core/clock.h>
 #include <core/taskmodel.h>
+#include <util/util.h>
 #include <widgets/taskeditwidget.h>
 #include <widgets/tasktree.h>
 
@@ -80,7 +81,7 @@ void TopLevelItem::invokeContextMenu(const QPoint & pos)
             headerTable->cellAt(0,0).firstCursorPosition().insertText("Tingy");
 
             headerTable->cellAt(0,1).firstCursorPosition().setBlockFormat(textBlockFormat(Qt::AlignRight));
-            headerTable->cellAt(0,1).firstCursorPosition().insertHtml(Clock::currentDateTime().toString("dd.MM.yyyy' %1 'hh:mm:ss' Uhr'").arg(QString::fromUtf8("\xe2\x80\xa2")));
+            headerTable->cellAt(0,1).firstCursorPosition().insertHtml(dot(Clock::currentDateTime().toString("dd.MM.yyyy' * 'hh:mm:ss' Uhr'")));
             cursor.movePosition(QTextCursor::Down);
         }
 
