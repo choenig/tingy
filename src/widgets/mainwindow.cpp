@@ -72,6 +72,7 @@ void MainWindow::showEvent(QShowEvent * event)
 {
     if (!lastPos.isNull()) move(lastPos);
     QMainWindow::showEvent(event);
+    ui->leAddTask->setFocus();
 }
 
 bool MainWindow::event(QEvent * event)
