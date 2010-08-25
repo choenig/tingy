@@ -39,10 +39,13 @@ void DateBeam::enterEvent(QEvent *)
 
 void DateBeam::mouseMoveEvent(QMouseEvent * event)
 {
+    bool oldHoveredCell = hoveredCell_;
     hoveredCell_ = event->pos().x() / cellWidth_;
     update();
 
-    emit dateHovered(Clock::currentDate().addDays(hoveredCell_));
+    if (oldHoveredCell != hoveredCell_) {
+        emit dateHovered(Clock::currentDate().addDays(hoveredCell_));
+    }
 }
 
 void DateBeam::leaveEvent(QEvent *)
