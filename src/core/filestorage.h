@@ -1,30 +1,24 @@
 #pragma once
 
+#include <core/storageengine.h>
 #include <core/task.h>
 
 #include <QDir>
-#include <QObject>
 
 class TaskId;
 
-class FileStorage : public QObject
+class FileStorage : public StorageEngine
 {
-    Q_OBJECT
+public:
+    FileStorage();
 
 public:
-    FileStorage(QObject * parent = 0);
-
-public slots:
-    void restoreFromFiles();
-
-private slots:
-    void addTask(const Task & task);
-    void updateTask(const Task & task, bool doneChanged);
-    void removeTask(const TaskId & taskId);
+    virtual QList<Task> loadTasks();
+    virtual bool saveTasks(const QList<Task> & tasks);
+    virtual bool addTask(const Task & task);
+    virtual bool updateTask(const Task & task, bool doneChanged);
+    virtual bool removeTask(const TaskId & taskId);
 
 private:
     QDir fileDir_;
-
-    // list of tasks used to handle initial restore
-    QList<Task> newTasks_;
 };

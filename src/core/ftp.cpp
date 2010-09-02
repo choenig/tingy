@@ -71,22 +71,22 @@ QList<QUrlInfo> Ftp::ls(const QRegExp & fileRe)
     return lsInfo;
 }
 
-void Ftp::put(const QString & filename, QIODevice * ioDevice)
+bool Ftp::put(const QString & filename, QIODevice * ioDevice)
 {
     myIds << ftp->put(ioDevice, filename);
-    loop.exec();
+    return loop.exec() == 0;
 }
 
-void Ftp::get(const QString & filename, QIODevice * ioDevice)
+bool Ftp::get(const QString & filename, QIODevice * ioDevice)
 {
     myIds << ftp->get(filename, ioDevice);
-    loop.exec();
+    return loop.exec() == 0;
 }
 
-void Ftp::remove(const QString & filename)
+bool Ftp::remove(const QString & filename)
 {
     myIds << ftp->remove(filename);
-    loop.exec();
+    return loop.exec() == 0;
 }
 
 void Ftp::_q_commandFinished(int id, bool error)

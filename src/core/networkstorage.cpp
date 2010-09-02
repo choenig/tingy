@@ -47,6 +47,18 @@ public:
        return retval;
     }
 
+    bool saveTasks(const QList<Task> & tasks)
+    {
+        Ftp ftp;
+
+        bool ok = true;
+        foreach (const Task & task, tasks) {
+            ok = ok && saveTaskToFile(task);
+        }
+
+        return ok;
+    }
+
     Task loadTaskFromFile(const QString & fileName)
     {
         // try to enforce a really uniq tempfileName as QSettings tries to cache and seems not to reload the file in some cases
@@ -64,7 +76,7 @@ public:
         return Task();
     }
 
-    void saveTaskToFile(const Task & task)
+    bool saveTaskToFile(const Task & task)
     {
         QTemporaryFile tempFile;
         tempFile.open();
@@ -73,23 +85,27 @@ public:
         const QString filename = filenameFromTaskId(task.getId()) + (task.isDone() ? ".done" : "");
 
         Ftp ftp;
-        ftp.put(filename, &tempFile);
+        bool ok = ftp.put(filename, &tempFile);
 
         availableTasks_[filename] = QDateTime::currentDateTime();
+
+        return ok;
     }
 
-    void removeTask(const QString & filename)
+    bool removeTask(const QString & filename)
     {
-        if (!availableTasks_.contains(filename)) return;
+        if (!availableTasks_.contains(filename)) return false;
 
         Ftp ftp;
-        ftp.remove(filename);
+        bool ok = ftp.remove(filename);
 
         availableTasks_.remove(filename);
+
+        return ok;
     }
 
 
-    void checkForChanges(QList<Task> & changedTasks)
+    void checkForChanges()
     {
         // remember old list
         const QMap<QString, QDateTime> oldAvailableTasks = availableTasks_;
@@ -106,7 +122,6 @@ public:
             if (!oldAvailableTasks.contains(filename)) {
                 Task task = loadTaskFromFile(filename);
                 if (task.isValid()) {
-                    changedTasks << task;
                     TaskModel::instance()->addTask(task);
                 }
                 continue;
@@ -116,7 +131,6 @@ public:
             if (oldAvailableTasks[filename] != availableTasks_[filename]) {
                 Task task = loadTaskFromFile(filename);
                 if (task.isValid()) {
-                    changedTasks << task;
                     TaskModel::instance()->updateTask(task);
                 }
                 continue;
@@ -127,7 +141,6 @@ public:
         foreach (const QString & filename, oldAvailableTasks.keys()) {
             if (!availableTasks_.contains(filename)) {
                 TaskId taskId = TaskId::fromString(QString(filename).remove(".task"));
-                changedTasks << Task(taskId);
                 TaskModel::instance()->removeTask(taskId);
             }
         }
@@ -159,16 +172,9 @@ public:
 //
 // NetworkStorage
 
-NetworkStorage::NetworkStorage(QObject *parent)
-    : QObject(parent), checkForChangesTimer_(0), d_ptr(new NetworkStoragePrivate(this))
+NetworkStorage::NetworkStorage()
+    : QObject(), checkForChangesTimer_(0), d_ptr(new NetworkStoragePrivate(this))
 {
-    // use Qt::QueuedConnection to make sure to loop the event loop on every action to have instant gui updates before
-    // updating the network files
-    TaskModel * tm = TaskModel::instance();
-    connect(tm, SIGNAL(taskAdded(Task)),        this, SLOT(addTask(Task)),         Qt::QueuedConnection);
-    connect(tm, SIGNAL(taskUpdated(Task,bool)), this, SLOT(updateTask(Task,bool)), Qt::QueuedConnection);
-    connect(tm, SIGNAL(taskRemoved(TaskId)),    this, SLOT(removeTask(TaskId)),    Qt::QueuedConnection);
-
     checkForChangesTimer_ = new QTimer(this);
     connect(checkForChangesTimer_, SIGNAL(timeout()), this, SLOT(checkForChanges()));
     checkForChangesTimer_->start(30 * 1000);
@@ -179,66 +185,48 @@ NetworkStorage::~NetworkStorage()
     delete d_ptr;
 }
 
-void NetworkStorage::restoreFromFiles()
+QList<Task> NetworkStorage::loadTasks()
 {
-    newTasks_.clear();
-
-    // reload all task files
     Q_D(NetworkStorage);
-    newTasks_ = d->loadAllAvailableTasks();
-    TaskModel::instance()->init(newTasks_);
+    return d->loadAllAvailableTasks();
 }
 
-void NetworkStorage::addTask(const Task & task)
+bool NetworkStorage::saveTasks(const QList<Task> & tasks)
 {
-    if (newTasks_.contains(task)) {
-        newTasks_.removeOne(task);
-        return;
-    }
-
     Q_D(NetworkStorage);
-    d->saveTaskToFile(task);
+    return d->saveTasks(tasks);
 }
 
-void NetworkStorage::updateTask(const Task & task, bool doneChanged)
+bool NetworkStorage::addTask(const Task & task)
 {
-    if (newTasks_.contains(task)) {
-        newTasks_.removeOne(task);
-        return;
-    }
+    Q_D(NetworkStorage);
+    return d->saveTaskToFile(task);
+}
 
+bool NetworkStorage::updateTask(const Task & task, bool doneChanged)
+{
     Q_D(NetworkStorage);
 
     // remove 'other' file
     if (doneChanged) d->removeTask(filenameFromTaskId(task.getId()) + (task.isDone() ? "" : ".done"));
 
     // save new task
-    d->saveTaskToFile(task);
+    return d->saveTaskToFile(task);
 }
 
-void NetworkStorage::removeTask(const TaskId & taskId)
+bool NetworkStorage::removeTask(const TaskId & taskId)
 {
-    foreach (const Task & task, newTasks_) {
-        if (task.getId() == taskId) {
-            newTasks_.removeOne(task);
-            return;
-        }
-    }
-
     Q_D(NetworkStorage);
-    d->removeTask(filenameFromTaskId(taskId));
+   return  d->removeTask(filenameFromTaskId(taskId));
 }
 
 void NetworkStorage::checkForChanges()
 {
     log << "checking for changes ...";
 
-    // seems initial reload is in progress
-    if (!newTasks_.isEmpty()) return;
-
     // check for changes
     Q_D(NetworkStorage);
-    d->checkForChanges(newTasks_);
+    d->checkForChanges();
 
     log << "checking for changes ... [done]";
 }

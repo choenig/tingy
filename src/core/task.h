@@ -63,7 +63,7 @@ public:
     static Task createFromString(const QString & string);
 
 public:
-    static void saveToFile(const QString & filename, const Task & task);
+    static bool saveToFile(const QString & filename, const Task & task);
     static Task loadFromFile(const QString & filePath);
 
 private:

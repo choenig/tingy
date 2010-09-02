@@ -18,7 +18,7 @@ DateBeam::DateBeam(QWidget *parent) :
 
     // update on date change
     connect(Clock::instance(), SIGNAL(dateChanged(QDate)), this, SLOT(update()));
-    // fixme cleanup tasks from the past in datesWithTasks_
+    // RFI remove tasks from the past from datesWithTasks_
 
     TaskModel * tm = TaskModel::instance();
     connect(tm, SIGNAL(taskAdded(Task)),        this, SLOT(addTask(Task)));

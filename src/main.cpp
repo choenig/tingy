@@ -30,16 +30,11 @@ int main(int argc, char * argv[])
 
     // initialize taskModel end corresponding storage modules
     TaskModel taskModel;
+    QTimer::singleShot(0, TaskModel::instance(), SLOT(init()));
 
     // initialize storage modules
-    FileStorage * fileStorage = new FileStorage(&a);
-    NetworkStorage * netStorage = 0;
-    if (Settings::NetworkStorage::Enabled()) {
-        netStorage = new NetworkStorage(&a);
-        QTimer::singleShot(0, netStorage, SLOT(restoreFromFiles()));
-    } else {
-        QTimer::singleShot(0, fileStorage, SLOT(restoreFromFiles()));
-    }
+    taskModel.instance()->addStorageEngine(new FileStorage);
+    taskModel.instance()->addStorageEngine(new NetworkStorage);
 
     // init the mainWindow
     MainWindow mainWindow;

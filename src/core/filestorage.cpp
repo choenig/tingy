@@ -16,42 +16,39 @@ QString filenameFromTask(const TaskId & taskId) {
 }
 }
 
-FileStorage::FileStorage(QObject * parent)
-: QObject(parent), fileDir_(Settings::dataPath() + "tasks")
+FileStorage::FileStorage()
+: fileDir_(Settings::dataPath() + "tasks")
 {
-    if (!fileDir_.exists()) {
-        fileDir_.mkpath(fileDir_.absolutePath());
-    }
-
-    TaskModel * tm = TaskModel::instance();
-    connect(tm, SIGNAL(taskAdded(Task)),        this, SLOT(addTask(Task)),         Qt::QueuedConnection);
-    connect(tm, SIGNAL(taskUpdated(Task,bool)), this, SLOT(updateTask(Task,bool)), Qt::QueuedConnection);
-    connect(tm, SIGNAL(taskRemoved(TaskId)),    this, SLOT(removeTask(TaskId)),    Qt::QueuedConnection);
+    if (!fileDir_.exists()) fileDir_.mkpath(fileDir_.absolutePath());
 }
 
-void FileStorage::restoreFromFiles()
+QList<Task> FileStorage::loadTasks()
 {
-    newTasks_.clear();
+    QList<Task> retval;
     const QStringList files = fileDir_.entryList(QStringList("*.task"));
     foreach (const QString & fileName, files) {
         Task task = Task::loadFromFile(fileDir_.absolutePath() + QDir::separator() + fileName);
-        if (task.isValid()) newTasks_ << task;
+        if (task.isValid()) retval << task;
     }
 
-    TaskModel::instance()->init(newTasks_);
+    return retval;
 }
 
-void FileStorage::addTask(const Task & task)
+bool FileStorage::saveTasks(const QList<Task> & tasks)
 {
-    if (newTasks_.contains(task)) {
-        newTasks_.removeOne(task);
-        return;
+    bool ok = true;
+    foreach (const Task & task, tasks) {
+        ok = ok && Task::saveToFile(fileDir_.absolutePath() + QDir::separator() + filenameFromTask(task.getId()), task);
     }
-
-    Task::saveToFile(fileDir_.absolutePath() + QDir::separator() + filenameFromTask(task.getId()), task);
+    return ok;
 }
 
-void FileStorage::updateTask(const Task & task, bool doneChanged)
+bool FileStorage::addTask(const Task & task)
+{
+    return Task::saveToFile(fileDir_.absolutePath() + QDir::separator() + filenameFromTask(task.getId()), task);
+}
+
+bool FileStorage::updateTask(const Task & task, bool doneChanged)
 {
     const QString filename = fileDir_.absolutePath() + QDir::separator() + filenameFromTask(task.getId());
 
@@ -59,16 +56,16 @@ void FileStorage::updateTask(const Task & task, bool doneChanged)
     if (doneChanged) QDir().remove(filename + (task.isDone() ? "" : ".done"));
 
     // update task file
-    Task::saveToFile(filename + (task.isDone() ? ".done" : ""), task);
+    return Task::saveToFile(filename + (task.isDone() ? ".done" : ""), task);
 }
 
-void FileStorage::removeTask(const TaskId & taskId)
+bool FileStorage::removeTask(const TaskId & taskId)
 {
     QFile f(fileDir_.absolutePath() + QDir::separator() + filenameFromTask(taskId));
     if (!f.exists()) {
-        log << "cannot find task "<< taskId.toString() << " to remove";
-        return;
+        log(Log::Error) << "cannot find task "<< taskId << " to remove";
+        return false;
     }
 
-    f.remove();
+    return f.remove();
 }

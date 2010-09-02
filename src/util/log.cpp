@@ -12,9 +12,11 @@
 class Logger
 {
 public:
-    void add(const QDateTime & now, const QString & file, int line, const QString & msg, bool print = false)
+    void add(const QDateTime & now, Log::Severity severity, const QString & file, int line, const QString & msg, bool print = false)
     {
-        QString logStr = "| " + file.leftJustified(24, ' ', true) + " " + QString::number(line).rightJustified(4) + " |" + msg;
+        QString logStr = "| " + QString::number((int)severity)
+                + " | " + file.leftJustified(24, ' ', true) + " " + QString::number(line).rightJustified(4)
+                + " |"  + msg;
         logBuffer[now] = logStr;
 
         if (print) {
@@ -56,13 +58,19 @@ namespace Log {
 // LogLine
 
 LogLine::LogLine(const char * file, int line)
-    : file_(file), line_(line), timestamp_(Clock::currentDateTime())
+    : timestamp_(Clock::currentDateTime()), severity_(Log::Debug), file_(file), line_(line)
 {
 }
 
 LogLine::~LogLine()
 {
-    logger()->add(timestamp_, file_, line_, string_);
+    logger()->add(timestamp_, severity_, file_, line_, string_);
+}
+
+LogLine & LogLine::operator()(Log::Severity severity)
+{
+    severity_ = severity;
+    return *this;
 }
 
 LogLine & LogLine::operator<<(const QString & str)
@@ -81,4 +89,9 @@ LogLine & LogLine::operator<<(int i)
 {
     string_ += " " + QString::number(i);
     return *this;
+}
+
+LogLine & LogLine::operator<<(bool b)
+{
+    return operator<<(b ? "true" : "false");
 }

@@ -1,5 +1,7 @@
 #pragma once
 
+#include <core/storageengine.h>
+
 #include <QObject>
 
 class Task;
@@ -7,29 +9,27 @@ class TaskId;
 class NetworkStoragePrivate;
 class QTimer;
 
-class NetworkStorage : public QObject
+class NetworkStorage : public QObject, public StorageEngine
 {
     Q_OBJECT
     Q_DECLARE_PRIVATE(NetworkStorage);
 
 public:
-    NetworkStorage(QObject *parent = 0);
+    NetworkStorage();
     ~NetworkStorage();
 
-public slots:
-    void restoreFromFiles();
+public:
+    virtual QList<Task> loadTasks();
+    virtual bool saveTasks(const QList<Task> & tasks);
+    virtual bool addTask(const Task & task);
+    virtual bool updateTask(const Task & task, bool doneChanged);
+    virtual bool removeTask(const TaskId & taskId);
 
 private slots:
-    void addTask(const Task & task);
-    void updateTask(const Task & task, bool doneChanged);
-    void removeTask(const TaskId & taskId);
     void checkForChanges();
 
 private:
     QTimer * checkForChangesTimer_;
-
-    // list of tasks used to handle initial restore
-    QList<Task> newTasks_;
 
 private:
     NetworkStoragePrivate * const d_ptr;

@@ -36,7 +36,8 @@ SOURCES += \
     widgets/tasktreeitems.cpp \
     widgets/textpopup.cpp \
     core/ftp.cpp \
-    widgets/lineedit.cpp
+    widgets/lineedit.cpp \
+    core/storageengine.cpp
 
 HEADERS  += \
     core/clock.h \
@@ -61,7 +62,8 @@ HEADERS  += \
     widgets/tasktreeitems.h \
     widgets/textpopup.h \
     core/ftp.h \
-    widgets/lineedit.h
+    widgets/lineedit.h \
+    core/storageengine.h
 
 FORMS += \
 widgets/ui/calendarpopup.ui \

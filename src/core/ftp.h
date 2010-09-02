@@ -15,9 +15,9 @@ public:
     ~Ftp();
 
     QList<QUrlInfo> ls(const QRegExp & fileRe);
-    void put(const QString & filename, QIODevice * ioDevice);
-    void get(const QString &filename, QIODevice *ioDevice);
-    void remove(const QString &filename);
+    bool put(const QString & filename, QIODevice * ioDevice);
+    bool get(const QString &filename, QIODevice *ioDevice);
+    bool remove(const QString &filename);
 
 private slots:
     void _q_commandFinished(int id, bool error);

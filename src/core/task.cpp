@@ -192,7 +192,7 @@ Task Task::createFromString(const QString & string)
     return task;
 }
 
-void Task::saveToFile(const QString & filename, const Task & task)
+bool Task::saveToFile(const QString & filename, const Task & task)
 {
     // Version History
     // 1: changed 'done' from bool to timestamp
@@ -210,6 +210,9 @@ void Task::saveToFile(const QString & filename, const Task & task)
     settings.setValue("task/plannedDate",       task.getPlannedDate().toString(Qt::ISODate));
     settings.setValue("task/effort",            task.getEffort().toMinutes());
     settings.setValue("task/done",              task.getDoneTimestamp().toString(Qt::ISODate));
+
+    settings.sync();
+    return settings.status() == QSettings::NoError;
 }
 
 Task Task::loadFromFile(const QString & filePath)

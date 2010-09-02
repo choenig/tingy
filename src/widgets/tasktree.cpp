@@ -34,8 +34,7 @@ void setTopLevelItemsHidden(bool hide, bool ignoreWithChildren = false)
 
 void updateNext(TaskTree * tree, QMutableListIterator<TopLevelItem*> & it, const QDate & date, const QString & string)
 {
-    if (!it.hasNext())
-    {
+    if (!it.hasNext()) {
         it.insert(new TopLevelItem(tree));
         it.previous();
     }
