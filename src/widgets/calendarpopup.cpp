@@ -192,6 +192,13 @@ void CalendarPopup::keyPressEvent(QKeyEvent * keyEvent)
     }
 }
 
+void CalendarPopup::wheelEvent(QWheelEvent * wheelEvent)
+{
+    QWidget::wheelEvent(wheelEvent);
+    moveSelectedIndex((wheelEvent->delta() > 0 ? -1 : 1) * 7 );
+    update();
+}
+
 QLabel * CalendarPopup::getDateLabel(QPoint pos)
 {
     switch (pos.x() + pos.y()*colCount_) {

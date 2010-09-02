@@ -23,6 +23,7 @@ signals:
 protected:
     virtual void paintEvent(QPaintEvent * event);
     virtual void keyPressEvent(QKeyEvent * keyEvent);
+    virtual void wheelEvent(QWheelEvent * wheelEvent);
 
 private:
     void updateVisibleDates(const QDate & dateInFirstRow);
