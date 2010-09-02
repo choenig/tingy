@@ -66,6 +66,9 @@ public:
     static bool saveToFile(const QString & filename, const Task & task);
     static Task loadFromFile(const QString & filePath);
 
+    QString toICal() const;
+    static Task fromICal(const QString & taskString);
+
 private:
     TaskId    id_;
     QDateTime creationTimestamp_;

@@ -1,8 +1,9 @@
 #include <core/clock.h>
-#include <core/filestorage.h>
-#include <core/networkstorage.h>
 #include <core/settings.h>
 #include <core/taskmodel.h>
+#include <storage/caldavstorage.h>
+#include <storage/filestorage.h>
+#include <storage/networkstorage.h>
 #include <widgets/mainwindow.h>
 
 #include <QApplication>
@@ -33,8 +34,9 @@ int main(int argc, char * argv[])
     QTimer::singleShot(0, TaskModel::instance(), SLOT(init()));
 
     // initialize storage modules
-    taskModel.instance()->addStorageEngine(new FileStorage);
-    taskModel.instance()->addStorageEngine(new NetworkStorage);
+    if (Settings::FileStorage::Enabled())   taskModel.instance()->addStorageEngine(new FileStorage);
+    if (Settings::NetworkStorage::Enabled()) taskModel.instance()->addStorageEngine(new NetworkStorage);
+    if (Settings::CalDavStorage::Enabled())  taskModel.instance()->addStorageEngine(new CalDavStorage);
 
     // init the mainWindow
     MainWindow mainWindow;

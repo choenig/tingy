@@ -15,6 +15,16 @@ QString dataPath() {
     return QDir::homePath() + QDir::separator() + ".tingy" + QDir::separator();
 }
 
+namespace FileStorage
+{
+    QString ns = "FileStorage/";
+
+    bool Enabled() {
+        QSettings settings(settingsPath, QSettings::IniFormat);
+        return settings.value(ns + "Enabled", 1).toBool();
+    }
+}
+
 //
 // NetworkStorage
 
@@ -24,7 +34,7 @@ namespace NetworkStorage
 
     bool Enabled() {
         QSettings settings(settingsPath, QSettings::IniFormat);
-        return settings.value(ns + "Enabled", 0).toBool();
+        return settings.value(ns + "Enabled", false).toBool();
     }
 
     QString Hostname() {
@@ -39,7 +49,47 @@ namespace NetworkStorage
 
     QString Password() {
         QSettings settings(settingsPath, QSettings::IniFormat);
-        return settings.value(ns + "Password").toString();
+        return QByteArray::fromBase64( settings.value(ns + "Password").toByteArray() );
+    }
+
+    QString Taskdir() {
+        QSettings settings(settingsPath, QSettings::IniFormat);
+        return settings.value(ns + "Taskdir").toString();
+    }
+}
+
+namespace CalDavStorage
+{
+    QString ns = "CalDavStorage/";
+
+    bool Enabled() {
+        QSettings settings(settingsPath, QSettings::IniFormat);
+        return settings.value(ns + "Enabled", false).toBool();
+    }
+
+    bool UseSSL() {
+        QSettings settings(settingsPath, QSettings::IniFormat);
+        return settings.value(ns + "UseSSL", true).toBool();
+    }
+
+    QString Hostname() {
+        QSettings settings(settingsPath, QSettings::IniFormat);
+        return settings.value(ns + "Hostname").toString();
+    }
+
+    int Port() {
+           QSettings settings(settingsPath, QSettings::IniFormat);
+           return settings.value(ns + "Port").toInt();
+    }
+
+    QString Username() {
+        QSettings settings(settingsPath, QSettings::IniFormat);
+        return settings.value(ns + "Username").toString();
+    }
+
+    QString Password() {
+        QSettings settings(settingsPath, QSettings::IniFormat);
+        return QByteArray::fromBase64( settings.value(ns + "Password").toByteArray() );
     }
 
     QString Taskdir() {

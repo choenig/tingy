@@ -5,6 +5,7 @@
 #include <util/util.h>
 
 #include <QDebug>
+#include <QFile>
 #include <QRegExp>
 #include <QSettings>
 #include <QStringList>
@@ -227,7 +228,7 @@ Task Task::loadFromFile(const QString & filePath)
 
     // lastChanged
     if (version >= 3) task.lastChanged_ = QDateTime::fromString(settings.value("task/lastChanged_").toString(), Qt::ISODate);
-    else              task.lastChanged_ = Clock::currentDateTime();
+    if (task.lastChanged_.isNull()) task.lastChanged_ = Clock::currentDateTime();
 
     // priority
     task.priority_ = (Priority::Level)settings.value("task/priority").toInt();
@@ -252,6 +253,117 @@ Task Task::loadFromFile(const QString & filePath)
     // doneTimestamp
     if (version == 0) task.doneTimestamp_ = settings.value("task/done").toBool() ? Clock::currentDateTime() : QDateTime();
     else              task.doneTimestamp_ = QDateTime::fromString(settings.value("task/done").toString(), Qt::ISODate);
+
+    return task;
+}
+
+#define NL "\n"
+
+QString Task::toICal() const
+{
+    QString taskString;
+
+    taskString += "BEGIN:VCALENDAR" NL;
+    taskString += "VERSION:2.0" NL;
+    taskString += "PRODID:Tingy" NL;
+    taskString += "BEGIN:VTODO" NL;
+
+    taskString += "UID:"+getId().toString() + NL;
+    taskString += "DTSTAMP:" + getCreationTimestamp().toString("yyyyMMdd'T'hhmmss'Z'") + NL;
+    taskString += "CREATED:" + getCreationTimestamp().toString("yyyyMMdd'T'hhmmss'Z'") + NL;
+    taskString += "LAST-MODIFIED:" + getLastChanged().toString("yyyyMMdd'T'hhmmss'Z'") + NL;
+    taskString += "PRIORITY:" + QString::number(2 - getPriority().toInt()) + NL;
+    taskString += "SUMMARY:"     + getTitle().replace('\n', "\\n") + NL;
+    taskString += "DESCRIPTION:" + getDescription().replace('\n', "\\n") + NL;
+
+    taskString += "CLASS:PRIVATE" NL;
+
+    if (getDueDate().isValid()) {
+        taskString += "DUE;VALUE=DATE:" + getDueDate().toString("yyyyMMdd") + NL;
+    }
+
+    if (getPlannedDate().isValid()) {
+        taskString += "RDATE;VALUE=DATE:" + getPlannedDate().toString("yyyyMMdd") + NL;
+    }
+
+    if (getEffort().isValid()) {
+        taskString += "DURATION:PT" + getEffort().toString().toUpper() + NL;      // must not be used together with DUE
+    }
+
+    if (isDone()) {
+        taskString += "COMPLETED:" + getDoneTimestamp().toString("yyyyMMdd'T'hhmmss'Z'") + NL;
+    }
+
+    taskString += "END:VTODO" NL;
+    taskString += "END:VCALENDAR" NL;
+
+    return taskString;
+}
+
+namespace {
+
+void parse(TaskId & id, const QString & key, const QString & src) {
+    QRegExp re(key+":(.*)\\n");
+    re.setMinimal(true);
+    if (src.indexOf(re) == -1) return;
+    id = TaskId::fromString(re.cap(1));
+}
+
+void parse(Priority & priority, const QString & key, const QString & src) {
+    QRegExp re(key+":(.*)\\n");
+    re.setMinimal(true);
+    if (src.indexOf(re) == -1) return;
+    priority = (Priority::Level)(2-re.cap(1).toInt());
+}
+
+void parse(Effort & effort, const QString & key, const QString & src) {
+    QRegExp re(key+"(.*)Z\\n");
+    re.setMinimal(true);
+    if (src.indexOf(re) == -1) return;
+    effort = Effort::fromString(re.cap(1));
+}
+
+void parse(QDateTime & timestamp, const QString & key, const QString & src) {
+    QRegExp re(key+":(.*)Z\\n");
+    re.setMinimal(true);
+    if (src.indexOf(re) == -1) return;
+    timestamp = QDateTime::fromString(re.cap(1), "yyyyMMddThhmmss");
+}
+
+void parse(QDate & date,  const QString & key, const QString & src) {
+    QRegExp re(key+";VALUE=DATE:(.*)\\n");
+    re.setMinimal(true);
+    if (src.indexOf(re) == -1) return;
+    date = QDate::fromString(re.cap(1), "yyyyMMdd");
+}
+
+void parse(QString & str, const QString & key, const QString & src) {
+    QRegExp re(key+":(.*)\\n");
+    re.setMinimal(true);
+    if (src.indexOf(re) == -1) return;
+    str = QString(re.cap(1)).replace("\\n", "\n");
+}
+}
+
+Task Task::fromICal(const QString & taskString)
+{
+//    qDebug() << taskString;
+//    QFile file(filename);
+//    file.open(QFile::ReadOnly);
+//    QString taskString = file.readAll();
+//    file.close();
+
+    Task task;
+    parse(task.id_               , "UID",           taskString);
+    parse(task.creationTimestamp_, "CREATED",       taskString);
+    parse(task.lastChanged_      , "LAST-MODIFIED", taskString);
+    parse(task.priority_         , "PRIORITY",      taskString);
+    parse(task.title_            , "SUMMARY",       taskString);
+    parse(task.description_      , "DESCRIPTION",   taskString);
+    parse(task.dueDate_          , "DUE",           taskString);
+    parse(task.plannedDate_      , "RDATE",         taskString);
+    parse(task.effort_           , "DURATION:PT",   taskString);
+    parse(task.doneTimestamp_    , "COMPLETED",     taskString);
 
     return task;
 }
