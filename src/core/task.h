@@ -21,34 +21,36 @@ public:
     TaskId getId() const { return id_; }
 
     QDateTime getCreationTimestamp() const { return creationTimestamp_; }
-    void setCreationTimestamp(const QDateTime & timestamp) { creationTimestamp_ = timestamp; }
+
+    QDateTime getLastChanged() const { return lastChanged_; }
+    void updateLastChanged();
 
     Priority getPriority() const { return priority_; }
-    void setPriority(const Priority & priority) { priority_ = priority; }
+    void setPriority(const Priority & priority);
 
     QString getTitle() const { return title_; }
-    void setTitle(const QString & title) { title_ = title; }
+    void setTitle(const QString & title);
 
     QString getDescription() const { return description_; }
-    void setDescription(const QString & description) { description_ = description; }
+    void setDescription(const QString & description);
 
     // returns the date this task is scheduled, which is either the planned or the due date
     QDate getEffectiveDate() const;
 
     QDate getDueDate() const { return dueDate_; }
-    void setDueDate(const QDate & dueDate) { dueDate_ = dueDate; }
+    void setDueDate(const QDate & dueDate);
 
     bool isOverdue() const;
 
     QDate getPlannedDate() const { return plannedDate_; }
-    void setPlannedDate(const QDate & plannedDate) { plannedDate_ = plannedDate; }
-    void resetPlannedDate() { plannedDate_ = QDate(); }
+    void setPlannedDate(const QDate & plannedDate);
+    void resetPlannedDate();
 
     Effort getEffort() const { return effort_; }
-    void setEffort(const Effort & effort) { effort_ = effort; }
+    void setEffort(const Effort & effort);
 
     bool isDone() const { return doneTimestamp_.isValid(); }
-    void setDone(const QDateTime & timestamp) { doneTimestamp_ = timestamp; }
+    void setDone(const QDateTime & timestamp);
     QDateTime getDoneTimestamp() const { return doneTimestamp_; }
 
     QString toString() const;
@@ -60,7 +62,6 @@ public:
 
     static Task createFromString(const QString & string);
 
-
 public:
     static void saveToFile(const QString & filename, const Task & task);
     static Task loadFromFile(const QString & filePath);
@@ -68,6 +69,7 @@ public:
 private:
     TaskId    id_;
     QDateTime creationTimestamp_;
+    QDateTime lastChanged_;
     Priority  priority_;
     QString   title_;
     QString   description_;
@@ -86,6 +88,7 @@ private:
 inline QDataStream & operator<<(QDataStream & out, const Task & task) {
     out << task.id_
         << task.creationTimestamp_
+        << task.lastChanged_
         << task.priority_
         << task.title_
         << task.description_
@@ -98,6 +101,7 @@ inline QDataStream & operator<<(QDataStream & out, const Task & task) {
 inline QDataStream & operator>>(QDataStream & in, Task & task) {
     in  >> task.id_
         >> task.creationTimestamp_
+        >> task.lastChanged_
         >> task.priority_
         >> task.title_
         >> task.description_

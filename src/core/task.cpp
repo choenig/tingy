@@ -12,7 +12,7 @@
 QT_REGISTER_TYPE(Task);
 
 Task::Task(const TaskId & taskId)
-    : id_(taskId)
+    : id_(taskId), lastChanged_(Clock::currentDateTime())
 {
 }
 
@@ -26,6 +26,29 @@ bool Task::isValid() const
     return !id_.isNull() && creationTimestamp_.isValid() && !title_.isEmpty();
 }
 
+void Task::updateLastChanged()
+{
+    lastChanged_ = Clock::currentDateTime();
+}
+
+void Task::setPriority(const Priority & priority)
+{
+    priority_ = priority;
+    updateLastChanged();
+}
+
+void Task::setTitle(const QString & title)
+{
+    title_ = title;
+    updateLastChanged();
+}
+
+void Task::setDescription(const QString & description)
+{
+    description_ = description;
+    updateLastChanged();
+}
+
 QDate Task::getEffectiveDate() const
 {
     if (isDone()) return QDate(); // done items don't have an effective date
@@ -33,11 +56,43 @@ QDate Task::getEffectiveDate() const
     return dueDate_;
 }
 
+void Task::setDueDate(const QDate & dueDate)
+{
+    dueDate_ = dueDate;
+    updateLastChanged();
+}
+
 bool Task::isOverdue() const
 {
     const QDate effDate = getEffectiveDate();
     return !isDone() && effDate.isValid() && effDate < Clock::currentDate();
 }
+
+void Task::setPlannedDate(const QDate & plannedDate)
+{
+    plannedDate_ = plannedDate;
+    updateLastChanged();
+}
+
+void Task::resetPlannedDate()
+{
+    plannedDate_ = QDate();
+    updateLastChanged();
+}
+
+void Task::setEffort(const Effort & effort)
+{
+    effort_ = effort;
+    updateLastChanged();
+}
+
+
+void Task::setDone(const QDateTime & timestamp)
+{
+    doneTimestamp_ = timestamp;
+    updateLastChanged();
+}
+
 
 QString Task::toString() const
 {
@@ -48,6 +103,7 @@ bool Task::operator==(const Task & rhs) const
 {
     return id_                == rhs.id_                &&
            creationTimestamp_ == rhs.creationTimestamp_ &&
+           lastChanged_       == rhs.lastChanged_       &&
            priority_          == rhs.priority_          &&
            title_             == rhs.title_             &&
            description_       == rhs.description_       &&
@@ -57,7 +113,7 @@ bool Task::operator==(const Task & rhs) const
            doneTimestamp_     == rhs.doneTimestamp_;
 }
 
-bool Task::operator <(const Task & rhs) const
+bool Task::operator<(const Task & rhs) const
 {
 	const Task & lhs = *this;
 
@@ -89,6 +145,7 @@ Task Task::createFromString(const QString & string)
     Task task;
     task.id_ = TaskId::createUniqueId();
     task.creationTimestamp_ = Clock::currentDateTime();
+    task.lastChanged_ = Clock::currentDateTime();
     task.title_ = string;
 
     // parse date like "*today"
@@ -140,10 +197,12 @@ void Task::saveToFile(const QString & filename, const Task & task)
     // Version History
     // 1: changed 'done' from bool to timestamp
     // 2: added 'title'
+    // 3: added 'lastChanged'
     QSettings settings(filename, QSettings::IniFormat);
-    settings.setValue("fileStorageVersion", 2);
+    settings.setValue("fileStorageVersion", 3);
     settings.setValue("task/id",                task.getId().toString());
     settings.setValue("task/creationTimestamp", task.getCreationTimestamp().toString(Qt::ISODate));
+    settings.setValue("task/lastChanged",       task.getLastChanged().toString(Qt::ISODate));
     settings.setValue("task/priority",          task.getPriority().toInt());
     settings.setValue("task/title",             task.getTitle());
     settings.setValue("task/description",       task.getDescription());
@@ -159,18 +218,37 @@ Task Task::loadFromFile(const QString & filePath)
     const int version = settings.value("fileStorageVersion").toInt();
 
     Task task(TaskId::fromString(settings.value("task/id").toString()));
-    task.setCreationTimestamp(QDateTime::fromString(settings.value("task/creationTimestamp").toString(), Qt::ISODate));
-    task.setPriority((Priority::Level)settings.value("task/priority").toInt());
+
+    // creationTimestamp
+    task.creationTimestamp_ = QDateTime::fromString(settings.value("task/creationTimestamp").toString(), Qt::ISODate);
+
+    // lastChanged
+    if (version >= 3) task.lastChanged_ = QDateTime::fromString(settings.value("task/lastChanged_").toString(), Qt::ISODate);
+    else              task.lastChanged_ = Clock::currentDateTime();
+
+    // priority
+    task.priority_ = (Priority::Level)settings.value("task/priority").toInt();
+
+    // title and description
     if (version >= 2) {
-        task.setTitle(settings.value("task/title").toString());
-        task.setDescription(settings.value("task/description").toString());
+        task.title_ = settings.value("task/title").toString();
+        task.description_ = settings.value("task/description").toString();
     } else {
-        task.setTitle(settings.value("task/description").toString());
+        task.title_ = settings.value("task/description").toString();
     }
-    task.setDueDate(QDate::fromString(settings.value("task/dueDate").toString(), Qt::ISODate));
-    task.setPlannedDate(QDate::fromString(settings.value("task/plannedDate").toString(), Qt::ISODate));
-    task.setEffort(Effort(settings.value("task/effort").toUInt()));
-    if (version == 0) task.setDone(settings.value("task/done").toBool() ? Clock::currentDateTime() : QDateTime());
-    else              task.setDone(QDateTime::fromString(settings.value("task/done").toString(), Qt::ISODate));
+
+    // dueDate
+    task.dueDate_ = QDate::fromString(settings.value("task/dueDate").toString(), Qt::ISODate);
+
+    // plannedDate
+    task.plannedDate_ = QDate::fromString(settings.value("task/plannedDate").toString(), Qt::ISODate);
+
+    // effort
+    task.effort_ = Effort(settings.value("task/effort").toUInt());
+
+    // doneTimestamp
+    if (version == 0) task.doneTimestamp_ = settings.value("task/done").toBool() ? Clock::currentDateTime() : QDateTime();
+    else              task.doneTimestamp_ = QDateTime::fromString(settings.value("task/done").toString(), Qt::ISODate);
+
     return task;
 }
