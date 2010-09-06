@@ -24,6 +24,9 @@ public:
     bool operator==(const Priority & rhs) const { return level_ == rhs.level_; }
     bool operator!=(const Priority & rhs) const { return !operator==(rhs); }
 
+    bool operator<(const Priority & rhs) const { return level_ < rhs.level_; }
+    bool operator>(const Priority & rhs) const { return level_ > rhs.level_; }
+
 private:
     Level level_;
 

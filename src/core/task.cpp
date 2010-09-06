@@ -136,6 +136,9 @@ bool Task::operator<(const Task & rhs) const
 		if (lhsDate != rhsDate) return !lhsDate.isNull();
 	}
 
+	// sort by priority
+	if (lhs.getPriority() != rhs.getPriority()) return lhs.getPriority() > rhs.getPriority();
+
 	// finally compare creation timestamp
 	return lhs.getCreationTimestamp() < rhs.getCreationTimestamp();
 }
