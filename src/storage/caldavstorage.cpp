@@ -43,18 +43,18 @@ public:
                            "<C:calendar-query xmlns:C=\"urn:ietf:params:xml:ns:caldav\">" NL
                            "  <D:prop xmlns:D=\"DAV:\">" NL
                            "    <D:getetag/>" NL
+//                           "      <C:calendar-data />" NL
                            "  </D:prop>" NL
                            "  <C:filter>" NL
                            "    <C:comp-filter name=\"VCALENDAR\">" NL
                            "      <C:comp-filter name=\"VTODO\">" NL
-                           "        <C:prop-filter name=\"COMPLETED\">" NL
-                           "          <C:is-not-defined/>" NL
-                           "        </C:prop-filter>" NL
-                           "        <C:prop-filter name=\"STATUS\">" NL
-                           "          <C:text-match" NL
-                           "             negate-condition=\"yes\">CANCELLED</C:text-match>" NL
-                           "        </C:prop-filter>" NL
-                           "      </C:comp-filter>" NL
+//                           "        <C:prop-filter name=\"COMPLETED\">" NL
+//                           "          <C:is-not-defined/>" NL
+//                           "        </C:prop-filter>" NL
+//                           "        <C:prop-filter name=\"STATUS\">" NL
+//                           "          <C:text-match" negate-condition=\"yes\">CANCELLED</C:text-match>" NL
+//                           "        </C:prop-filter>" NL
+//                           "      </C:comp-filter>" NL
                            "    </C:comp-filter>" NL
                            "  </C:filter>" NL
                            "</C:calendar-query>");
@@ -185,6 +185,9 @@ namespace {
     CalDavNetworkManager * networkMgr;
 }
 
+//
+// CalDavStorage
+
 CalDavStorage::CalDavStorage(QObject *parent) :
     QObject(parent)
 {
@@ -199,12 +202,18 @@ QList<Task> CalDavStorage::loadTasks()
 
 bool CalDavStorage::saveTasks(const QList<Task> & tasks)
 {
-    QHash<QString, QString> availableHRefs = networkMgr->listAvailableHrefsAndETags();
-    foreach (const QString & href, availableHRefs.keys()) {
-        qDebug() << href << availableHRefs[href];
+    bool retval = true;
+    foreach (const Task & task, tasks) {
+        retval = retval && addTask(task);
     }
+    return retval;
 
-    return false;
+//    QHash<QString, QString> availableHRefs = networkMgr->listAvailableHrefsAndETags();
+//    foreach (const QString & href, availableHRefs.keys()) {
+//        qDebug() << href << availableHRefs[href];
+//    }
+
+//    return false;
 }
 
 bool CalDavStorage::addTask(const Task & task)
