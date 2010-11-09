@@ -116,7 +116,7 @@ public:
         QList<Task> tasks;
         QStringList parts = split("BEGIN:VCALENDAR", "END:VCALENDAR", replyString_);
         foreach (const QString & part, parts) {
-            tasks << Task::fromICal(part);
+            tasks << Task::fromICal(unescapeFromXml(part));
         }
         return tasks;
     }

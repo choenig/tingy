@@ -341,18 +341,8 @@ void parse(QString & str, const QString & key, const QString & src) {
     QRegExp re(key+":(.*)\\n");
     re.setMinimal(true);
     if (src.indexOf(re) == -1) return;
-
     str = re.cap(1);
     str.replace("\\n", "\n");
-    str.replace("&quot;", "\"");
-    str.replace("&lt;", "<");
-    str.replace("&gt;", ">");
-    str.replace("&amp;", "&");
-
-    QRegExp asciiRE("&#([0-9]+);");
-    while (str.indexOf(asciiRE) != -1) {
-        str.replace(QString("&#%1;").arg(asciiRE.cap(1)), QChar(asciiRE.cap(1).toInt()));
-    }
 }
 }
 

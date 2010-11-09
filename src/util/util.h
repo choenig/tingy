@@ -3,6 +3,7 @@
 #include <qmetatype.h>
 #include <QRegExp>
 #include <QStringList>
+#include <QTextDocument>
 
 #define QT_REGISTER_TYPE(ClassName) \
 	Q_DECLARE_METATYPE(ClassName) \
@@ -25,4 +26,21 @@ inline QStringList split(const QString & startTag, const QString & endTag, const
         ++idx;
     }
     return retval;
+}
+
+inline QString unescapeFromXml(const QString & escapedString)
+{
+    QString unescapedString = escapedString;
+    unescapedString.replace("&quot;", "\"");
+    unescapedString.replace("&lt;",   "<");
+    unescapedString.replace("&gt;",   ">");
+    unescapedString.replace("&amp;",  "&");
+
+    QRegExp asciiRE("&#([0-9]+);");
+    while (unescapedString.indexOf(asciiRE) != -1) {
+        unescapedString.replace(QString("&#%1;").arg(asciiRE.cap(1)),
+                                QChar(asciiRE.cap(1).toInt()));
+    }
+
+    return unescapedString;
 }
