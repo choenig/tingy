@@ -43,7 +43,7 @@ public:
                            "<C:calendar-query xmlns:C=\"urn:ietf:params:xml:ns:caldav\">" NL
                            "  <D:prop xmlns:D=\"DAV:\">" NL
                            "    <D:getetag/>" NL
-//                           "      <C:calendar-data />" NL
+                           "      <C:calendar-data />" NL
                            "  </D:prop>" NL
                            "  <C:filter>" NL
                            "    <C:comp-filter name=\"VCALENDAR\">" NL
@@ -63,6 +63,8 @@ public:
         if (loop_.exec() != 0) {
             return QHash<QString,QString>();
         }
+
+        qDebug() << replyString_;
 
         QHash<QString, QString> retval;
         const QStringList parts = split("<D:response>", "</D:response>", replyString_);
@@ -202,18 +204,19 @@ QList<Task> CalDavStorage::loadTasks()
 
 bool CalDavStorage::saveTasks(const QList<Task> & tasks)
 {
+    //    QHash<QString, QString> availableHRefs = networkMgr->listAvailableHrefsAndETags();
+    //    foreach (const QString & href, availableHRefs.keys()) {
+    //        qDebug() << href << availableHRefs[href];
+    //    }
+
+    //    return false;
+
     bool retval = true;
     foreach (const Task & task, tasks) {
         retval = retval && addTask(task);
     }
     return retval;
 
-//    QHash<QString, QString> availableHRefs = networkMgr->listAvailableHrefsAndETags();
-//    foreach (const QString & href, availableHRefs.keys()) {
-//        qDebug() << href << availableHRefs[href];
-//    }
-
-//    return false;
 }
 
 bool CalDavStorage::addTask(const Task & task)
