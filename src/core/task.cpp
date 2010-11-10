@@ -292,6 +292,7 @@ QString Task::toICal() const
 
     if (isDone()) {
         taskString += "COMPLETED:" + getDoneTimestamp().toString("yyyyMMdd'T'hhmmss'Z'") + NL;
+        taskString += "STATUS:COMPLETED" NL;
     }
 
     taskString += "END:VTODO" NL;
