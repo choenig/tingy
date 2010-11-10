@@ -44,7 +44,7 @@ Ftp::Ftp() : QObject(), isNested(ftp != 0)
     if (!isNested) {
         myIds << ftp->connectToHost(Settings::NetworkStorage::Hostname());
         myIds << ftp->login(Settings::NetworkStorage::Username(),
-                            QByteArray::fromBase64(Settings::NetworkStorage::Password().toLatin1()));
+                            Settings::NetworkStorage::Password());
         myIds << ftp->cd(Settings::NetworkStorage::Taskdir());
         loop.exec();
     }

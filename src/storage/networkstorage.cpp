@@ -1,10 +1,10 @@
 #include "networkstorage.h"
 
 #include <core/clock.h>
-#include <core/filestorage.h>
 #include <core/ftp.h>
 #include <core/settings.h>
 #include <core/taskmodel.h>
+#include <storage/filestorage.h>
 #include <util/log.h>
 
 #include <QDebug>

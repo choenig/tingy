@@ -1,3 +1,5 @@
+* parse timestamp (08:00) and use it for sorting taks
+* iCal Support 
 * enhance Windows Icons
 * make sure all used icons are free to use
 * close main window on minimize

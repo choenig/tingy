@@ -64,7 +64,7 @@ LogLine::LogLine(const char * file, int line)
 
 LogLine::~LogLine()
 {
-    logger()->add(timestamp_, severity_, file_, line_, string_);
+    logger()->add(timestamp_, severity_, file_, line_, string_, true);
 }
 
 LogLine & LogLine::operator()(Log::Severity severity)
