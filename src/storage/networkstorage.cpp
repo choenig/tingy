@@ -53,7 +53,7 @@ public:
 
         bool ok = true;
         foreach (const Task & task, tasks) {
-            ok = ok && saveTaskToFile(task);
+            ok = saveTaskToFile(task) && ok;
         }
 
         return ok;

@@ -38,7 +38,8 @@ bool FileStorage::saveTasks(const QList<Task> & tasks)
 {
     bool ok = true;
     foreach (const Task & task, tasks) {
-        ok = ok && Task::saveToFile(fileDir_.absolutePath() + QDir::separator() + filenameFromTask(task.getId()), task);
+        ok = Task::saveToFile(fileDir_.absolutePath() + QDir::separator() + filenameFromTask(task.getId()), task)
+             && ok;
     }
     return ok;
 }

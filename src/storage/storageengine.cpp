@@ -74,28 +74,28 @@ QList<Task> StorageEngines::loadTasks()
 bool StorageEngines::saveTasks(const QList<Task> &tasks)
 {
 	bool ok = true;
-	foreach(StorageEngine * storageEngine, *this) { ok = ok && storageEngine->saveTasks(tasks); }
+	foreach(StorageEngine * storageEngine, *this) { ok = storageEngine->saveTasks(tasks) && ok; }
 	return ok;
 }
 
 bool StorageEngines::addTask(const Task & task)
 {
 	bool ok = true;
-	foreach(StorageEngine * storageEngine, *this) { ok = ok && storageEngine->addTask(task); }
+	foreach(StorageEngine * storageEngine, *this) { ok = storageEngine->addTask(task) && ok; }
 	return ok;
 }
 
 bool StorageEngines::updateTask(const Task & task, bool doneChanged)
 {
 	bool ok = true;
-	foreach(StorageEngine * storageEngine, *this) { ok = ok && storageEngine->updateTask(task, doneChanged); }
+	foreach(StorageEngine * storageEngine, *this) { ok = storageEngine->updateTask(task, doneChanged) && ok; }
 	return ok;
 }
 
 bool StorageEngines::removeTask(const TaskId & taskId)
 {
 	bool ok = true;
-	foreach(StorageEngine * storageEngine, *this) { ok = ok && storageEngine->removeTask(taskId); }
+	foreach(StorageEngine * storageEngine, *this) { ok = storageEngine->removeTask(taskId) && ok; }
 	return ok;
 }
 
