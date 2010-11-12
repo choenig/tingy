@@ -152,13 +152,23 @@ Task Task::createFromString(const QString & string)
     task.lastChanged_ = Clock::currentDateTime();
     task.title_ = string;
 
-    // parse date like "*today"
+    // parse due date like "*today"
     QRegExp reDue("\\*([^ ]+)");
     if (task.title_.indexOf(reDue) >= 0) {
         const QDate dueDate = parseDate(reDue.cap(1));
         if (dueDate.isValid()) {
             task.title_.remove(reDue);
             task.dueDate_ = dueDate;
+        }
+    }
+
+    // parse planned date like "*today"
+    QRegExp rePlanned("\\@([^ ]+)");
+    if (task.title_.indexOf(rePlanned) >= 0) {
+        const QDate plannedDate = parseDate(rePlanned.cap(1));
+        if (plannedDate.isValid()) {
+            task.title_.remove(rePlanned);
+            task.plannedDate_ = plannedDate;
         }
     }
 

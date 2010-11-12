@@ -21,15 +21,14 @@ void AutocompleteLineEdit::onTextChanged(const QString & text)
 {
     QWidget * wdgt = 0;
 
+
     if (text.endsWith("!")) {
-        QStringList choices; choices << "+" << "-";
-        textPopup_->setChoices(choices, QRegExp("[+-]"));
+        textPopup_->setChoices(QStringList() << "+" << "-", QRegExp("[+-]"));
         wdgt = textPopup_;
     } else if (text.endsWith("$") || text.endsWith("*+")) {
-        QStringList choices; choices << "m" << "h"<< "d"<< "w"<< "y";
-        textPopup_->setChoices(choices, QRegExp("[0-9]+([mhdwy]?[0-9]*)*"));
+        textPopup_->setChoices(QStringList() << "m" << "h" << "d" << "w" << "y", QRegExp("[0-9]+([mhdwy]?[0-9]*)*"));
         wdgt = textPopup_;
-    } else if (text.endsWith("*")) {
+    } else if (text.endsWith("*") || text.endsWith("@")) {
         calPopup_->reset();
         wdgt = calPopup_;
     }
