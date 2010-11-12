@@ -30,7 +30,7 @@ QHash<TaskId, Task> StorageEngines::syncTasks()
 	QHash<TaskId, Task> tasks;
 
 	// remember which tasks came from which tasklist
-	QMap<StorageEngine*, QHash<TaskId,Task> > loadTaskLists;
+	QMap<StorageEngine*, QHash<TaskId,Task>> loadTaskLists;
 
 	// first gather and merge all tasks from all storage engines ...
 	foreach (StorageEngine * storageEngine, *this) {
@@ -40,7 +40,7 @@ QHash<TaskId, Task> StorageEngines::syncTasks()
 	}
 
 	// .. then prepare for save ...
-	QMap<StorageEngine*, QList<Task> > saveTaskLists;
+	QMap<StorageEngine*, QList<Task>> saveTaskLists;
 	foreach (const Task & task, tasks)
 	{
 		foreach (StorageEngine * storageEngine, *this)
