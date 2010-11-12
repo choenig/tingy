@@ -4,6 +4,7 @@
 #include <core/taskmodel.h>
 #include <qtextlib/qxtglobalshortcut.h>
 #include <util/log.h>
+#include <util/util.h>
 #include <widgets/quickadddialog.h>
 
 #include <QCloseEvent>
@@ -214,7 +215,7 @@ void MainWindow::updateTrayIcon(bool hasOverdueTasks)
 void MainWindow::showDateInStatusbar(const QDate & date)
 {
     if (date.isNull()) statusBar()->clearMessage();
-    else               statusBar()->showMessage(QLocale().toString(date, "dd.MM.yyyy, dddd"));
+    else               statusBar()->showMessage(QLocale().toString(date, dot("dddd * dd.MM.yyyy")));
 }
 
 void MainWindow::globalShortcutTriggered()

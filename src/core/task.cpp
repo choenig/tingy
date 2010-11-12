@@ -147,10 +147,10 @@ bool Task::operator<(const Task & rhs) const
 Task Task::createFromString(const QString & string)
 {
     Task task;
-    task.id_ = TaskId::createUniqueId();
+    task.id_                = TaskId::createUniqueId();
     task.creationTimestamp_ = Clock::currentDateTime();
-    task.lastChanged_ = Clock::currentDateTime();
-    task.title_ = string;
+    task.lastChanged_       = Clock::currentDateTime();
+    task.title_             = string;
 
     // parse due date like "*today"
     QRegExp reDue("\\*([^ ]+)");
@@ -197,8 +197,10 @@ Task Task::createFromString(const QString & string)
     }
 
     // replace '//' by newlines
-    task.title_.replace(QRegExp("\\s*//\\s*"), "\n");
-    task.description_.replace(QRegExp("\\s*//\\s*"), "\n");
+    // the ':' is used to not replace things like http://www
+    const QRegExp newLineRegExp("\\s*[^:]//\\s*");
+    task.title_.replace(newLineRegExp, "\n");
+    task.description_.replace(newLineRegExp, "\n");
 
     task.title_       = task.title_.trimmed();
     task.description_ = task.description_.trimmed();
