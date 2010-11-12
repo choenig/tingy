@@ -8,6 +8,8 @@
 class StorageEngine
 {
 public:
+    virtual ~StorageEngine() {}
+
     virtual QList<Task> loadTasks()                              =0;
     virtual bool saveTasks(const QList<Task> & tasks)            =0;
 

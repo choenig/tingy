@@ -34,7 +34,7 @@ int main(int argc, char * argv[])
     QTimer::singleShot(0, TaskModel::instance(), SLOT(init()));
 
     // initialize storage modules
-    if (Settings::FileStorage::Enabled())   taskModel.instance()->addStorageEngine(new FileStorage);
+    if (Settings::FileStorage::Enabled())    taskModel.instance()->addStorageEngine(new FileStorage);
     if (Settings::NetworkStorage::Enabled()) taskModel.instance()->addStorageEngine(new NetworkStorage);
     if (Settings::CalDavStorage::Enabled())  taskModel.instance()->addStorageEngine(new CalDavStorage);
 
