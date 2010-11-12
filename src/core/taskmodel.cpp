@@ -33,24 +33,7 @@ void TaskModel::init()
 {
     Q_ASSERT(tasks_.isEmpty());
 
-    QHash<TaskId, Task> tasks;
-
-	// first gather all tasks from all storage engines ...
-	foreach (StorageEngine * storageEngine, storageEngines_)
-	{
-		foreach (const Task & task, storageEngine->loadTasks())
-		{
-			if (tasks.contains(task.getId())) {
-				if (task.getLastChanged() > tasks[task.getId()].getLastChanged()) {
-					tasks[task.getId()] = task;
-				}
-			} else {
-				tasks.insert(task.getId(), task);
-			}
-		}
-	}
-
-    // ... then add tasks
+    const QHash<TaskId, Task> tasks = storageEngines_.syncTasks();
     foreach (const Task & task, tasks)
     {
         tasks_[task.getId()] = task;
@@ -61,9 +44,6 @@ void TaskModel::init()
             if (overdueTasks_.size() == 1) emit hasOverdueTasks(true);
         }
     }
-
-    // finally sync all storage engines
-    storageEngines_.saveTasks(tasks.values());
 }
 
 void TaskModel::addTask(const Task & task)
