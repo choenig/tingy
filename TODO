@@ -1,9 +1,6 @@
-* add cmd for setting planned date
 * add cmd for setting today (like "**")
 * add indicator, if duedate is 'real' due date or only my due date
-
 * parse timestamp (08:00) and use it for sorting taks
-* iCal Support 
 * enhance Windows Icons
 * make sure all used icons are free to use
 * close main window on minimize
