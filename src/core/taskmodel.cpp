@@ -48,6 +48,8 @@ void TaskModel::init()
 
 void TaskModel::addTask(const Task & task)
 {
+    if (!task.isValid()) return;
+
     if (tasks_.contains(task.getId())) {
         qFatal("duplicate task in TaskModel %s", (const char*)task.getId().toString().constData());
         return;
@@ -70,6 +72,8 @@ void TaskModel::addTask(const Task & task)
 
 void TaskModel::updateTask(const Task & task)
 {
+    if (!task.isValid()) return;
+
     Task oldTask = tasks_.value(task.getId());
     if (task == oldTask) return;
 
