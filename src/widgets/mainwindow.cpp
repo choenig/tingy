@@ -36,7 +36,6 @@ MainWindow::MainWindow(QWidget * parent)
     // init stuff
     initActions();
     initSystemTray();    
-    initStatusBar();
 
 	QxtGlobalShortcut * globalShortcut = new QxtGlobalShortcut(QKeySequence("Ctrl+Alt+Home"), this);
 	globalShortcut->setEnabled(true);
@@ -64,13 +63,13 @@ void MainWindow::closeEvent(QCloseEvent * event)
 
 void MainWindow::hideEvent(QHideEvent *event)
 {
-    lastPos = pos();
+    lastWindowPos = pos();
     QMainWindow::hideEvent(event);
 }
 
 void MainWindow::showEvent(QShowEvent * event)
 {
-    if (!lastPos.isNull()) move(lastPos);
+    if (!lastWindowPos.isNull()) move(lastWindowPos);
     QMainWindow::showEvent(event);
     ui->leAddTask->setFocus();
 }
@@ -210,21 +209,6 @@ void MainWindow::trayActivated(QSystemTrayIcon::ActivationReason reason)
 void MainWindow::updateTrayIcon(bool hasOverdueTasks)
 {
 	trayIcon_->setIcon( hasOverdueTasks ? QIcon(":/images/NOK.png") : QIcon(":/images/OK.png") );
-}
-
-void MainWindow::initStatusBar()
-{
-//    lblStatusBarTimestamp_ = new QLabel;
-//    statusBar()->addPermanentWidget(lblStatusBarTimestamp_);
-
-//    QTimer * timer = new QTimer;
-//    connect(timer, SIGNAL(timeout()), this, SLOT(updateStatusBarTime()));
-//    timer->start(1000);
-}
-
-void MainWindow::updateStatusBarTime()
-{
-    lblStatusBarTimestamp_->setText(Clock::currentDateTime().toString("dd.MM.yyyy   hh:mm:ss"));
 }
 
 void MainWindow::showDateInStatusbar(const QDate & date)

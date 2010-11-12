@@ -29,7 +29,6 @@ private slots:
     void toggleShowDoneTasks();
     void trayActivated(QSystemTrayIcon::ActivationReason reason);
     void updateTrayIcon(bool ok);
-    void updateStatusBarTime();
     void globalShortcutTriggered();
     void showTrayMessage(const QString & title, const QString & msg);
     void showDateInStatusbar(const QDate & date);
@@ -38,14 +37,13 @@ private slots:
 private:
     void initActions();
     void initSystemTray();
-    void initStatusBar();
 
 private:
     QuickAddDialog * quickAddDlg_;
     QAction * showDoneTasksAction_;
     QLabel  * lblStatusBarTimestamp_;
     QSystemTrayIcon * trayIcon_;
-    QPoint lastPos;
+    QPoint lastWindowPos;
 
 private:
     Ui::MainWindow * ui;
