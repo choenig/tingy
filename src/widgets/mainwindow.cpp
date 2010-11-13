@@ -23,31 +23,33 @@ MainWindow::MainWindow(QWidget * parent)
 {
     ui->setupUi(this);
 
+    connect(ui->dateBeam, SIGNAL(dateHovered(QDate)), this, SLOT(showDateInStatusbar(QDate)));
+    connect(ui->dateBeam, SIGNAL(dateHovered(QDate)), ui->taskTree, SLOT(highlightDate(QDate)));
+
     ui->leAddTask->setInfoText("Neuen Task hinzufügen");
     ui->leAddTask->setLeftIcon(QPixmap(":/images/add.png"));
     ui->leAddTask->setRightIcon(QPixmap(":/images/clear.png"));
 
     ui->pbInfo->setIcon(QPixmap(":/images/info.png"));
 
-    connect(ui->dateBeam, SIGNAL(dateHovered(QDate)), this, SLOT(showDateInStatusbar(QDate)));
-    connect(ui->dateBeam, SIGNAL(dateHovered(QDate)), ui->taskTree, SLOT(highlightDate(QDate)));
+    // init stuff
+    initActions();
+    initSystemTray();
 
+    // init quickAddDlg
     quickAddDlg_ = new QuickAddDialog();
     connect(quickAddDlg_, SIGNAL(showMessage(QString,QString)), this, SLOT(showTrayMessage(QString,QString)));
 
-    // init stuff
-    initActions();
-    initSystemTray();    
+    // init global shortcut
+    QxtGlobalShortcut * globalShortcut = new QxtGlobalShortcut(QKeySequence(Settings::QuickTingyShortcut()), this);
+    globalShortcut->setEnabled(true);
+    connect(globalShortcut, SIGNAL(activated()), this, SLOT(globalShortcutTriggered()));
 
-	// init global shortcut
-	QxtGlobalShortcut * globalShortcut = new QxtGlobalShortcut(QKeySequence(Settings::QuickTingyShortcut()), this);
-	globalShortcut->setEnabled(true);
-	connect(globalShortcut, SIGNAL(activated()), this, SLOT(globalShortcutTriggered()));
+    // dump log on Ctrl+Shift+D
+    new QShortcut(QKeySequence("Ctrl+Shift+D"), this, SLOT(dumpLog()));
 
-	new QShortcut(QKeySequence("Ctrl+Shift+D"), this, SLOT(dumpLog()));
-
-	// hide window on Escape
-	new QShortcut(QKeySequence("Esc"), this, SLOT(hide()));
+    // hide window on Escape
+    new QShortcut(QKeySequence("Esc"), this, SLOT(hide()));
 }
 
 MainWindow::~MainWindow()
