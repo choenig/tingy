@@ -17,45 +17,5 @@
 ** You should have received a copy (license.txt) of the
 ** GNU General Public License along with Tingy.
 ** If not, see <http://www.gnu.org/licenses/>.
+**
 ****************************************************************************/
-#pragma once
-
-#include <QObject>
-#include <QDate>
-
-class QTime;
-class QTimer;
-
-class Clock : public QObject
-{
-    Q_OBJECT
-public:
-    Clock();
-    Clock(const QDateTime & now);
-    ~Clock();
-
-    static Clock * instance() { return instance_; }
-
-public:
-    static QDateTime currentDateTime();
-    static QDate currentDate();
-    static QTime currentTime();
-
-signals:
-    void dateChanged(const QDate & date);
-
-private slots:
-    void handleDateChange();
-
-private:
-    qint64 msecsTillTomorrow() const;
-    void init();
-
-private:
-    qint64 offsetInMSecs_;
-    QTimer * dateChangeTimer_;
-    QDate lastDate_;
-
-private:
-    static Clock * instance_;
-};
