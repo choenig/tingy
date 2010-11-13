@@ -5,6 +5,7 @@ class QString;
 namespace Settings
 {
     QString dataPath();
+    QString QuickTingyShortcut();
 
     namespace FileStorage
     {

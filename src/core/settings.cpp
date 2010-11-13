@@ -15,6 +15,11 @@ QString dataPath() {
     return QDir::homePath() + QDir::separator() + ".tingy" + QDir::separator();
 }
 
+QString QuickTingyShortcut() {
+    QSettings settings(settingsPath, QSettings::IniFormat);
+    return settings.value("QuickTingyShortcut", "Ctrl+Alt+Home").toString();
+}
+
 namespace FileStorage
 {
     QString ns = "FileStorage/";

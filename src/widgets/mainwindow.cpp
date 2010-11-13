@@ -1,6 +1,7 @@
 #include "mainwindow.h"
 
 #include <core/clock.h>
+#include <core/settings.h>
 #include <core/taskmodel.h>
 #include <qtextlib/qxtglobalshortcut.h>
 #include <util/log.h>
@@ -38,7 +39,8 @@ MainWindow::MainWindow(QWidget * parent)
     initActions();
     initSystemTray();    
 
-	QxtGlobalShortcut * globalShortcut = new QxtGlobalShortcut(QKeySequence("Ctrl+Alt+Home"), this);
+	// init global shortcut
+	QxtGlobalShortcut * globalShortcut = new QxtGlobalShortcut(QKeySequence(Settings::QuickTingyShortcut()), this);
 	globalShortcut->setEnabled(true);
 	connect(globalShortcut, SIGNAL(activated()), this, SLOT(globalShortcutTriggered()));
 
