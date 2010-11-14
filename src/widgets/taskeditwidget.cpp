@@ -98,7 +98,7 @@ void TaskEditWidget::paintEvent(QPaintEvent * paintEvent)
     QPainter p(this);
     p.fillRect(QRect(ui->lblSubject->geometry().topLeft(),
                      QPoint(ui->lblDone->geometry().right() + 4, ui->btnGroup->geometry().bottom())),
-               QColor("#C1C1FF"));
+               QColor(ui->lblSubject->palette().color(QPalette::Window)));
 
     QDialog::paintEvent(paintEvent);
 }

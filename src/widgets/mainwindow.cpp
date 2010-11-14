@@ -35,8 +35,24 @@
 #include <QTimer>
 #include <QEvent>
 #include <QShortcut>
+#include <QPushButton>
 
 #include "ui_mainwindow.h"
+
+bool getGridPos(const QGridLayout * layout, const QWidget * w, int & x, int & y)
+{
+    for (int r = 0 ; r < layout->rowCount() ; ++r) {
+        for (int c = 0 ; c < layout->columnCount() ; ++c) {
+            if (layout->itemAtPosition(r, c)->widget() == w) {
+                x = r;
+                y = c;
+                return true;
+            }
+        }
+    }
+
+    return false;
+}
 
 MainWindow::MainWindow(QWidget * parent)
     : QMainWindow(parent), quickAddDlg_(0), ui(new Ui::MainWindow)
@@ -50,7 +66,26 @@ MainWindow::MainWindow(QWidget * parent)
     ui->leAddTask->setLeftIcon(QPixmap(":/images/add.png"));
     ui->leAddTask->setRightIcon(QPixmap(":/images/clear.png"));
 
-    ui->pbInfo->setIcon(QPixmap(":/images/info.png"));
+//    ui->pbInfo->setIcon(QPixmap(":/images/info.png"));
+//    ui->pushButton->setIcon(QPixmap(":/images/info.png"));
+//    ui->pushButton->setText(QString());
+
+
+    {
+        const QPixmap infoIcon(":/images/info.png");
+
+        QGridLayout * centralLayout = (QGridLayout*)centralWidget()->layout();
+
+        int r,c;
+        bool ok = getGridPos(centralLayout, ui->dummyWidget, r, c);
+        delete ui->dummyWidget;
+
+        QToolBar * bar = new QToolBar();
+        bar->setIconSize(infoIcon.size());
+        bar->addAction(infoIcon, "Info über Tingy", this, SLOT(showInfoDialog()));
+
+        centralLayout->addWidget(bar, r, c, 1, 1);
+    }
 
     // init stuff
     initActions();
@@ -70,6 +105,9 @@ MainWindow::MainWindow(QWidget * parent)
 
     // hide window on Escape
     new QShortcut(QKeySequence("Esc"), this, SLOT(hide()));
+
+    // initialy hide done tasks
+    toggleShowDoneTasks();
 }
 
 MainWindow::~MainWindow()
@@ -88,13 +126,13 @@ void MainWindow::closeEvent(QCloseEvent * event)
 
 void MainWindow::hideEvent(QHideEvent *event)
 {
-    lastWindowPos = pos();
+    lastWindowPos_ = pos();
     QMainWindow::hideEvent(event);
 }
 
 void MainWindow::showEvent(QShowEvent * event)
 {
-    if (!lastWindowPos.isNull()) move(lastWindowPos);
+    if (!lastWindowPos_.isNull()) move(lastWindowPos_);
     QMainWindow::showEvent(event);
     ui->leAddTask->setFocus();
 }
@@ -122,7 +160,7 @@ void MainWindow::on_leAddTask_returnPressed()
     statusBar()->showMessage("Task added successfully", 5 * 1000);
 }
 
-void MainWindow::on_pbInfo_clicked()
+void MainWindow::showInfoDialog()
 {
     QString msg;
     msg =
@@ -173,15 +211,24 @@ void MainWindow::on_pbInfo_clicked()
 
 void MainWindow::initActions()
 {
+    ui->mainToolBar->setIconSize(QSize(40, 20));
+
+    // showDoneTasks
     showDoneTasksAction_ = ui->mainToolBar->addAction(QIcon(":/images/done.png"), "Abgeschlossene Tasks einblenden",
                                                       this, SLOT(toggleShowDoneTasks()));
     showDoneTasksAction_->setCheckable(true);
+
+    ui->mainToolBar->addSeparator();
+
+    // about action
+    ui->mainToolBar->addAction(QIcon(":/images/about.png"), "Info über Tingy", this, SLOT(showAboutDialog()));
 
     // spacer used to 'squeeze' the filterLineEdit
     QWidget * spacerWidget = new QWidget(this);
     spacerWidget->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Ignored);
     ui->mainToolBar->addWidget(spacerWidget);
 
+    // filterLineEdit
     LineEdit * filterLineEdit = new LineEdit(this);
     filterLineEdit->setInfoText("Filter");
     filterLineEdit->setLeftIcon(QPixmap(":/images/mag.png"));
@@ -190,10 +237,12 @@ void MainWindow::initActions()
     filterLineEdit->setMaximumWidth(250);
     ui->mainToolBar->addWidget(filterLineEdit);
 
-    new QShortcut(QKeySequence("Ctrl+F"), filterLineEdit, SLOT(setFocus()));
+    // spacerWidget
+    QWidget * borderSpacerWidget = new QWidget();
+    borderSpacerWidget->setMinimumWidth(2);
+    ui->mainToolBar->addWidget(borderSpacerWidget);
 
-    // initialy hide done tasks
-    toggleShowDoneTasks();
+    new QShortcut(QKeySequence("Ctrl+F"), filterLineEdit, SLOT(setFocus()));
 }
 
 void MainWindow::toggleShowDoneTasks()
@@ -255,4 +304,31 @@ void MainWindow::showTrayMessage(const QString & title, const QString & msg)
 void MainWindow::dumpLog()
 {
     Log::dumpLog();
+}
+
+void MainWindow::showAboutDialog()
+{
+    QString msg;
+    msg =
+            "<b>About Tingy</b><br>"
+            "<br>"
+            "Version: " + QApplication::applicationVersion() +"<br>"
+            "<br>"
+            "Tingy is free software: you can redistribute it and/or modify"
+            "it under the terms of the GNU General Public License as published by"
+            "the Free Software Foundation, either version 3 of the License, or"
+            "(at your option) any later version.<br>"
+            "<br>"
+            "Tingy is distributed in the hope that it will be useful,"
+            "but WITHOUT ANY WARRANTY; without even the implied warranty of"
+            "MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the"
+            "GNU General Public License for more details.<br>"
+            "<br>"
+            "You should have received a copy (license.txt) of the"
+            "GNU General Public License along with Tingy.<br>"
+            "If not, see http://www.gnu.org/licenses/.<br>";
+
+    QMessageBox msgBox;
+    msgBox.setText(msg);
+    msgBox.exec();
 }

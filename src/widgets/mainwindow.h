@@ -45,7 +45,7 @@ protected:
 
 private slots:
     void on_leAddTask_returnPressed();
-    void on_pbInfo_clicked();
+    void showInfoDialog();
     void toggleShowDoneTasks();
     void trayActivated(QSystemTrayIcon::ActivationReason reason);
     void updateTrayIcon(bool ok);
@@ -53,17 +53,18 @@ private slots:
     void showTrayMessage(const QString & title, const QString & msg);
     void showDateInStatusbar(const QDate & date);
     void dumpLog();
+    void showAboutDialog();
 
 private:
     void initActions();
     void initSystemTray();
 
 private:
-    QuickAddDialog * quickAddDlg_;
-    QAction * showDoneTasksAction_;
-    QLabel  * lblStatusBarTimestamp_;
     QSystemTrayIcon * trayIcon_;
-    QPoint lastWindowPos;
+    QuickAddDialog  * quickAddDlg_;
+    QAction         * showDoneTasksAction_;
+    QLabel          * lblStatusBarTimestamp_;
+    QPoint            lastWindowPos_;
 
 private:
     Ui::MainWindow * ui;

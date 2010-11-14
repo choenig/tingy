@@ -40,6 +40,10 @@ int main(int argc, char * argv[])
 {
     QApplication a(argc, argv);
 
+    // set application details
+    QApplication::setApplicationName("tingy");
+    QApplication::setApplicationVersion("1.0.0");
+
     // do not close the applicaton when the quicktingy is closed
     a.setQuitOnLastWindowClosed(false);
 
