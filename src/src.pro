@@ -38,7 +38,10 @@ SOURCES += \
     widgets/tasktree.cpp \
     widgets/tasktreeitems.cpp \
     widgets/textpopup.cpp \
-    storage/caldavstorage.cpp
+    widgets/tingydialog.cpp \
+    storage/caldavstorage.cpp \
+    widgets/aboutdialog.cpp \
+    widgets/infodialog.cpp
 
 HEADERS  += \
     core/clock.h \
@@ -65,13 +68,18 @@ HEADERS  += \
     widgets/tasktree.h \
     widgets/tasktreeitems.h \
     widgets/textpopup.h \
-    storage/caldavstorage.h
+    widgets/tingydialog.h \
+    storage/caldavstorage.h \
+    widgets/aboutdialog.h \
+    widgets/infodialog.h
 
 FORMS += \
 widgets/ui/calendarpopup.ui \
 widgets/ui/mainwindow.ui \
 widgets/ui/quickadddialog.ui \
-widgets/ui/taskeditwidget.ui
+widgets/ui/taskeditwidget.ui \
+widgets/ui/aboutdialog.ui \
+widgets/ui/infodialog.ui
 
 RESOURCES += \
     tingy.qrc

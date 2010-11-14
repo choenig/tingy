@@ -18,23 +18,19 @@
 ** GNU General Public License along with Tingy.
 ** If not, see <http://www.gnu.org/licenses/>.
 ****************************************************************************/
-#pragma once
 
-#include <core/task.h>
-#include <widgets/tingydialog.h>
+#include "infodialog.h"
 
-namespace Ui { class TaskEditWidget; }
+#include "ui_infodialog.h"
 
-class TaskEditWidget : public TingyDialog
+InfoDialog::InfoDialog(QWidget *parent)
+    : TingyDialog(parent, "Information"), ui(new Ui::InfoDialog)
 {
-    Q_OBJECT
+    ui->setupUi(centralWidget());
+    resize(500,200);
+}
 
-public:
-    TaskEditWidget(QWidget * parent = 0);
-    ~TaskEditWidget();
-
-    Task exec(const Task & task);
-
-private:
-    Ui::TaskEditWidget *ui;
-};
+InfoDialog::~InfoDialog()
+{
+    delete ui;
+}

@@ -26,6 +26,8 @@
 #include <qtextlib/qxtglobalshortcut.h>
 #include <util/log.h>
 #include <util/util.h>
+#include <widgets/aboutdialog.h>
+#include <widgets/infodialog.h>
 #include <widgets/quickadddialog.h>
 
 #include <QCloseEvent>
@@ -65,11 +67,6 @@ MainWindow::MainWindow(QWidget * parent)
     ui->leAddTask->setInfoText("Neuen Task hinzufügen");
     ui->leAddTask->setLeftIcon(QPixmap(":/images/add.png"));
     ui->leAddTask->setRightIcon(QPixmap(":/images/clear.png"));
-
-//    ui->pbInfo->setIcon(QPixmap(":/images/info.png"));
-//    ui->pushButton->setIcon(QPixmap(":/images/info.png"));
-//    ui->pushButton->setText(QString());
-
 
     {
         const QPixmap infoIcon(":/images/info.png");
@@ -162,51 +159,8 @@ void MainWindow::on_leAddTask_returnPressed()
 
 void MainWindow::showInfoDialog()
 {
-    QString msg;
-    msg =
-            "<b>Informationen</b>"
-            "<table>"
-            "<tr>"
-            "  <th>&nbsp;&nbsp;Tag&nbsp;&nbsp;</th>"
-            "  <th align=left>Beschreibung</th>"
-            "  <th align=left>Beispiele</th>"
-            "</tr>"
-            "<tr>"
-            "  <td align=center>*</td>"
-            "  <td>Due Date</td>"
-            "  <td>*12.03.1978<br>*today<br>*tomorrow<br>*+5d</td>"
-            "</tr>"
-            "<tr>"
-            "  <td align=center>@</td>"
-            "  <td>Planned Date</td>"
-            "  <td>@12.03.1978<br>@today<br>@tomorrow<br>@+5d</td>"
-            "</tr>"
-            "<tr>"
-            "  <td align=center>!</td>"
-            "  <td>Wichtigkeit</td>"
-            "  <td>!+<br>!-</td>"
-            "</tr>"
-            "<tr>"
-            "  <td align=center>$</td>"
-            "  <td>Aufwand</td>"
-            "  <td>$1h45m</td>"
-            "</tr>"
-            "<tr>"
-            "  <td align=center>//</td>"
-            "  <td>Zeilenumbruch</td>"
-            "  <td>Neue // Zeile</td>"
-            "</tr>"
-            "<tr>"
-            "  <td align=center>///</td>"
-            "  <td>Trenner zwischen Titel und Beschreibung</td>"
-            "  <td>Titel /// Beschreibung</td>"
-            "</tr>"
-            "</table>"
-            ;
-
-    QMessageBox msgBox;
-    msgBox.setText(msg);
-    msgBox.exec();
+    InfoDialog dlg;
+    dlg.exec();
 }
 
 void MainWindow::initActions()
@@ -308,27 +262,6 @@ void MainWindow::dumpLog()
 
 void MainWindow::showAboutDialog()
 {
-    QString msg;
-    msg =
-            "<b>About Tingy</b><br>"
-            "<br>"
-            "Version: " + QApplication::applicationVersion() +"<br>"
-            "<br>"
-            "Tingy is free software: you can redistribute it and/or modify"
-            "it under the terms of the GNU General Public License as published by"
-            "the Free Software Foundation, either version 3 of the License, or"
-            "(at your option) any later version.<br>"
-            "<br>"
-            "Tingy is distributed in the hope that it will be useful,"
-            "but WITHOUT ANY WARRANTY; without even the implied warranty of"
-            "MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the"
-            "GNU General Public License for more details.<br>"
-            "<br>"
-            "You should have received a copy (license.txt) of the"
-            "GNU General Public License along with Tingy.<br>"
-            "If not, see http://www.gnu.org/licenses/.<br>";
-
-    QMessageBox msgBox;
-    msgBox.setText(msg);
-    msgBox.exec();
+    AboutDialog dlg;
+    dlg.exec();
 }

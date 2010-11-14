@@ -17,24 +17,24 @@
 ** You should have received a copy (license.txt) of the
 ** GNU General Public License along with Tingy.
 ** If not, see <http://www.gnu.org/licenses/>.
+**
 ****************************************************************************/
 #pragma once
 
-#include <core/task.h>
 #include <widgets/tingydialog.h>
 
-namespace Ui { class TaskEditWidget; }
+#include <QWidget>
 
-class TaskEditWidget : public TingyDialog
+namespace Ui { class AboutDialog; }
+
+class AboutDialog : public TingyDialog
 {
     Q_OBJECT
 
 public:
-    TaskEditWidget(QWidget * parent = 0);
-    ~TaskEditWidget();
-
-    Task exec(const Task & task);
+    explicit AboutDialog(QWidget *parent = 0);
+    ~AboutDialog();
 
 private:
-    Ui::TaskEditWidget *ui;
+    Ui::AboutDialog *ui;
 };

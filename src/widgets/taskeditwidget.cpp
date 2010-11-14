@@ -31,9 +31,11 @@
 #include "ui_taskeditwidget.h"
 
 TaskEditWidget::TaskEditWidget(QWidget *parent)
-    : QDialog(parent), ui(new Ui::TaskEditWidget)
+    : TingyDialog(parent, "Task bearbeiten"), ui(new Ui::TaskEditWidget)
 {
-    ui->setupUi(this);
+    ui->setupUi(centralWidget());
+
+    resize(600,350);
 
     // init the Priority combo box
     ui->cbPrio->addItem(QPixmap(":/images/highPriority.png"),   "Hoch",    Priority::High);
@@ -44,10 +46,6 @@ TaskEditWidget::TaskEditWidget(QWidget *parent)
     ui->calPlanned->setDisplayFormat("dd.MM.yyyy");
     ui->calDue->calendarWidget()->setFirstDayOfWeek(Qt::Monday);
     ui->calPlanned->calendarWidget()->setFirstDayOfWeek(Qt::Monday);
-
-    // connect main signals
-    connect(ui->btnGroup, SIGNAL(accepted()), this, SLOT(accept()));
-    connect(ui->btnGroup, SIGNAL(rejected()), this, SLOT(reject()));
 }
 
 TaskEditWidget::~TaskEditWidget()
@@ -90,15 +88,4 @@ Task TaskEditWidget::exec(const Task & task)
     retval.setPlannedDate(ui->chkPlanned->isChecked() ? ui->calPlanned->date() : QDate());
     retval.setDone(task.isDone() ? task.getDoneTimestamp() : ui->chkDone->isChecked() ? Clock::currentDateTime() : QDateTime());
     return retval;
-}
-
-void TaskEditWidget::paintEvent(QPaintEvent * paintEvent)
-{
-    // draw the 'blue' background
-    QPainter p(this);
-    p.fillRect(QRect(ui->lblSubject->geometry().topLeft(),
-                     QPoint(ui->lblDone->geometry().right() + 4, ui->btnGroup->geometry().bottom())),
-               QColor(ui->lblSubject->palette().color(QPalette::Window)));
-
-    QDialog::paintEvent(paintEvent);
 }
