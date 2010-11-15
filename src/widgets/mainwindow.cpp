@@ -2,20 +2,20 @@
 ** Author: Christian Hoenig <tingy@mail.hoenig.cc>
 ** Copyright (c) 2010 Christian Hoenig
 **
-** This file is part of Tingy.
+** This file is part of tingy.
 **
-** Tingy is free software: you can redistribute it and/or modify
+** tingy is free software: you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
 ** the Free Software Foundation, either version 3 of the License, or
 ** (at your option) any later version.
 **
-** Tingy is distributed in the hope that it will be useful,
+** tingy is distributed in the hope that it will be useful,
 ** but WITHOUT ANY WARRANTY; without even the implied warranty of
 ** MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ** GNU General Public License for more details.
 **
 ** You should have received a copy (license.txt) of the
-** GNU General Public License along with Tingy.
+** GNU General Public License along with tingy.
 ** If not, see <http://www.gnu.org/licenses/>.
 ****************************************************************************/
 #include "mainwindow.h"
@@ -79,7 +79,7 @@ MainWindow::MainWindow(QWidget * parent)
 
         QToolBar * bar = new QToolBar();
         bar->setIconSize(infoIcon.size());
-        bar->addAction(infoIcon, "Info über Tingy", this, SLOT(showInfoDialog()));
+        bar->addAction(infoIcon, "Info über tingy", this, SLOT(showInfoDialog()));
 
         centralLayout->addWidget(bar, r, c, 1, 1);
     }
@@ -175,7 +175,7 @@ void MainWindow::initActions()
     ui->mainToolBar->addSeparator();
 
     // about action
-    ui->mainToolBar->addAction(QIcon(":/images/about.png"), "Info über Tingy", this, SLOT(showAboutDialog()));
+    ui->mainToolBar->addAction(QIcon(":/images/about.png"), "Info über tingy", this, SLOT(showAboutDialog()));
 
     // spacer used to 'squeeze' the filterLineEdit
     QWidget * spacerWidget = new QWidget(this);
@@ -214,7 +214,7 @@ void MainWindow::initSystemTray()
 
     // init context menu
     QMenu * contextMenu = new QMenu;
-    contextMenu->addAction(QIcon(":/images/exit.png"), "Quit Tingy", qApp, SLOT(quit()));
+    contextMenu->addAction(QIcon(":/images/exit.png"), "tingy beenden", qApp, SLOT(quit()));
     trayIcon_->setContextMenu(contextMenu);    
 
     trayIcon_->show();

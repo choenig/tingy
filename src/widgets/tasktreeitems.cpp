@@ -2,20 +2,20 @@
 ** Author: Christian Hoenig <tingy@mail.hoenig.cc>
 ** Copyright (c) 2010 Christian Hoenig
 **
-** This file is part of Tingy.
+** This file is part of tingy.
 **
-** Tingy is free software: you can redistribute it and/or modify
+** tingy is free software: you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
 ** the Free Software Foundation, either version 3 of the License, or
 ** (at your option) any later version.
 **
-** Tingy is distributed in the hope that it will be useful,
+** tingy is distributed in the hope that it will be useful,
 ** but WITHOUT ANY WARRANTY; without even the implied warranty of
 ** MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ** GNU General Public License for more details.
 **
 ** You should have received a copy (license.txt) of the
-** GNU General Public License along with Tingy.
+** GNU General Public License along with tingy.
 ** If not, see <http://www.gnu.org/licenses/>.
 ****************************************************************************/
 #include "tasktreeitems.h"
@@ -98,7 +98,7 @@ void TopLevelItem::invokeContextMenu(const QPoint & pos)
             QTextTable * headerTable = cursor.insertTable(1, 2, textTableFormat(0, Qt::AlignCenter, headerWidthConstraints));
 
             headerTable->cellAt(0,0).firstCursorPosition().setBlockFormat(textBlockFormat(Qt::AlignLeft));
-            headerTable->cellAt(0,0).firstCursorPosition().insertText("Tingy");
+            headerTable->cellAt(0,0).firstCursorPosition().insertText("tingy");
 
             headerTable->cellAt(0,1).firstCursorPosition().setBlockFormat(textBlockFormat(Qt::AlignRight));
             headerTable->cellAt(0,1).firstCursorPosition().insertHtml(dot(Clock::currentDateTime().toString("dd.MM.yyyy' * 'hh:mm:ss' Uhr'")));
