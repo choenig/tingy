@@ -159,8 +159,9 @@ void MainWindow::on_leAddTask_returnPressed()
 
 void MainWindow::showInfoDialog()
 {
-    InfoDialog dlg;
-    dlg.exec();
+    InfoDialog * dlg = new InfoDialog();
+	connect(dlg, SIGNAL(finished(int)), dlg, SLOT(deleteLater()));
+    dlg->show();
 }
 
 void MainWindow::initActions()
