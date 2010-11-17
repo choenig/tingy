@@ -248,7 +248,8 @@ void MainWindow::showDateInStatusbar(const QDate & date)
 
 void MainWindow::globalShortcutTriggered()
 {
-    quickAddDlg_->showDlg();
+    if (quickAddDlg_->isVisible()) quickAddDlg_->hide();
+    else                           quickAddDlg_->showDlg();
 }
 
 void MainWindow::showTrayMessage(const QString & title, const QString & msg)
