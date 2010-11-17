@@ -44,6 +44,8 @@ int main(int argc, char * argv[])
     QApplication::setApplicationName("tingy");
     QApplication::setApplicationVersion("1.1.0-git");
 
+    QApplication::setWindowIcon(QIcon(":/images/OK.png"));
+
     // do not close the applicaton when the quicktingy is closed
     a.setQuitOnLastWindowClosed(false);
 
