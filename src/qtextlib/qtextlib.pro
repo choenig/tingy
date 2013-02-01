@@ -19,6 +19,6 @@ unix:SOURCES  += qxtglobalshortcut_x11.cpp
 win32:SOURCES += qxtglobalshortcut_win.cpp
 
 HEADERS  += \
-    qxtglobalstuff.h \
+    qxtglobal.h \
     qxtglobalshortcut.h \
     qxtglobalshortcut_p.h
