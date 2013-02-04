@@ -60,7 +60,7 @@ void Clock::init()
 
 qint64 Clock::msecsTillTomorrow() const
 {
-    QDateTime now = currentDateTime();
+    const QDateTime now = currentDateTime();
     return now.msecsTo(QDateTime(now.date().addDays(1)));
 }
 
