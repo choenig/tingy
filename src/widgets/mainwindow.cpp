@@ -74,7 +74,7 @@ MainWindow::MainWindow(QWidget * parent)
         QGridLayout * centralLayout = (QGridLayout*)centralWidget()->layout();
 
         int r,c;
-        bool ok = getGridPos(centralLayout, ui->dummyWidget, r, c);
+        getGridPos(centralLayout, ui->dummyWidget, r, c);
         delete ui->dummyWidget;
 
         QToolBar * bar = new QToolBar();

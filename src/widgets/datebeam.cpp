@@ -59,7 +59,7 @@ void DateBeam::enterEvent(QEvent *)
 
 void DateBeam::mouseMoveEvent(QMouseEvent * event)
 {
-    bool oldHoveredCell = hoveredCell_;
+    int oldHoveredCell = hoveredCell_;
     hoveredCell_ = event->pos().x() / cellWidth_;
     update();
 
