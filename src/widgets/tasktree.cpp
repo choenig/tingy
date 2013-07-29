@@ -84,7 +84,7 @@ void updateTopLevelItems(TaskTree * tree)
     updateNext(tree, it, nextWeekDate.addDays(7), "Zukunft ...");
 
     while (it.hasNext()) {
-        it.next();
+        delete it.next();
         it.remove();
     }
 }
